@@ -1,0 +1,13 @@
+Type                         Module                      Label            Process   
+------------------------------------------------------------------------------------
+FEDRawDataCollection         "hltFEDSelectorL1"          ""               "HLT"     
+double                       "hltScoutingCaloPacker"     "caloMetPhi"     "HLT"     
+double                       "hltScoutingCaloPacker"     "caloMetPt"      "HLT"     
+double                       "hltScoutingCaloPacker"     "rho"            "HLT"     
+edm::TriggerResults          "TriggerResults"            ""               "HLT"     
+vector<ScoutingCaloJet>      "hltScoutingCaloPacker"     ""               "HLT"     
+vector<ScoutingMuon>         "hltScoutingMuonPackerCalo"   ""               "HLT"     
+vector<ScoutingTrack>        "hltScoutingTrackPacker"    ""               "HLT"     
+vector<ScoutingVertex>       "hltScoutingMuonPackerCalo"   "displacedVtx"   "HLT"     
+vector<ScoutingVertex>       "hltScoutingPrimaryVertexPacker"   "primaryVtx"     "HLT"     
+vector<ScoutingVertex>       "hltScoutingPrimaryVertexPackerCaloMuon"   "primaryVtx"     "HLT"     
