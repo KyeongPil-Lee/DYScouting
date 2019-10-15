@@ -17,8 +17,9 @@
 
 
 // -- frameworks
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/one/EDAnalyzer.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -51,7 +52,6 @@
 using namespace std;
 using namespace reco;
 using namespace edm;
-using namespace pat;
 
 class DYTreeProducer : public edm::EDAnalyzer
 {
@@ -60,10 +60,11 @@ public:
   ~DYTreeProducer();
 
 private:
-  virtual void beginJob();
   virtual void analyze( const edm::Event&, const edm::EventSetup& );
+  virtual void beginJob();
   virtual void endJob();
   virtual void beginRun( const edm::Run&, const edm::EventSetup& );
+  virtual void endRun( const edm::Run&, const edm::EventSetup& );
 
   void Init();
   void Make_Branch();
@@ -178,7 +179,7 @@ t_PUSummaryInfo_  ( consumes< std::vector<PileupSummaryInfo> > (iConfig.getUntra
 t_genEventInfo_   ( consumes< GenEventInfoProduct >            (iConfig.getUntrackedParameter<edm::InputTag>("genEventInfo")) ),
 t_genParticle_    ( consumes< reco::GenParticleCollection >    (iConfig.getUntrackedParameter<edm::InputTag>("genParticle")) )
 {
-   usesResource("TFileService");
+   // usesResource("TFileService");
 }
 
 DYTreeProducer::~DYTreeProducer()
@@ -198,7 +199,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   eventNum_     = iEvent.id().event();
 
   // -- True PU info: only for MC -- //
-  if( !isRealData_ )
+  if( !isRealData )
   {
     edm::Handle<std::vector< PileupSummaryInfo > > h_PUSummaryInfo;
 
@@ -220,7 +221,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   Fill_HLT(iEvent);
   Fill_ScoutingVertex(iEvent);
   Fill_ScoutingMuon(iEvent);
-  if( !isRealData_ ) Fill_GenParticle(iEvent);
+  if( !isRealData ) Fill_GenParticle(iEvent);
 
   ntuple_->Fill();
 }
@@ -247,9 +248,9 @@ void DYTreeProducer::Init()
   // -- trigger information
   vec_firedTrigger_.clear();
   vec_filterName_.clear();
-  vec_HLTObj_pt_.claer();
-  vec_HLTObj_eta_.claer();
-  vec_HLTObj_phi_.claer();
+  vec_HLTObj_pt_.clear();
+  vec_HLTObj_eta_.clear();
+  vec_HLTObj_phi_.clear();
 
   // -- vertex information (@ HLT)
   nVtx_ = -999;
@@ -498,7 +499,9 @@ void DYTreeProducer::Fill_ScoutingVertex( const edm::Event& iEvent )
   int _nVtx = 0;
   if( h_scoutingVertex.isValid() )
   {
-    for(auto i_vtx=0; i_vtx<h_scoutingVertex->size(); ++i_vtx)
+    // cout << "h_scoutingVertex->size() = " << h_scoutingVertex->size() << endl;
+
+    for(unsigned int i_vtx=0; i_vtx<h_scoutingVertex->size(); ++i_vtx)
     {
       const ScoutingVertex &scoutingVertex = (*h_scoutingVertex)[i_vtx];
 
@@ -512,6 +515,7 @@ void DYTreeProducer::Fill_ScoutingVertex( const edm::Event& iEvent )
 
     nVtx_ = _nVtx;
   }
+
 }
 
 void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
@@ -522,13 +526,15 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
   int _nMuon = 0;
   if( h_scoutingMuon.isValid() )
   {
-    for(auto i_mu=0; i_mu<h_scoutingMuon->size(); ++i_mu)
+    // cout << "h_scoutingMuon->size() = " << h_scoutingMuon->size() << endl;
+
+    for(unsigned int i_mu=0; i_mu<h_scoutingMuon->size(); ++i_mu)
     {
       const ScoutingMuon& muon = (*h_scoutingMuon)[i_mu];
 
-      muon_px_[i_mu]  = muon.px();
-      muon_py_[i_mu]  = muon.py();
-      muon_pz_[i_mu]  = muon.pz();
+      // muon_px_[i_mu]  = muon.px();
+      // muon_py_[i_mu]  = muon.py();
+      // muon_pz_[i_mu]  = muon.pz();
       muon_pt_[i_mu]  = muon.pt();
       muon_eta_[i_mu] = muon.eta();
       muon_phi_[i_mu] = muon.phi();
@@ -540,16 +546,17 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
       muon_nMatchedStation_[i_mu] = muon.nMatchedStations();
       muon_normChi2_[i_mu]        = muon.ndof() > 0. ? muon.chi2() / muon.ndof() : 1e4;
 
-      muon_dxy[i_mu] = muon.dxy();
-      muon_dz[i_mu]  = muon.dz();
+      muon_dxy_[i_mu] = muon.dxy();
+      muon_dz_[i_mu]  = muon.dz();
 
-      muon_triIso[i_mu] = muon.trackIso();
+      muon_trkIso_[i_mu] = muon.trackIso();
 
       _nMuon++;
     }
 
     nMuon_ = _nMuon;
   }
+
 }
 
 
@@ -588,5 +595,9 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
 
   return flag;
 }
+
+void DYTreeProducer::endJob() {}
+void DYTreeProducer::beginRun(const edm::Run &iRun, const edm::EventSetup &iSetup) {}
+void DYTreeProducer::endRun(const edm::Run &iRun, const edm::EventSetup &iSetup) {}
 
 DEFINE_FWK_MODULE(DYTreeProducer);
