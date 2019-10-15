@@ -1,3 +1,11 @@
+# python
+*.pyc
+
+# from LaTeX compiling
+*.aux
+*.log
+*.toc
+
 # Prerequisites
 *.d
 
