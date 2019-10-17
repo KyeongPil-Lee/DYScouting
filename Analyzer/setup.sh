@@ -12,16 +12,16 @@ export ROOT_INCLUDE_PATH=${DY_ANALYZER_PATH}:${ROOT_INCLUDE_PATH}
 export PYTHONPATH=${DY_ANALYZER_PATH}:${PYTHONPATH}
 
 export DY_NTUPLE_PATH=""
-# if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; then
-#   DY_NTUPLE_PATH="/data9/DATA/DYntuple"
+if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; then
+  DY_NTUPLE_PATH="DUMMY"
 
-# elif [ $HOSTNAME == "muon" ]; then
-#   DY_NTUPLE_PATH="/scratch/kplee/DYntuple"
+elif [ $HOSTNAME == "muon" ]; then
+  DY_NTUPLE_PATH="/scratch/kplee/DYScoutingTree"
 
 # elif [ $USER == "KyeongPil_Lee" ]; then
 #   DY_NTUPLE_PATH="/Users/KyeongPil_Lee/temp/DYntuple"
 
-# fi
+fi
 echo "========================================"
 echo "Enviornment variables"
 echo "DY_ANALYZER_PATH: "$DY_ANALYZER_PATH
