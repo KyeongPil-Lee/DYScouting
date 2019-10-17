@@ -37,14 +37,14 @@ if __name__ == '__main__':
     config.Data.inputDataset = '/ScoutingCaloMuon/Run2018A-v1/RAW'
     crabCommand('submit', config = config)
 
-    config.General.requestName = 'DYTree'+version+'ScoutingCaloMuon_Run2018Bv1_GoldenJSON'
-    config.Data.inputDataset = '/ScoutingCaloMuon/Run2018B-v1/RAW'
-    crabCommand('submit', config = config)
+    # config.General.requestName = 'DYTree'+version+'ScoutingCaloMuon_Run2018Bv1_GoldenJSON'
+    # config.Data.inputDataset = '/ScoutingCaloMuon/Run2018B-v1/RAW'
+    # crabCommand('submit', config = config)
 
-    config.General.requestName = 'DYTree'+version+'ScoutingCaloMuon_Run2018Cv1_GoldenJSON'
-    config.Data.inputDataset = '/ScoutingCaloMuon/Run2018C-v1/RAW'
-    crabCommand('submit', config = config)
+    # config.General.requestName = 'DYTree'+version+'ScoutingCaloMuon_Run2018Cv1_GoldenJSON'
+    # config.Data.inputDataset = '/ScoutingCaloMuon/Run2018C-v1/RAW'
+    # crabCommand('submit', config = config)
 
-    config.General.requestName = 'DYTree'+version+'ScoutingCaloMuon_Run2018Dv1_GoldenJSON'
-    config.Data.inputDataset = '/ScoutingCaloMuon/Run2018D-v1/RAW'
-    crabCommand('submit', config = config)
+    # config.General.requestName = 'DYTree'+version+'ScoutingCaloMuon_Run2018Dv1_GoldenJSON'
+    # config.Data.inputDataset = '/ScoutingCaloMuon/Run2018D-v1/RAW'
+    # crabCommand('submit', config = config)

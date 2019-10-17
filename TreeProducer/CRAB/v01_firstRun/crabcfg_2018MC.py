@@ -41,11 +41,11 @@ if __name__ == '__main__':
     crabCommand('submit', config = config)
 
     # -- DY, M50 (aMCNLO)
-    config.General.requestName = 'DYTree'+version+'DYJetsToLL_M10to50_aMCNLO'
+    config.General.requestName = 'DYTree'+version+'DYJetsToLL_M50toInf_aMCNLO'
     config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
     crabCommand('submit', config = config)
 
-    config.General.requestName = 'DYTree'+version+'DYJetsToLL_M10to50_aMCNLO_ext'
+    config.General.requestName = 'DYTree'+version+'DYJetsToLL_M50toInf_aMCNLO_ext'
     config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v1/AODSIM'
     crabCommand('submit', config = config)
 
