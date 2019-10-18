@@ -164,8 +164,8 @@ public:
     Double_t realTime = timer_.RealTime();
 
     cout << "************************************************" << endl;
-    cout << "Total real time: " << realTime << " seconds = " << realTime / 60.0 << " hours" << endl;
-    cout << "Total CPU time:  " << cpuTime << " seconds = " << realTime / 60.0 << " hours" << endl;
+    cout << "Total real time: " << realTime << " seconds = " << realTime / 60.0 << " minutes = " << realTime / (60.0*60.0) << " hours" << endl;
+    cout << "Total CPU time:  " << cpuTime  << " seconds = " << cpuTime / 60.0  << " minutes = " << cpuTime / (60.0*60.0)  << " hours" << endl;
     cout << "  CPU time / real time = " << cpuTime / realTime << endl;
     cout << "************************************************" << endl;
   }
