@@ -241,7 +241,7 @@ void DYTreeProducer::Init()
   lumiBlockNum_ = -999;
   eventNum_ = 0;
 
-  genWeight_ = -999;
+  genWeight_ = 0; // -- not -999; for analyzer code
 
   truePU_ = -999;
 
@@ -404,7 +404,7 @@ void DYTreeProducer::Fill_GenParticle(const edm::Event &iEvent)
   {
     const reco::GenParticle &parCand = (*h_genParticle)[i];
 
-    if( abs(parCand.pdgId()) == 13 ) // -- only muons -- //
+    if( abs(parCand.pdgId()) == 11 || abs(parCand.pdgId()) == 13 || abs(parCand.pdgId()) == 15 ) // -- only leptons for now -- //
     {
       genParticle_ID_[_nGenParticle]     = parCand.pdgId();
       genParticle_status_[_nGenParticle] = parCand.status();
