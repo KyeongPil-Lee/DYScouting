@@ -6,6 +6,7 @@
 #include <TStopwatch.h>
 
 #include <Include/Object.h>
+#include <Include/SimplePlotTools.h>
 
 namespace DYTool
 {
@@ -303,7 +304,50 @@ DYTool::MuPair EventSelection(DYTool::DYTree *ntuple, Bool_t& doPass)
   }
 }
 
+class PUReweightTool
+{
+public:
+  TString type_;
+  TH1D* h_PUWeight_;
+  Double_t lastPUBin_;
 
+  PUReweightTool(TString type)
+  {
+    type_ = type;
+    Init();
+  }
+
+  Double_t Weight( Int_t truePU )
+  {
+    if( truePU > lastPUBin_ ) return 0;
+
+    return h_PUWeight_->GetBinContent(truePU+1); // -- e.g. truePU = 0 -> 1st bin value (PU = 0), truePU = 98 -> 99th bin [98, 99] value (PU=98) 
+  }
+
+private:
+  void Init()
+  {
+    TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
+    if( type_ == "2018" )
+    {
+      TString rootFilePath = analyzerPath+"/Include/Pileup/ROOTFile_PUReweighting_2018.root";
+      h_PUWeight_ = PlotTool::Get_Hist(rootFilePath, "h_ratio");
+    }
+    else
+    {
+      cout << "[PUReweightTool] type = " << type_ << " is not recognizable" << endl;
+      h_PUWeight_ = nullptr;
+      lastPUBin_ = -999;
+    }
+
+    if( h_PUWeight_ != nullptr )
+    {
+      Int_t nBin = h_PUWeight_->GetNbinsX();
+      lastPUBin_ = h_PUWeight_->GetBinLowEdge(nBin);
+      cout << "[PUReweightTool] lastPUBin = " << lastPUBin_ << endl;
+    }
+  }
+};
 
 static inline void loadBar(int x, int n, int r, int w)
 {

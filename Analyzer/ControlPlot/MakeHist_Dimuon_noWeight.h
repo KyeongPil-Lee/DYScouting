@@ -181,6 +181,8 @@ public:
     Int_t nEvent = chain->GetEntries();
     cout << "\t[Total Events: " << nEvent << "]" << endl;
 
+    DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
+
     HistContainer* hists       = new HistContainer();
     HistContainer* hists_ZPeak = new HistContainer();
 
@@ -195,6 +197,7 @@ public:
 
       // Double_t totWeight = sampleInfo_.normFactor * genWeight;
       Double_t totWeight = genWeight;
+      if( sampleInfo_.isMC ) totWeight = genWeight * PUTool->Weight( ntuple->truePU );
 
       // -- only DY->mumu or DY->ee events according to its name -- //
       if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )

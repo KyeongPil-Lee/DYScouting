@@ -275,6 +275,57 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
   return h_temp;
 }
 
+void Print_Histogram( TH1D* h, Bool_t NegativeCheck = kFALSE )
+{
+  h->Print();
+
+  // -- underflow -- //
+  Double_t value_uf = h->GetBinContent(0);
+  Double_t errorAbs_uf = h->GetBinError(0);
+  Double_t errorRel_uf = value_uf == 0 ? 0 : errorAbs_uf / value_uf;
+
+  printf( "Underflow: (value, error) = (%lf, %lf (%7.3lf %%))\n", 
+         value_uf, errorAbs_uf, errorRel_uf*100 );
+
+  if( NegativeCheck && value_uf < 0 )
+    printf("################## NEGATIVE BIN ##################");
+
+  Int_t nBin = h->GetNbinsX();
+  for(Int_t i=0; i<nBin; i++)
+  {
+    Int_t i_bin = i+1;
+    Double_t LowerEdge = h->GetBinLowEdge(i_bin);
+    Double_t UpperEdge = h->GetBinLowEdge(i_bin+1);
+
+    Double_t value = h->GetBinContent(i_bin);
+    Double_t errorAbs = h->GetBinError(i_bin);
+    Double_t errorRel;
+    if( value != 0 )
+      errorRel = errorAbs / value;
+    else
+      errorRel = 0;
+
+    printf( "%02d bin: [%6.1lf, %6.1lf] (value, error) = (%lf, %lf (%7.3lf %%))\n", 
+           i_bin, LowerEdge, UpperEdge, value, errorAbs, errorRel*100 );
+    
+    if( NegativeCheck && value < 0 )
+      printf("################## NEGATIVE BIN ##################");
+  }
+
+  // -- overflow -- //
+  Double_t value_of = h->GetBinContent(nBin+1);
+  Double_t errorAbs_of = h->GetBinError(nBin+1);
+  Double_t errorRel_of = value_of == 0 ? 0 : errorAbs_of / value_of;
+
+  printf( "Overflow: (value, error) = (%lf, %lf (%7.3lf %%))\n", 
+         value_of, errorAbs_of, errorRel_of*100 );
+
+  if( NegativeCheck && value_of < 0 )
+    printf("################## NEGATIVE BIN ##################");
+
+  printf("\n\n");
+}
+
 struct HistInfo
 {
   TH1D* h;
