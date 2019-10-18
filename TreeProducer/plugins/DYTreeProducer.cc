@@ -7,7 +7,8 @@
 //
 //   Author:
 //   K.P.Lee           Seoul National University
-//
+// 
+//  Reference: https://github.com/schhibra/DarkPhotonAnalysis/blob/master/CMSSW_9_4_14/src/ScoutingAnalysis/TreeMaker/plugins/TreeMaker.cc
 //--------------------------------------------------
 
 
@@ -69,6 +70,7 @@ private:
   void Init();
   void Make_Branch();
 
+  void Fill_L1( const edm::Event&, const edm::EventSetup& );
   void Fill_HLT( const edm::Event & );
   void Fill_ScoutingVertex( const edm::Event& );
   void Fill_ScoutingMuon( const edm::Event& );
@@ -78,6 +80,8 @@ private:
   bool SavedFilterCondition( std::string& );
 
   // -- tokens
+  edm::EDGetTokenT< BXVector<GlobalAlgBlk> >         t_globalAlgBlk_;
+
   edm::EDGetTokenT< edm::TriggerResults >            t_triggerResults_;
   // edm::EDGetTokenT< trigger::TriggerEvent >          t_triggerEvent_;
 
@@ -90,6 +94,10 @@ private:
   edm::EDGetTokenT< reco::GenParticleCollection >    t_genParticle_;
 
   // const edm::EDGetTokenT<LHEEventProduct>         t_LHEEventProduct_; // -- it will be added later (if needed)
+
+  // -- variable for L1 information
+  vector< std::string> vec_L1Seed_;
+  l1t::L1TGlobalUtil   *L1GtUtils_;
 
   // -- tree
   TTree* ntuple_;
@@ -107,6 +115,8 @@ private:
   int truePU_;
 
   // -- trigger information
+  vector< bool > vec_L1Bit_;
+  vector< int >  vec_L1Prescale_;
   vector< std::string > vec_firedTrigger_;
   vector< std::string > vec_filterName_;
   vector< double > vec_HLTObj_pt_;
@@ -171,6 +181,7 @@ private:
 };
 
 DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
+t_globalAlgBlk_   ( consumes< BXVector< GlobalAlgBlk > >       (iConfig.getUntrackedParameter<edm::InputTag>("globalAlgBlk")) ),
 t_triggerResults_ ( consumes< edm::TriggerResults >            (iConfig.getUntrackedParameter<edm::InputTag>("triggerResults")) ),
 // t_triggerEvent_   ( consumes< trigger::TriggerEvent >          (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ),
 t_scoutingVertex_ ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("scoutingVertex")) ),
@@ -180,6 +191,8 @@ t_genEventInfo_   ( consumes< GenEventInfoProduct >            (iConfig.getUntra
 t_genParticle_    ( consumes< reco::GenParticleCollection >    (iConfig.getUntrackedParameter<edm::InputTag>("genParticle")) )
 {
    // usesResource("TFileService");
+  vec_L1Seed_ = iConfig.getUntrackedParameter<std::vector<std::string> >("L1SeedList");
+  L1GtUtils_  = new l1t::L1TGlobalUtil(iConfig, consumesCollector());
 }
 
 DYTreeProducer::~DYTreeProducer()
@@ -218,6 +231,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   } // -- end of isMC -- //
 
   // -- fill each object
+  Fill_L1(iEvent, iSetup);
   Fill_HLT(iEvent);
   Fill_ScoutingVertex(iEvent);
   Fill_ScoutingMuon(iEvent);
@@ -246,6 +260,8 @@ void DYTreeProducer::Init()
   truePU_ = -999;
 
   // -- trigger information
+  vec_L1Bit_.clear();
+  vec_L1Prescale_.clear();
   vec_firedTrigger_.clear();
   vec_filterName_.clear();
   vec_HLTObj_pt_.clear();
@@ -325,11 +341,13 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("eventNum",&eventNum_,"eventNum/l"); // -- unsigned long long -- //
   ntuple_->Branch("truePU", &truePU_, "truePU/I");
 
+  ntuple_->Branch("vec_L1Bit",        &vec_L1Bit_);
+  ntuple_->Branch("vec_L1Prescale",   &vec_L1Prescale_);
   ntuple_->Branch("vec_firedTrigger", &vec_firedTrigger_);
-  ntuple_->Branch("vec_filterName", &vec_filterName_);
-  ntuple_->Branch("vec_HLTObj_pt", &vec_HLTObj_pt_);
-  ntuple_->Branch("vec_HLTObj_eta", &vec_HLTObj_eta_);
-  ntuple_->Branch("vec_HLTObj_phi", &vec_HLTObj_phi_);
+  ntuple_->Branch("vec_filterName",   &vec_filterName_);
+  ntuple_->Branch("vec_HLTObj_pt",    &vec_HLTObj_pt_);
+  ntuple_->Branch("vec_HLTObj_eta",   &vec_HLTObj_eta_);
+  ntuple_->Branch("vec_HLTObj_phi",   &vec_HLTObj_phi_);
 
 
   ntuple_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -557,6 +575,23 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
     nMuon_ = _nMuon;
   }
 
+}
+
+void DYTreeProducer::Fill_L1( const edm::Event& iEvent, const edm::EventSetup& iSetup )
+{
+  L1GtUtils_->retrieveL1(iEvent, iSetup, t_globalAlgBlk_);
+
+  for(unsigned int i_seed=0; i_seed<vec_L1Seed_.size(); i_seed++)
+  {
+    bool isFired = false;
+    L1GtUtils_->getFinalDecisionByName(string(vec_L1Seed_[i_seed]), isFired);
+
+    int L1Prescale = -999;
+    L1GtUtils_->getPrescaleByName(string(vec_L1Seed_[i_seed]), L1Prescale );
+
+    vec_L1Bit_.push_back( isFired );
+    vec_L1Prescale_.push_back( L1Prescale );
+  }
 }
 
 

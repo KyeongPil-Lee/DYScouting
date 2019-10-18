@@ -21,7 +21,19 @@ process.TFileService = cms.Service("TFileService",
   closeFileFast = cms.untracked.bool(False),
 )
 
+##--- l1 stage2 digis ---
+process.load("EventFilter.L1TRawToDigi.gtStage2Digis_cfi")
+process.gtStage2Digis.InputLabel = cms.InputTag( "hltFEDSelectorL1" )
+process.load('PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff')
+
+from DYScouting.TreeProducer.L1SeedList import GetL1SeedList
+
 process.DYTree = cms.EDAnalyzer('DYTreeProducer',
+  globalAlgBlk          = cms.untracked.InputTag("gtStage2Digis"),
+  l1tAlgBlkInputTag     = cms.InputTag("gtStage2Digis"), # -- for L1TGlobalUtil
+  l1tExtBlkInputTag     = cms.InputTag("gtStage2Digis"), # -- for L1TGlobalUtil
+  ReadPrescalesFromFile = cms.bool( False ),             # -- for L1TGlobalUtil
+  L1SeedList     = cms.untracked.vstring(GetL1SeedList()),
   triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
   scoutingVertex = cms.untracked.InputTag("hltScoutingMuonPackerCalo", "displacedVtx", "HLT"),
   scoutingMuon   = cms.untracked.InputTag("hltScoutingMuonPackerCalo"),
@@ -30,4 +42,8 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
   genParticle    = cms.untracked.InputTag("genParticles"), 
 )
 
-process.mypath = cms.EndPath(process.DYTree)
+isMC = False
+if isMC : 
+    process.p = cms.Path(process.DYTree)
+else : 
+    process.p = cms.Path(process.gtStage2Digis + process.DYTree)
