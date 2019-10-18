@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <TStopwatch.h>
+#include <TSystem.h>
 
 #include <Include/Object.h>
 #include <Include/SimplePlotTools.h>
