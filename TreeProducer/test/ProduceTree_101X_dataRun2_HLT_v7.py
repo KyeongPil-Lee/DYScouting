@@ -22,7 +22,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.DYTree = cms.EDAnalyzer('DYTreeProducer',
-  triggerResults = cms.untracked.InputTag("TriggerResults"),
+  triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
   scoutingVertex = cms.untracked.InputTag("hltScoutingMuonPackerCalo", "displacedVtx", "HLT"),
   scoutingMuon   = cms.untracked.InputTag("hltScoutingMuonPackerCalo"),
   PUSummaryInfo  = cms.untracked.InputTag("addPileupInfo"),
