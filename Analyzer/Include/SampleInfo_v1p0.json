@@ -78,7 +78,7 @@
     "xSec": 831.76,
     "sumWeight": -1.0,
     "comment": "NNLO cross section",
-    "list_dir": ["dummy"]
+    "list_dir": ["v1.0/TTTo2L2Nu_Powheg_Incompleted"]
   },
 
   {
