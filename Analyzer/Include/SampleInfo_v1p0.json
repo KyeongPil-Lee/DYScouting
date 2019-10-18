@@ -46,7 +46,7 @@
   },
 
   {
-    "tag": "DYTauTau_M10to50_NLOXSec",
+    "tag": "DYTauTau_M10to50",
     "isMC": 1,
     "xSec": 6270.0,
     "sumWeight": -1.0,
