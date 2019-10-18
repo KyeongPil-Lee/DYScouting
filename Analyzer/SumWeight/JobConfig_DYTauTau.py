@@ -10,7 +10,8 @@ generator.luminosity = 1.0 # -- not used anyway
 generator.jsonName = "SampleInfo_v1p0.json" # -- under DY_ANALYZER_PATH/Include
 
 generator.dic_nJob = { 
-  "DYMuMu_M50toInf":    8,
+  # "DYMuMu_M50toInf":    8,
+  "DYMuMu_M10to50":    8,
   }
 
 generator.outputPath = "/scratch/kplee/DYScoutingJob"
