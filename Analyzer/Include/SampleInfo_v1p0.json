@@ -6,7 +6,7 @@
     "xSec": 6270.0,
     "sumWeight": -1.0,
     "comment": "Cross section is from XSDB: 18810.0 / 3",
-    "list_dir": ["dummy"]
+    "list_dir": ["v1.0/DYJetsToLL_M10to50_Madgraph_ext"]
   },
 
   {
@@ -15,7 +15,7 @@
     "xSec": 35090.3,
     "sumWeight": -1.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (WARNING: PDF error is 57657.3 pb (164%)!!)",
-    "list_dir": ["dummy"]
+    "list_dir": ["v1.0/DYJetsToLL_M10to50_Madgraph_ext"]
   },
 
   {
@@ -24,7 +24,7 @@
     "xSec": 2384.97,
     "sumWeight": -1.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED",
-    "list_dir": ["dummy"]
+    "list_dir": ["v1.0/DYJetsToLL_M10to50_Madgraph_ext"]
   },
 
   {
@@ -127,12 +127,12 @@
   },
 
   {
-    "tag": "ScoutingCaloMuon_Run2018A",
-    "isMC": 0,
-    "xSec": -1.0,
+    "tag": "QCDMuEnriched_Pt20toInf",
+    "isMC": 1,
+    "xSec": 1.0,
     "sumWeight": -1.0,
-    "comment": "",
-    "list_dir": ["dummy"]
+    "comment": "NNLO cross section",
+    "list_dir": ["v1.0/QCDMuEnriched_Pt20toInf"]
   },
 
   {
@@ -140,8 +140,8 @@
     "isMC": 0,
     "xSec": -1.0,
     "sumWeight": -1.0,
-    "comment": "",
-    "list_dir": ["dummy"]
+    "comment": "WARNING: INCOMPLETED directory",
+    "list_dir": ["v1.0/ScoutingCaloMuon_Run2018Av1_GoldenJSON_Incompleted"]
   },
 
   {
@@ -150,7 +150,7 @@
     "xSec": -1.0,
     "sumWeight": -1.0,
     "comment": "",
-    "list_dir": ["dummy"]
+    "list_dir": ["v1.0/ScoutingCaloMuon_Run2018Bv1_GoldenJSON"]
   },
 
   {
@@ -159,7 +159,7 @@
     "xSec": -1.0,
     "sumWeight": -1.0,
     "comment": "",
-    "list_dir": ["dummy"]
+    "list_dir": ["v1.0/ScoutingCaloMuon_Run2018Cv1_GoldenJSON"]
   },
 
   {
@@ -167,8 +167,8 @@
     "isMC": 0,
     "xSec": -1.0,
     "sumWeight": -1.0,
-    "comment": "",
-    "list_dir": ["dummy"]
+    "comment": "WARNING: INCOMPLETED directory",
+    "list_dir": ["v1.0/ScoutingCaloMuon_Run2018Dv1_GoldenJSON_Incompleted"]
   },
 
   {
