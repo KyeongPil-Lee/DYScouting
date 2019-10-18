@@ -271,6 +271,38 @@ vector<DYTool::GenParticle> GetAllGenLeptons(DYTool::DYTree *ntuple, Int_t pdgID
   return vec_genLepton;
 }
 
+Bool_t CompareMuPair_LargerDimuonMass( DYTool::MuPair pair1, DYTool::MuPair pair2 )
+{
+  // -- the pair with the highest mass
+  return pair1.mass > pair2.mass; 
+}
+
+
+DYTool::MuPair EventSelection(DYTool::DYTree *ntuple, Bool_t& doPass)
+{
+  DYTool::MuPair muPair_dummy;
+
+  if( ntuple->nVtx <= 0 ) return muPair_dummy;
+
+
+  vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+  vector< DYTool::MuPair > vec_goodMuPair;
+  for( auto& muPair : vec_muPair )
+    if( muPair.IsDYCandidate() ) vec_goodMuPair.push_back( muPair );
+
+  if( vec_goodMuPair.size() == 1 ) // -- only takes the case when there's exact 1 muon pair
+  {
+    doPass = kTRUE;
+    return vec_goodMuPair[0];
+  }
+  else
+  {
+    doPass = kFALSE;
+    return muPair_dummy;
+  }
+}
+
 
 
 static inline void loadBar(int x, int n, int r, int w)

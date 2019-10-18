@@ -276,6 +276,25 @@ public:
     Assign();
   }
 
+  Bool_t IsDYCandidate()
+  {
+    Bool_t flag = kFALSE;
+
+    Bool_t isWithinAcc = kFALSE;
+    if( first_.pt > 4  && fabs(first_.eta) < 2.4 &&
+        second_.pt > 4 && fabs(second_.eta) < 2.4 ) 
+      isWithinAcc = kTRUE;
+
+    Bool_t isGoodMuon = kFALSE;
+    if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.15 &&
+        second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.15 )
+      isGoodMuon = kTRUE;
+
+    if( isWithinAcc && isGoodMuon ) flag = kTRUE;
+
+    return flag;
+  }
+
 private:
   void Assign()
   {
