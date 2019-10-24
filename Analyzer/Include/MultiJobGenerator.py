@@ -265,8 +265,8 @@ log        = condor.log
 getenv     = True
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-output = output_condor.log
-error  = error_condor.log
+output = condor_output.log
+error  = condor_error.log
 accounting_group=group_cms
 
 queue 1
