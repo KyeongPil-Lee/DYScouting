@@ -2,6 +2,7 @@ from Include.MultiJobGenerator import *
 
 generator = MultiJobGenerator()
 
+generator.jobType = "HTCondor"
 generator.jobName = "ControlPlot" # -- used for workspace name
 generator.classCodePath = "ControlPlot/MakeHist_Dimuon_noWeight.h"
 generator.className = "HistProducer"
