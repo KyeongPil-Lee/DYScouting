@@ -259,7 +259,7 @@ class JobGenerator:
         f_script = open("%s/SubmitHTCondor.jds" % path, "w")
         f_script.write(
 """
-executable = {scriptNameToRun_}
+executable = {path_}/{scriptNameToRun_}
 universe   = vanilla
 log        = condor.log
 getenv     = True
@@ -270,7 +270,7 @@ error  = error_condor.log
 accounting_group=group_cms
 
 queue 1
-""".format(scriptNameToRun_ = scriptNameToRun)
+""".format(path_=path, scriptNameToRun_ = scriptNameToRun)
         )
 
         f_script.close()
@@ -366,7 +366,7 @@ void Run()
             scriptPath = "%s/Run.sh" % path
             cmd = "source %s &" % scriptPath
 
-        elif self.jobType = "HTCondor":
+        elif self.jobType == "HTCondor":
             scriptPath = "%s/SubmitHTCondor.jds" % path
             cmd = "condor_submit %s" % scriptPath
 

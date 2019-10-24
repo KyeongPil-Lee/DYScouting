@@ -14,7 +14,7 @@ generator.dic_nJob = {
   "WJets":    5,
   }
 
-generator.outputPath = "/scratch/kplee/DYScoutingJob"
+generator.outputPath = "/data9/Users/kplee/DYScoutingJob"
 generator.bringOutput = True # -- bring output root file to the current working directory where JobConfig is executed
 
 generator.Generate()
