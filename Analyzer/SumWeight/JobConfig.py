@@ -12,9 +12,9 @@ generator.jsonName = "SampleInfo_v1p1.json" # -- under DY_ANALYZER_PATH/Include
 
 generator.dic_nJob = { 
   "DYMuMu_M10to50":     5,
-  "DYMuMu_M50toInf":    5,
+  "DYMuMu_M50toInf":    10,
   "DYTauTau_M10to50":     5,
-  "DYTauTau_M50toInf":    5,
+  "DYTauTau_M50toInf":    10,
   # "WJets":    5, # -- done
   "ttbar":    5,
   "QCDMuEnriched_Pt20toInf": 3,
