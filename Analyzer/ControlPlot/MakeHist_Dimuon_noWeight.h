@@ -98,15 +98,15 @@ private:
     h_phi_lead_ = new TH1D("h_phi_lead", "", 80, -4, 4);
     h_phi_sub_  = new TH1D("h_phi_sub",  "", 80, -4, 4);
 
-    h_diMuM_ = new TH1D("h_diMuM",     "", 10000, 0, 10000);
-    h_diMuPt_ = new TH1D("h_diMuPt",   "", 10000, 0, 10000);
+    h_diMuM_   = new TH1D("h_diMuM",     "", 10000, 0, 10000);
+    h_diMuPt_  = new TH1D("h_diMuPt",   "", 10000, 0, 10000);
     h_diMuRap_ = new TH1D("h_diMuRap", "", 60, -3, 3);
 
     h_nMuonHit_        = new TH1D("h_nMuonHit",        "", 100, 0, 100);
     h_nMatchedStation_ = new TH1D("h_nMatchedStation", "", 10, 0, 10);
     h_nPixelHit_       = new TH1D("h_nPixelHit",       "", 15, 0, 15);
     h_nTrackerLayer_   = new TH1D("h_nTrackerLayer",   "", 25, 0, 25);
-    h_normChi2_        = new TH1D("h_normChi2",        "", 200, 0, 200);
+    h_normChi2_        = new TH1D("h_normChi2",        "", 200, 0, 20);
     h_dxy_             = new TH1D("h_dxy",             "", 60, -0.3, 0.3);
     h_dz_              = new TH1D("h_dz",              "", 200, -1.0, 1.0);
     h_relTrkIso_       = new TH1D("h_relTrkIso",       "", 50, 0, 0.5);

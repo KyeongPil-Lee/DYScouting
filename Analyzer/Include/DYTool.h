@@ -288,18 +288,18 @@ DYTool::MuPair EventSelection(DYTool::DYTree *ntuple, Bool_t& doPass)
 
   if( ntuple->nVtx <= 0 ) return muPair_dummy;
 
-  // Bool_t doPassTrig = kFALSE;
-  // for(const auto& firedTrigger : ntuple->vec_firedTrigger_)
-  // {
-  //   TString tstr_firedTrig = firedTrigger;
-  //   if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
-  //   {
-  //     doPassTrig = kTRUE;
-  //     break;
-  //   }
-  // }
+  Bool_t doPassTrig = kFALSE;
+  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
+  {
+    TString tstr_firedTrig = firedTrigger;
+    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
+    {
+      doPassTrig = kTRUE;
+      break;
+    }
+  }
 
-  // if( !doPassTrig ) return muPair_dummy;
+  if( !doPassTrig ) return muPair_dummy;
 
 
   vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
