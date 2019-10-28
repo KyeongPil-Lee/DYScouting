@@ -183,8 +183,9 @@ public:
 
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
 
-    HistContainer* hists       = new HistContainer();
-    HistContainer* hists_ZPeak = new HistContainer();
+    HistContainer* hists         = new HistContainer();
+    HistContainer* hists_ZPeak   = new HistContainer();
+    HistContainer* hists_M10to60 = new HistContainer();
 
     for(Int_t i=0; i<nEvent; i++)
     {
@@ -212,6 +213,9 @@ public:
 
           if( 60 < mass && mass < 120 )
             hists_ZPeak->Fill(DYMuPair, totWeight);
+
+          if( 10 < mass && mass < 60 )
+            hists_M10to60->Fill(DYMuPair, totWeight);
         }
       }
     }
@@ -223,6 +227,10 @@ public:
     f_output->mkdir("ZPeak");
     f_output->cd("ZPeak");
     hists_ZPeak->Write(f_output);
+
+    f_output->mkdir("M10to60");
+    f_output->cd("M10to60");
+    hists_M10to60->Write(f_output);
 
     f_output->Close();
 
