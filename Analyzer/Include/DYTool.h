@@ -346,7 +346,7 @@ DYTool::MuPair EventSelection_Pt5GeV(DYTool::DYTree *ntuple, Bool_t& doPass)
 
   vector< DYTool::MuPair > vec_goodMuPair;
   for( auto& muPair : vec_muPair )
-    if( muPair.IsDYCandidate() ) vec_goodMuPair.push_back( muPair );
+    if( muPair.IsDYCandidate_Pt5GeV() ) vec_goodMuPair.push_back( muPair );
 
   if( vec_goodMuPair.size() == 1 ) // -- only takes the case when there's exact 1 muon pair
   {
