@@ -3,8 +3,8 @@ from Include.MultiJobGenerator import *
 generator = MultiJobGenerator()
 
 generator.jobType = "HTCondor"
-generator.jobName = "ControlPlotPt5GeV" # -- used for workspace name
-generator.classCodePath = "ControlPlot/Pt5GeV/MakeHist_Dimuon_noWeight.h"
+generator.jobName = "ControlPlot" # -- used for workspace name
+generator.classCodePath = "ControlPlot/MakeHist_Dimuon_noWeight.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now
