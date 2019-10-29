@@ -3,15 +3,15 @@ from Include.MultiJobGenerator import *
 generator = MultiJobGenerator()
 
 generator.jobType = "HTCondor"
-generator.jobName = "ControlPlot" # -- used for workspace name
-generator.classCodePath = "ControlPlot/MakeHist_Dimuon_noWeight.h"
+generator.jobName = "ControlPlotPt5GeV" # -- used for workspace name
+generator.classCodePath = "ControlPlot/Pt5GeV/MakeHist_Dimuon_noWeight.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now
 generator.jsonName = "SampleInfo_v1p1.json" # -- under DY_ANALYZER_PATH/Include
 
 generator.dic_nJob = { 
-  "ScoutingCaloMuon_Run2018All": 50,
+  "ScoutingCaloMuon_Run2018All": 70,
   "DYMuMu_M10to50":    5,
   "DYMuMu_M50toInf":   10,
   "DYTauTau_M10to50":  5,

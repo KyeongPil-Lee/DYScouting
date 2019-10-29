@@ -320,46 +320,6 @@ DYTool::MuPair EventSelection(DYTool::DYTree *ntuple, Bool_t& doPass)
   }
 }
 
-DYTool::MuPair EventSelection_Pt5GeV(DYTool::DYTree *ntuple, Bool_t& doPass)
-{
-  doPass = kFALSE;
-
-  DYTool::MuPair muPair_dummy;
-
-  if( ntuple->nVtx <= 0 ) return muPair_dummy;
-
-  Bool_t doPassTrig = kFALSE;
-  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
-  {
-    TString tstr_firedTrig = firedTrigger;
-    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
-    {
-      doPassTrig = kTRUE;
-      break;
-    }
-  }
-
-  if( !doPassTrig ) return muPair_dummy;
-
-
-  vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
-
-  vector< DYTool::MuPair > vec_goodMuPair;
-  for( auto& muPair : vec_muPair )
-    if( muPair.IsDYCandidate_Pt5GeV() ) vec_goodMuPair.push_back( muPair );
-
-  if( vec_goodMuPair.size() == 1 ) // -- only takes the case when there's exact 1 muon pair
-  {
-    doPass = kTRUE;
-    return vec_goodMuPair[0];
-  }
-  else
-  {
-    doPass = kFALSE;
-    return muPair_dummy;
-  }
-}
-
 class PUReweightTool
 {
 public:
