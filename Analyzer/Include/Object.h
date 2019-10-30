@@ -258,6 +258,10 @@ public:
 
   Bool_t isOS;
 
+  Double_t dEta;
+  Double_t dPhi;
+  Double_t angle3D;
+
   MuPair() { Init(); }
 
   MuPair(Muon muon1, Muon muon2): MuPair()
@@ -309,6 +313,10 @@ private:
     absRap = fabs(rap);
 
     isOS = first_.charge != second_.charge ? kTRUE : kFALSE;
+
+    dEta = fabs(first_.eta - second_.eta);
+    dPhi = first_.vecP.DeltaPhi( second_.vecP );
+    angle3D = first_.vecP.Angle( second_.vecP.Vect() );
   }
 
   void Init()
