@@ -282,9 +282,24 @@ Bool_t CompareMuPair_LargerDimuonMass( DYTool::MuPair pair1, DYTool::MuPair pair
 
 DYTool::MuPair EventSelection(DYTool::DYTree *ntuple, Bool_t& doPass)
 {
+  doPass = kFALSE;
+
   DYTool::MuPair muPair_dummy;
 
   if( ntuple->nVtx <= 0 ) return muPair_dummy;
+
+  Bool_t doPassTrig = kFALSE;
+  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
+  {
+    TString tstr_firedTrig = firedTrigger;
+    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
+    {
+      doPassTrig = kTRUE;
+      break;
+    }
+  }
+
+  if( !doPassTrig ) return muPair_dummy;
 
 
   vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);

@@ -12,8 +12,8 @@ export ROOT_INCLUDE_PATH=${DY_ANALYZER_PATH}:${ROOT_INCLUDE_PATH}
 export PYTHONPATH=${DY_ANALYZER_PATH}:${PYTHONPATH}
 
 export DY_NTUPLE_PATH=""
-if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; then
-  DY_NTUPLE_PATH="DUMMY"
+if [ $HOSTNAME == "tamsa2" ]; then
+  DY_NTUPLE_PATH="/gv0/Users/kplee/DYScoutingTree"
 
 elif [ $HOSTNAME == "muon" ]; then
   DY_NTUPLE_PATH="/scratch/kplee/DYScoutingTree"

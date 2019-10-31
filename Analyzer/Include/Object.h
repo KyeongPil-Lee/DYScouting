@@ -258,6 +258,14 @@ public:
 
   Bool_t isOS;
 
+  Double_t dEta;
+  Double_t dPhi;
+  Double_t angle3D;
+
+  Double_t dEtaCM;
+  Double_t dPhiCM;
+  Double_t angle3DCM;
+
   MuPair() { Init(); }
 
   MuPair(Muon muon1, Muon muon2): MuPair()
@@ -281,8 +289,8 @@ public:
     Bool_t flag = kFALSE;
 
     Bool_t isWithinAcc = kFALSE;
-    if( first_.pt > 4  && fabs(first_.eta) < 2.4 &&
-        second_.pt > 4 && fabs(second_.eta) < 2.4 ) 
+    if( first_.pt > 5  && fabs(first_.eta) < 2.4 &&
+        second_.pt > 5 && fabs(second_.eta) < 2.4 ) 
       isWithinAcc = kTRUE;
 
     Bool_t isGoodMuon = kFALSE;
@@ -309,6 +317,22 @@ private:
     absRap = fabs(rap);
 
     isOS = first_.charge != second_.charge ? kTRUE : kFALSE;
+
+    dEta = fabs(first_.eta - second_.eta);
+    dPhi = first_.vecP.DeltaPhi( second_.vecP );
+    angle3D = first_.vecP.Angle( second_.vecP.Vect() );
+
+    // -- boost to CM frame
+    TVector3 boostVector = vecP.BoostVector();
+    TLorentzVector vecP_first_CM  = first_.vecP;
+    vecP_first_CM.Boost( -boostVector );
+
+    TLorentzVector vecP_second_CM = second_.vecP;
+    vecP_second_CM.Boost( -boostVector );
+
+    dEtaCM    = fabs( vecP_first_CM.Eta() - vecP_second_CM.Eta() );
+    dPhiCM    = vecP_first_CM.DeltaPhi( vecP_second_CM );
+    angle3DCM = vecP_first_CM.Angle( vecP_second_CM.Vect() );
   }
 
   void Init()

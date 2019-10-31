@@ -5,6 +5,7 @@ import json
 class MultiJobGenerator:
     def __init__(self):
         self.jobName = ""
+        self.jobType = "" # -- shell, HTCondor
         self.classCodePath = ""
         self.className = ""
         self.jsonName = ""
@@ -26,6 +27,7 @@ class MultiJobGenerator:
 
         for sampleType in self.dic_nJob.keys():
             jobGenerator = JobGenerator()
+            jobGenerator.jobType = self.jobType
             jobGenerator.classCodePath = self.classCodePath
             jobGenerator.className = self.className
             jobGenerator.jsonName = self.jsonName
@@ -64,7 +66,7 @@ class MultiJobGenerator:
 
         f_script.close()
 
-        print "[MultiJobGenerator] Submit all jobs in backgrounds"
+        print "[MultiJobGenerator] Submit all jobs in %s" % (self.jobType)
         print "source %s\n" % scriptPath
 
     def GenerateFullHADDScript(self):
@@ -85,6 +87,10 @@ class MultiJobGenerator:
     def CheckOptions(self):
         if self.jobName == "":
             print "jobName is not set"
+            sys.exit()
+
+        if self.jobType == "":
+            print "jobType is not set"
             sys.exit()
 
         if self.classCodePath == "":
@@ -114,6 +120,7 @@ class MultiJobGenerator:
     def PrintOptions(self):
         print "[MultiJobGenerator::Options]"
         print "  jobName:       ", self.jobName
+        print "  jobType:       ", self.jobType
         print "  classCodePath: ", self.classCodePath
         print "  className:     ", self.className
         print "  jsonName:      ", self.jsonName
@@ -129,6 +136,7 @@ class JobGenerator:
     def __init__(self):
 
         # -- mandatory variables
+        self.jobType = "" # -- shell, HTCondor
         self.classCodePath = ""
         self.className = ""
         self.jsonName = ""
@@ -238,8 +246,35 @@ class JobGenerator:
             self.GenerateROOTCode(ntupleListName, subWSPath)
 
             # -- make shell script to run .cxx
-            self.CreateScriptPerJob( subWSPath )
+            scriptName = self.CreateScriptPerJob( subWSPath )
+
+            # -- make HTCondor script to run the script made above
+            if self.jobType == "HTCondor":
+                self.CreateHTCondorScript( subWSPath, scriptName )
+
             self.WriteCommandInFullScript( i, subWSPath )
+
+    def CreateHTCondorScript( self, path, scriptNameToRun ):
+
+        f_script = open("%s/SubmitHTCondor.jds" % path, "w")
+        f_script.write(
+"""
+executable = {path_}/{scriptNameToRun_}
+universe   = vanilla
+log        = condor.log
+getenv     = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+output = condor_output.log
+error  = condor_error.log
+accounting_group=group_cms
+
+queue 1
+""".format(path_=path, scriptNameToRun_ = scriptNameToRun)
+        )
+
+        f_script.close()
+
 
     def GenerateNtupleListPerJob(self, i, path):
         list_filePerJob = []
@@ -285,6 +320,8 @@ cd {workingDir_}
 
         f_script.close()
 
+        return scriptName
+
     def GenerateROOTCode(self, ntupleListName, path):
         isMCStr = ""
         normFactorStr = ""
@@ -324,9 +361,15 @@ void Run()
 
 
     def WriteCommandInFullScript(self, i, path ):
-        scriptPath = "%s/Run.sh" % path
+        cmd = ""
+        if self.jobType == "shell":
+            scriptPath = "%s/Run.sh" % path
+            cmd = "source %s &" % scriptPath
 
-        cmd = "source %s &" % scriptPath
+        elif self.jobType == "HTCondor":
+            scriptPath = "%s/SubmitHTCondor.jds" % path
+            cmd = "condor_submit %s" % scriptPath
+
         self.f_fullRunScript.write(cmd+"\n")
 
     def GenerateHADDScript(self):

@@ -1,0 +1,294 @@
+{
+  "Sample": [
+  {
+    "tag": "DYMuMu_M10to50_NLOXSec",
+    "isMC": 1,
+    "xSec": 6270.0,
+    "sumWeight": -1.0,
+    "comment": "Cross section is from XSDB: 18810.0 / 3",
+    "list_dir": ["v1.1/DYJetsToLL_M10to50_Madgraph", "v1.1/DYJetsToLL_M10to50_Madgraph_ext"]
+  },
+
+  {
+    "tag": "DYMuMu_M10to50",
+    "isMC": 1,
+    "xSec": 35090.3,
+    "sumWeight": -1.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (WARNING: PDF error is 57657.3 pb (164%)!!)",
+    "list_dir": ["v1.1/DYJetsToLL_M10to50_Madgraph", "v1.1/DYJetsToLL_M10to50_Madgraph_ext"]
+  },
+
+  {
+    "tag": "DYMuMu_M15to50",
+    "isMC": 1,
+    "xSec": 2384.97,
+    "sumWeight": -1.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED",
+    "list_dir": ["v1.1/DYJetsToLL_M10to50_Madgraph", "v1.1/DYJetsToLL_M10to50_Madgraph_ext"]
+  },
+
+  {
+    "tag": "DYMuMu_M50toInf",
+    "isMC": 1,
+    "xSec": 2009.41,
+    "sumWeight": -1.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
+    "list_dir": ["v1.1/DYJetsToLL_M50toInf_aMCNLO", "v1.1/DYJetsToLL_M50toInf_aMCNLO_ext"]
+  },
+
+  {
+    "tag": "DYMuMu_M50to100",
+    "isMC": 1,
+    "xSec": 1923.26,
+    "sumWeight": -1.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED",
+    "list_dir": ["v1.1/DYJetsToLL_M50toInf_aMCNLO", "v1.1/DYJetsToLL_M50toInf_aMCNLO_ext"]
+  },
+
+  {
+    "tag": "DYTauTau_M10to50",
+    "isMC": 1,
+    "xSec": 6270.0,
+    "sumWeight": -1.0,
+    "comment": "Cross section is from XSDB: 18810.0 / 3",
+    "list_dir": ["v1.1/DYJetsToLL_M10to50_Madgraph", "v1.1/DYJetsToLL_M10to50_Madgraph_ext"]
+  },
+
+  {
+    "tag": "DYTauTau_M50toInf",
+    "isMC": 1,
+    "xSec": 2009.41,
+    "sumWeight": -1.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
+    "list_dir": ["v1.1/DYJetsToLL_M50toInf_aMCNLO", "v1.1/DYJetsToLL_M50toInf_aMCNLO_ext"]
+  },
+
+  {
+    "tag": "WJets",
+    "isMC": 1,
+    "xSec": 61526.7,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["v1.1/WJetsToLNu_Madgraph"]
+  },
+
+  {
+    "tag": "ttbar",
+    "isMC": 1,
+    "xSec": 831.76,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["v1.1/TTTo2L2Nu_Powheg"]
+  },
+
+  {
+    "tag": "tW",
+    "isMC": 1,
+    "xSec": 35.85,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "tbarW",
+    "isMC": 1,
+    "xSec": 35.85,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "WW",
+    "isMC": 1,
+    "xSec": 118.7,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "WZ",
+    "isMC": 1,
+    "xSec": 47.13,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "ZZ",
+    "isMC": 1,
+    "xSec": 16.523,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt20toInf",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt20toInf"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt15to20",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt15to20"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt20to30",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "WARNING: Incompleted",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt20to30_Incompleted"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt30to50",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt30to50"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt50to80",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt50to80"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt80to120",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt80to120", "v1.1/QCDMuEnriched_Pt80to120_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt120to170",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt120to170", "v1.1/QCDMuEnriched_Pt120to170_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt170to300",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt170to300"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt300to470",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt300to470", "v1.1/QCDMuEnriched_Pt300to470_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt470to600",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt470to600", "v1.1/QCDMuEnriched_Pt470to600_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt600to800",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt600to800"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt800to1000",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt800to1000"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt1000toInf",
+    "isMC": 1,
+    "xSec": 1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/QCDMuEnriched_Pt1000toInf"]
+  },
+
+
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018A",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "WARNING: INCOMPLETED directory",
+    "list_dir": ["v1.1/ScoutingCaloMuon_Run2018Av1_GoldenJSON_Incompleted"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018B",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/ScoutingCaloMuon_Run2018Bv1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018C",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "",
+    "list_dir": ["v1.1/ScoutingCaloMuon_Run2018Cv1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018D",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "WARNING: INCOMPLETED directory",
+    "list_dir": ["v1.1/ScoutingCaloMuon_Run2018Dv1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018All",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "WARNING: INCOMPLETED directory for RunA",
+    "list_dir": ["v1.1/ScoutingCaloMuon_Run2018Av1_GoldenJSON_Incompleted", "v1.1/ScoutingCaloMuon_Run2018Bv1_GoldenJSON", "v1.1/ScoutingCaloMuon_Run2018Cv1_GoldenJSON", "v1.1/ScoutingCaloMuon_Run2018Dv1_GoldenJSON"]
+  }
+]
+
+}
