@@ -262,6 +262,10 @@ public:
   Double_t dPhi;
   Double_t angle3D;
 
+  Double_t dEtaCM;
+  Double_t dPhiCM;
+  Double_t angle3DCM;
+
   MuPair() { Init(); }
 
   MuPair(Muon muon1, Muon muon2): MuPair()
@@ -317,6 +321,18 @@ private:
     dEta = fabs(first_.eta - second_.eta);
     dPhi = first_.vecP.DeltaPhi( second_.vecP );
     angle3D = first_.vecP.Angle( second_.vecP.Vect() );
+
+    // -- boost to CM frame
+    TVector3 boostVector = vecP.BoostVector();
+    TLorentzVector vecP_first_CM  = first_.vecP;
+    vecP_first_CM.Boost( -boostVector );
+
+    TLorentzVector vecP_second_CM = second_.vecP;
+    vecP_second_CM.Boost( -boostVector );
+
+    dEtaCM    = fabs( vecP_first_CM.Eta() - vecP_second_CM.Eta() );
+    dPhiCM    = vecP_first_CM.DeltaPhi( vecP_second_CM );
+    angle3DCM = vecP_first_CM.Angle( vecP_second_CM.Vect() );
   }
 
   void Init()

@@ -45,6 +45,9 @@ public:
   TH1D* h_diMuDEta_;
   TH1D* h_diMuDPhi_;
   TH1D* h_diMuAngle3D_;
+  TH1D* h_diMuDEtaCM_;
+  TH1D* h_diMuDPhiCM_;
+  TH1D* h_diMuAngle3DCM_;
 
   // -- cut variables
   TH1D* h_nMuonHit_;
@@ -83,6 +86,9 @@ public:
     h_diMuDEta_->Fill( muPair.dEta, weight );
     h_diMuDPhi_->Fill( muPair.dPhi, weight );
     h_diMuAngle3D_->Fill( muPair.angle3D, weight );
+    h_diMuDEtaCM_->Fill( muPair.dEtaCM, weight );
+    h_diMuDPhiCM_->Fill( muPair.dPhiCM, weight );
+    h_diMuAngle3DCM_->Fill( muPair.angle3DCM, weight );
   }
 
   void Write(TFile *f_output)
@@ -113,6 +119,9 @@ private:
     h_diMuDEta_     = new TH1D("h_diMuDEta",    "", 60, 0, 6);
     h_diMuDPhi_     = new TH1D("h_diMuDPhi",    "", 40, 0, 4);
     h_diMuAngle3D_  = new TH1D("h_diMuAngle3D", "", 40, 0, 4);
+    h_diMuDEtaCM_     = new TH1D("h_diMuDEtaCM",    "", 60, 0, 6);
+    h_diMuDPhiCM_     = new TH1D("h_diMuDPhiCM",    "", 40, 0, 4);
+    h_diMuAngle3DCM_  = new TH1D("h_diMuAngle3DCM", "", 40, 0, 4);
 
     h_nMuonHit_        = new TH1D("h_nMuonHit",        "", 100, 0, 100);
     h_nMatchedStation_ = new TH1D("h_nMatchedStation", "", 10, 0, 10);
@@ -143,6 +152,9 @@ private:
     vec_hists_.push_back(h_diMuDEta_);
     vec_hists_.push_back(h_diMuDPhi_);
     vec_hists_.push_back(h_diMuAngle3D_);
+    vec_hists_.push_back(h_diMuDEtaCM_);
+    vec_hists_.push_back(h_diMuDPhiCM_);
+    vec_hists_.push_back(h_diMuAngle3DCM_);
 
     vec_hists_.push_back(h_nMuonHit_);
     vec_hists_.push_back(h_nMatchedStation_);
