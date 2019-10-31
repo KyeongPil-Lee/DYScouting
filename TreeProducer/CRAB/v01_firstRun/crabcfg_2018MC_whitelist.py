@@ -35,13 +35,13 @@ if __name__ == '__main__':
     config.General.requestName = 'DYTree'+version+'DYJetsToLL_M10to50_Madgraph'
     config.Data.inputDataset = '/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM'
     config.Data.ignoreLocality = True
-    config.Site.whitelist = ['T2_CH_*', 'T2_FR_*', 'T2_DE_*', 'T2_IT_*', 'T1_RU_*', 'T2_RU_*'] # -- mandatory for ignoreLocality option
+    config.Site.whitelist = ['T2_CH_*', 'T2_FR_*', 'T2_DE_*', 'T2_IT_*'] # -- mandatory for ignoreLocality option
     crabCommand('submit', config = config)
 
     config.General.requestName = 'DYTree'+version+'DYJetsToLL_M10to50_Madgraph_ext'
     config.Data.inputDataset = '/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v1/AODSIM'
     config.Data.ignoreLocality = True
-    config.Site.whitelist = ['T2_CH_*', 'T2_FR_*', 'T2_DE_*', 'T2_IT_*', 'T1_RU_*', 'T2_RU_*'] # -- mandatory for ignoreLocality option
+    config.Site.whitelist = ['T2_CH_*', 'T2_FR_*', 'T2_DE_*', 'T2_IT_*'] # -- mandatory for ignoreLocality option
     crabCommand('submit', config = config)
 
     # config.General.requestName = ''

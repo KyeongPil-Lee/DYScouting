@@ -3,7 +3,9 @@ from DYScouting.TreeProducer.TrasnferTree import *
 tool = TransferTool()
 # -- common settings
 # tool.scriptName = "script_transferDYTree_v01.sh"
-tool.scriptName = "script_transferDYTree_v02.sh"
+# tool.scriptName = "script_transferDYTree_v02.sh"
+# tool.scriptName = "script_transferDYTree_v03.sh"
+tool.scriptName = "script_transferDYTree_v04.sh"
 tool.destination = "kplee@147.47.50.161"
 tool.portNumber = 50001
 
@@ -123,20 +125,44 @@ basePath = "/scratch/kplee/DYScoutingTree/v1.0"
 # tool.outputDirPath = "%s/ScoutingCaloMuon_Run2018Bv1_GoldenJSON_Incompleted" % basePath
 # tool.Register()
 
+#############
+# -- v03 -- #
+#############
 
 # tool.SEPath = "/pnfs/knu.ac.kr/data/cms/store/user/kplee/ScoutingCaloMuon"
 
 # tool.crabDir = "crab_DYTree_v20191016_ScoutingCaloMuon_Run2018Cv1_GoldenJSON"
-# tool.outputDirPath = "%s/ScoutingCaloMuon_Run2018Cv1_GoldenJSON_Incompleted" % basePath
+# tool.outputDirPath = "%s/ScoutingCaloMuon_Run2018Cv1_GoldenJSON" % basePath
 # tool.Register()
 
+# tool.SEPath = "/pnfs/knu.ac.kr/data/cms/store/user/kplee/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8"
 
-# tool.SEPath = "/pnfs/knu.ac.kr/data/cms/store/user/kplee/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8"
-
-# tool.crabDir = "crab_DYTree_v20191016_TTTo2L2Nu_Powheg"
-# tool.outputDirPath = "%s/TTTo2L2Nu_Powheg_Incompleted" % basePath
+# tool.crabDir = "crab_DYTree_v20191016_DYJetsToLL_M10to50_Madgraph_ext"
+# tool.outputDirPath = "%s/DYJetsToLL_M10to50_Madgraph_ext" % basePath
 # tool.Register()
 
+#############
+# -- v04 -- #
+#############
 
+tool.SEPath = "/pnfs/knu.ac.kr/data/cms/store/user/kplee/ScoutingCaloMuon"
+
+tool.crabDir = "crab_DYTree_v20191016_ScoutingCaloMuon_Run2018Av1_GoldenJSON"
+tool.outputDirPath = "%s/ScoutingCaloMuon_Run2018Av1_GoldenJSON_Incompleted" % basePath
+tool.Register()
+
+
+tool.SEPath = "/pnfs/knu.ac.kr/data/cms/store/user/kplee/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8"
+
+tool.crabDir = "crab_DYTree_v20191016_TTTo2L2Nu_Powheg"
+tool.outputDirPath = "%s/TTTo2L2Nu_Powheg_Incompleted" % basePath
+tool.Register()
+
+
+tool.SEPath = "/pnfs/knu.ac.kr/data/cms/store/user/kplee/ScoutingCaloMuon"
+
+tool.crabDir = "crab_DYTree_v20191016_ScoutingCaloMuon_Run2018Dv1_GoldenJSON"
+tool.outputDirPath = "%s/ScoutingCaloMuon_Run2018Dv1_GoldenJSON_Incompleted" % basePath
+tool.Register()
 
 tool.GenScript()
