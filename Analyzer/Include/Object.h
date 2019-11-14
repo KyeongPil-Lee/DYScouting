@@ -184,6 +184,7 @@ public:
   Double_t charge;
 
   Int_t nPixelHit;
+  Int_t nStripHit;
   Int_t nTrackerLayer;
   Int_t nMuonHit;
   Int_t nMatchedStation;
@@ -193,6 +194,8 @@ public:
   Double_t trkIso;
 
   Double_t relTrkIso;
+
+  vector< Int_t > vec_vtxIndex;
 
   Muon()
   {
@@ -214,6 +217,7 @@ public:
     charge = ntuple->muon_charge[index];
 
     nPixelHit       = ntuple->muon_nPixelHit[index];
+    nStripHit       = ntuple->muon_nStripHit[index];
     nTrackerLayer   = ntuple->muon_nTrackerLayer[index];
     nMuonHit        = ntuple->muon_nMuonHit[index];
     nMatchedStation = ntuple->muon_nMatchedStation[index];
@@ -221,6 +225,7 @@ public:
     dxy             = ntuple->muon_dxy[index];
     dz              = ntuple->muon_dz[index];
     trkIso          = ntuple->muon_trkIso[index];
+    vec_vtxIndex    = ntuple->muon_vtxIndex->at(index);
 
     relTrkIso       = trkIso / pt;
   }
@@ -246,6 +251,71 @@ private:
   }
 };
 
+// -- Dimuon vertex reconstructed @ HLT
+class DimuonVertex
+{
+public:
+  Int_t index; // -- to be used for linking with the scouting muons
+
+  Double_t x;
+  Double_t y;
+  Double_t z;
+  Double_t xErr;
+  Double_t yErr;
+  Double_t zErr;
+  Double_t chi2;
+  Int_t nDOF;
+  Int_t isValid;
+
+  Double_t normChi2;
+
+  DimuonVertex()
+  {
+    Init();
+  }
+
+  DimuonVertex(DYTool::DYTree *ntuple, Int_t index): DimuonVertex()
+  {
+    FillFromNtuple(ntuple, index);
+  }
+
+  void FillFromNtuple(DYTool::DYTree *ntuple, Int_t idx)
+  {
+    index = idx;
+
+    x = ntuple->vtx_x[idx];
+    y = ntuple->vtx_y[idx];
+    z = ntuple->vtx_z[idx];
+
+    xErr = ntuple->vtx_xErr[idx];
+    yErr = ntuple->vtx_yErr[idx];
+    zErr = ntuple->vtx_zErr[idx];
+
+    chi2 = ntuple->vtx_chi2[idx];
+    nDOF = ntuple->vtx_nDOF[idx];
+
+    isValid = ntuple->vtx_isValid[idx];
+
+    if( nDOF != 0 ) normChi2 = chi2 / nDOF;
+  }
+
+private:
+  void Init()
+  {
+    Int_t index = -999;
+
+    Double_t x = -999;
+    Double_t y = -999;
+    Double_t z = -999;
+    Double_t xErr = -999;
+    Double_t yErr = -999;
+    Double_t zErr = -999;
+    Double_t chi2 = -999;
+    Double_t nDOF = -999;
+    Int_t isValid = -999;
+  }
+};
+
 class MuPair: public Object
 {
 public:
@@ -266,6 +336,11 @@ public:
   Double_t dPhiCM;
   Double_t angle3DCM;
 
+  // -- assigned when CheckVertex() is colled
+  Bool_t hasVertex;
+  DimuonVertex vertex;
+  Double_t normVtxChi2;
+
   MuPair() { Init(); }
 
   MuPair(Muon muon1, Muon muon2): MuPair()
@@ -284,7 +359,7 @@ public:
     Assign();
   }
 
-  Bool_t IsDYCandidate()
+  Bool_t IsDYCandidate(DYTool::DYTree *ntuple)
   {
     Bool_t flag = kFALSE;
 
@@ -298,9 +373,54 @@ public:
         second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.15 )
       isGoodMuon = kTRUE;
 
+    CheckVertex(ntuple);
+
     if( isWithinAcc && isGoodMuon ) flag = kTRUE;
 
     return flag;
+  }
+
+  void CheckVertex(DYTool::DYTree *ntuple)
+  {
+    Int_t nVtx = ntuple->nVtx;
+    if( nVtx == 0 )
+    {
+      hasVertex = kFALSE;
+      normVtxChi2 = -999;
+      return;
+    }
+
+    for(Int_t i_vtx=0; i_vtx<nVtx; i_vtx++)
+    {
+      Bool_t mu1_associated = kFALSE;
+      for(auto vtxIndex : first_.vec_vtxIndex)
+      {
+        if(i_vtx == vtxIndex)
+        {
+          mu1_associated = kTRUE;
+          break;
+        }
+      }
+
+      Bool_t mu2_associated = kFALSE;
+      for(auto vtxIndex : second_.vec_vtxIndex)
+      {
+        if(i_vtx == vtxIndex)
+        {
+          mu2_associated = kTRUE;
+          break;
+        }
+      }
+
+      if( mu1_associated && mu2_associated )
+      {
+        hasVertex = kTRUE;
+        vertex = DimuonVertex(ntuple, i_vtx);
+        normVtxChi2 = vertex.normChi2;
+        // cout << "(chi2, nDOF, normChi2, isValid) = " << vertex.chi2 << ", " << vertex.nDOF << ", " << vertex.normChi2 << ", " << vertex.isValid << endl;
+        break;
+      }
+    }
   }
 
 private:
@@ -342,8 +462,11 @@ private:
     absRap = -999;
 
     isOS = kFALSE;
+
+    // -- assigned when CheckVertex() is colled
+    hasVertex = kFALSE;
+    normVtxChi2 = -999;
   }
 };
-
 
 }; // -- end of namespace DYTool

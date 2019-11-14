@@ -32,7 +32,36 @@ public:
   Double_t vtx_x[ArrSize];
   Double_t vtx_y[ArrSize];
   Double_t vtx_z[ArrSize];
+  Double_t vtx_xErr[ArrSize];
+  Double_t vtx_yErr[ArrSize];
+  Double_t vtx_zErr[ArrSize];
   Double_t vtx_chi2[ArrSize];
+  Int_t    vtx_nDOF[ArrSize];
+  Int_t    vtx_isValid[ArrSize];
+
+  // -- pixel vertex from HLT tracking
+  Int_t nPixelVtx;
+  Double_t pixelVtx_x[ArrSize];
+  Double_t pixelVtx_y[ArrSize];
+  Double_t pixelVtx_z[ArrSize];
+  Double_t pixelVtx_xErr[ArrSize];
+  Double_t pixelVtx_yErr[ArrSize];
+  Double_t pixelVtx_zErr[ArrSize];
+  Double_t pixelVtx_chi2[ArrSize];
+  Double_t pixelVtx_nDOF[ArrSize];
+  Int_t    pixelVtx_isValid[ArrSize];
+
+  // -- pixel vertex made by tracks near L3 muons
+  Int_t nPixelVtxMu;
+  Double_t pixelVtxMu_x[ArrSize];
+  Double_t pixelVtxMu_y[ArrSize];
+  Double_t pixelVtxMu_z[ArrSize];
+  Double_t pixelVtxMu_xErr[ArrSize];
+  Double_t pixelVtxMu_yErr[ArrSize];
+  Double_t pixelVtxMu_zErr[ArrSize];
+  Double_t pixelVtxMu_chi2[ArrSize];
+  Double_t pixelVtxMu_nDOF[ArrSize];
+  Int_t    pixelVtxMu_isValid[ArrSize];
 
   // -- muon information
   Int_t nMuon;
@@ -45,6 +74,7 @@ public:
   Double_t muon_charge[ArrSize];
 
   Int_t muon_nPixelHit[ArrSize];
+  Int_t muon_nStripHit[ArrSize];
   Int_t muon_nTrackerLayer[ArrSize];
   Int_t muon_nMuonHit[ArrSize];
   Int_t muon_nMatchedStation[ArrSize];
@@ -52,6 +82,8 @@ public:
   Double_t muon_dxy[ArrSize];
   Double_t muon_dz[ArrSize];
   Double_t muon_trkIso[ArrSize];
+
+  vector< vector<int> >* muon_vtxIndex;
 
   // -- generator level information
   Int_t nGenParticle;
@@ -82,6 +114,10 @@ public:
   Int_t genParticle_fromHardProcessDecayed[ArrSize];
   Int_t genParticle_fromHardProcessFinalState[ArrSize];
   Int_t genParticle_isMostlyLikePythia6Status3[ArrSize];
+
+  Double_t caloMET_phi;
+  Double_t caloMET_pt;
+  Double_t rho;
 
   DYTree()
   {
@@ -114,6 +150,9 @@ public:
     chain_->SetBranchStatus("genWeight", 1);
     chain_->SetBranchStatus("truePU", 1);
     chain_->SetBranchStatus("vec_firedTrigger", 1);
+    chain_->SetBranchStatus("caloMET_pt", 1);
+    chain_->SetBranchStatus("caloMET_phi", 1);
+    chain_->SetBranchStatus("rho", 1);
 
     chain_->SetBranchAddress("runNum",           &runNum);
     chain_->SetBranchAddress("lumiBlockNum",     &lumiBlockNum);
@@ -121,6 +160,9 @@ public:
     chain_->SetBranchAddress("genWeight",        &genWeight);
     chain_->SetBranchAddress("truePU",           &truePU);
     chain_->SetBranchAddress("vec_firedTrigger", &vec_firedTrigger);
+    chain_->SetBranchAddress("caloMET_pt", &caloMET_pt);
+    chain_->SetBranchAddress("caloMET_phi", &caloMET_phi);
+    chain_->SetBranchAddress("rho", &rho);
   }
 
   void TurnOnBranches_VtxInfo()
@@ -130,13 +172,69 @@ public:
     chain_->SetBranchStatus("vtx_x", 1);
     chain_->SetBranchStatus("vtx_y", 1);
     chain_->SetBranchStatus("vtx_z", 1);
+    chain_->SetBranchStatus("vtx_xErr", 1);
+    chain_->SetBranchStatus("vtx_yErr", 1);
+    chain_->SetBranchStatus("vtx_zErr", 1);
     chain_->SetBranchStatus("vtx_chi2", 1);
+    chain_->SetBranchStatus("vtx_nDOF", 1);
+    chain_->SetBranchStatus("vtx_isValid", 1);
 
     chain_->SetBranchAddress("nVtx",     &nVtx);
     chain_->SetBranchAddress("vtx_x",    &vtx_x);
     chain_->SetBranchAddress("vtx_y",    &vtx_y);
     chain_->SetBranchAddress("vtx_z",    &vtx_z);
-    chain_->SetBranchAddress("vtx_chi2", &vtx_chi2);
+    chain_->SetBranchAddress("vtx_xErr",    &vtx_xErr);
+    chain_->SetBranchAddress("vtx_yErr",    &vtx_yErr);
+    chain_->SetBranchAddress("vtx_zErr",    &vtx_zErr);
+    chain_->SetBranchAddress("vtx_chi2",    &vtx_chi2);
+    chain_->SetBranchAddress("vtx_nDOF",    &vtx_nDOF);
+    chain_->SetBranchAddress("vtx_isValid", &vtx_isValid);
+
+
+    chain_->SetBranchStatus("nPixelVtx", 1);
+    chain_->SetBranchStatus("pixelVtx_x", 1);
+    chain_->SetBranchStatus("pixelVtx_y", 1);
+    chain_->SetBranchStatus("pixelVtx_z", 1);
+    chain_->SetBranchStatus("pixelVtx_xErr", 1);
+    chain_->SetBranchStatus("pixelVtx_yErr", 1);
+    chain_->SetBranchStatus("pixelVtx_zErr", 1);
+    chain_->SetBranchStatus("pixelVtx_chi2", 1);
+    chain_->SetBranchStatus("pixelVtx_nDOF", 1);
+    chain_->SetBranchStatus("pixelVtx_isValid", 1);
+
+    chain_->SetBranchAddress("nPixelVtx",     &nPixelVtx);
+    chain_->SetBranchAddress("pixelVtx_x",    &pixelVtx_x);
+    chain_->SetBranchAddress("pixelVtx_y",    &pixelVtx_y);
+    chain_->SetBranchAddress("pixelVtx_z",    &pixelVtx_z);
+    chain_->SetBranchAddress("pixelVtx_xErr",    &pixelVtx_xErr);
+    chain_->SetBranchAddress("pixelVtx_yErr",    &pixelVtx_yErr);
+    chain_->SetBranchAddress("pixelVtx_zErr",    &pixelVtx_zErr);
+    chain_->SetBranchAddress("pixelVtx_chi2",    &pixelVtx_chi2);
+    chain_->SetBranchAddress("pixelVtx_nDOF",    &pixelVtx_nDOF);
+    chain_->SetBranchAddress("pixelVtx_isValid", &pixelVtx_isValid);
+
+
+    chain_->SetBranchStatus("nPixelVtxMu", 1);
+    chain_->SetBranchStatus("pixelVtxMu_x", 1);
+    chain_->SetBranchStatus("pixelVtxMu_y", 1);
+    chain_->SetBranchStatus("pixelVtxMu_z", 1);
+    chain_->SetBranchStatus("pixelVtxMu_xErr", 1);
+    chain_->SetBranchStatus("pixelVtxMu_yErr", 1);
+    chain_->SetBranchStatus("pixelVtxMu_zErr", 1);
+    chain_->SetBranchStatus("pixelVtxMu_chi2", 1);
+    chain_->SetBranchStatus("pixelVtxMu_nDOF", 1);
+    chain_->SetBranchStatus("pixelVtxMu_isValid", 1);
+
+    chain_->SetBranchAddress("nPixelVtxMu",     &nPixelVtxMu);
+    chain_->SetBranchAddress("pixelVtxMu_x",    &pixelVtxMu_x);
+    chain_->SetBranchAddress("pixelVtxMu_y",    &pixelVtxMu_y);
+    chain_->SetBranchAddress("pixelVtxMu_z",    &pixelVtxMu_z);
+    chain_->SetBranchAddress("pixelVtxMu_xErr",    &pixelVtxMu_xErr);
+    chain_->SetBranchAddress("pixelVtxMu_yErr",    &pixelVtxMu_yErr);
+    chain_->SetBranchAddress("pixelVtxMu_zErr",    &pixelVtxMu_zErr);
+    chain_->SetBranchAddress("pixelVtxMu_chi2",    &pixelVtxMu_chi2);
+    chain_->SetBranchAddress("pixelVtxMu_nDOF",    &pixelVtxMu_nDOF);
+    chain_->SetBranchAddress("pixelVtxMu_isValid", &pixelVtxMu_isValid);
   }
 
   void TurnOnBranches_Muon()
@@ -151,6 +249,7 @@ public:
     chain_->SetBranchStatus("muon_charge", 1);
 
     chain_->SetBranchStatus("muon_nPixelHit", 1);
+    chain_->SetBranchStatus("muon_nStripHit", 1);
     chain_->SetBranchStatus("muon_nTrackerLayer", 1);
     chain_->SetBranchStatus("muon_nMuonHit", 1);
     chain_->SetBranchStatus("muon_nMatchedStation", 1);
@@ -158,6 +257,7 @@ public:
     chain_->SetBranchStatus("muon_dxy", 1);
     chain_->SetBranchStatus("muon_dz", 1);
     chain_->SetBranchStatus("muon_trkIso", 1);
+    chain_->SetBranchStatus("muon_vtxIndex", 1);
 
     chain_->SetBranchAddress("nMuon",       &nMuon);
     chain_->SetBranchAddress("muon_pt",     &muon_pt);
@@ -169,6 +269,7 @@ public:
     chain_->SetBranchAddress("muon_charge", &muon_charge);
 
     chain_->SetBranchAddress("muon_nPixelHit",       &muon_nPixelHit);
+    chain_->SetBranchAddress("muon_nStripHit",       &muon_nStripHit);
     chain_->SetBranchAddress("muon_nTrackerLayer",   &muon_nTrackerLayer);
     chain_->SetBranchAddress("muon_nMuonHit",        &muon_nMuonHit);
     chain_->SetBranchAddress("muon_nMatchedStation", &muon_nMatchedStation);
@@ -176,6 +277,7 @@ public:
     chain_->SetBranchAddress("muon_dxy",             &muon_dxy);
     chain_->SetBranchAddress("muon_dz",              &muon_dz);
     chain_->SetBranchAddress("muon_trkIso",          &muon_trkIso);
+    chain_->SetBranchAddress("muon_vtxIndex",        &muon_vtxIndex);
   }
 
   void TurnOnBranches_GenParticle()

@@ -48,6 +48,8 @@ public:
   TH1D* h_diMuDEtaCM_;
   TH1D* h_diMuDPhiCM_;
   TH1D* h_diMuAngle3DCM_;
+  TH1D* h_diMuHasVertex_;
+  TH1D* h_diMuNormVtxChi2_;
 
   // -- cut variables
   TH1D* h_nMuonHit_;
@@ -60,12 +62,15 @@ public:
 
   TH1D* h_relTrkIso_;
 
+  TH1D* h_caloMET_pt_;
+  TH1D* h_caloMET_phi_;
+
   HistContainer()
   {
     Init();
   }
 
-  void Fill( DYTool::MuPair& muPair, Double_t weight )
+  void Fill( DYTool::DYTree *ntuple, DYTool::MuPair& muPair, Double_t weight )
   {
     Fill_SingleMu( muPair.first_, weight);
     Fill_SingleMu( muPair.second_, weight );
@@ -89,6 +94,11 @@ public:
     h_diMuDEtaCM_->Fill( muPair.dEtaCM, weight );
     h_diMuDPhiCM_->Fill( muPair.dPhiCM, weight );
     h_diMuAngle3DCM_->Fill( muPair.angle3DCM, weight );
+    h_diMuHasVertex_->Fill( muPair.hasVertex, weight );
+    h_diMuNormVtxChi2_->Fill( muPair.normVtxChi2, weight );
+
+    h_caloMET_pt_->Fill( ntuple->caloMET_pt, weight);
+    h_caloMET_phi_->Fill( ntuple->caloMET_phi, weight);
   }
 
   void Write(TFile *f_output)
@@ -122,6 +132,8 @@ private:
     h_diMuDEtaCM_     = new TH1D("h_diMuDEtaCM",    "", 60, 0, 6);
     h_diMuDPhiCM_     = new TH1D("h_diMuDPhiCM",    "", 40, 0, 4);
     h_diMuAngle3DCM_  = new TH1D("h_diMuAngle3DCM", "", 40, 0, 4);
+    h_diMuHasVertex_  = new TH1D("h_diMuHasVertex", "", 2,  0, 2);
+    h_diMuNormVtxChi2_ = new TH1D("h_diMuNormVtxChi2", "", 40, 0, 40);
 
     h_nMuonHit_        = new TH1D("h_nMuonHit",        "", 100, 0, 100);
     h_nMatchedStation_ = new TH1D("h_nMatchedStation", "", 10, 0, 10);
@@ -131,6 +143,9 @@ private:
     h_dxy_             = new TH1D("h_dxy",             "", 60, -0.3, 0.3);
     h_dz_              = new TH1D("h_dz",              "", 200, -1.0, 1.0);
     h_relTrkIso_       = new TH1D("h_relTrkIso",       "", 50, 0, 0.5);
+
+    h_caloMET_pt_        = new TH1D("h_caloMET_pt",  "", 1000, 0, 1000);
+    h_caloMET_phi_       = new TH1D("h_caloMET_phi", "", 80, -4, 4);
 
 
     vec_hists_.push_back(h_pt_);
@@ -155,6 +170,8 @@ private:
     vec_hists_.push_back(h_diMuDEtaCM_);
     vec_hists_.push_back(h_diMuDPhiCM_);
     vec_hists_.push_back(h_diMuAngle3DCM_);
+    vec_hists_.push_back(h_diMuHasVertex_);
+    vec_hists_.push_back(h_diMuNormVtxChi2_);
 
     vec_hists_.push_back(h_nMuonHit_);
     vec_hists_.push_back(h_nMatchedStation_);
@@ -164,6 +181,9 @@ private:
     vec_hists_.push_back(h_dxy_);
     vec_hists_.push_back(h_dz_);
     vec_hists_.push_back(h_relTrkIso_);
+
+    vec_hists_.push_back(h_caloMET_pt_);
+    vec_hists_.push_back(h_caloMET_phi_);
 
     for(const auto& h: vec_hists_ )
       h->Sumw2();
@@ -237,13 +257,13 @@ public:
         {
           Double_t mass = DYMuPair.mass;
           if( mass > 10 )
-            hists->Fill(DYMuPair, totWeight);
+            hists->Fill(ntuple, DYMuPair, totWeight);
 
           if( 60 < mass && mass < 120 )
-            hists_ZPeak->Fill(DYMuPair, totWeight);
+            hists_ZPeak->Fill(ntuple, DYMuPair, totWeight);
 
           if( 10 < mass && mass < 60 )
-            hists_M10to60->Fill(DYMuPair, totWeight);
+            hists_M10to60->Fill(ntuple, DYMuPair, totWeight);
         }
       }
     }
@@ -271,7 +291,7 @@ void Test()
 {
   HistProducer* producer = new HistProducer();
 
-  producer->sampleInfo_.type = "DYMuMu_M10to50_NLOXSec";
+  producer->sampleInfo_.type = "DYMuMu_M10to50_NLOXSec_TEST";
   producer->sampleInfo_.ntuplePathFile = "/Users/KyeongPil_Lee/Physics/DYScouting/Analyzer/Include/Example/ntuplePath_example.txt";
   producer->sampleInfo_.xSec = 10000;
   producer->sampleInfo_.sumWeight = 10000;
