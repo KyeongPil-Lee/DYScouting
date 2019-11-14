@@ -33,13 +33,20 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
   l1tAlgBlkInputTag     = cms.InputTag("gtStage2Digis"), # -- for L1TGlobalUtil
   l1tExtBlkInputTag     = cms.InputTag("gtStage2Digis"), # -- for L1TGlobalUtil
   ReadPrescalesFromFile = cms.bool( False ),             # -- for L1TGlobalUtil
-  L1SeedList     = cms.untracked.vstring(GetL1SeedList()),
-  triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
-  scoutingVertex = cms.untracked.InputTag("hltScoutingMuonPackerCalo", "displacedVtx", "HLT"),
+  L1SeedList            = cms.untracked.vstring(GetL1SeedList()),
+  triggerResults        = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+
+  scoutingVertex      = cms.untracked.InputTag("hltScoutingMuonPackerCalo",              "displacedVtx", "HLT"),
+  pixelVertex         = cms.untracked.InputTag("hltScoutingPrimaryVertexPacker",         "primaryVtx",   "HLT"),
+  pixelVertexNearMuon = cms.untracked.InputTag("hltScoutingPrimaryVertexPackerCaloMuon", "primaryVtx",   "HLT"),
+
   scoutingMuon   = cms.untracked.InputTag("hltScoutingMuonPackerCalo"),
   PUSummaryInfo  = cms.untracked.InputTag("addPileupInfo"),
   genEventInfo   = cms.untracked.InputTag("generator"),
-  genParticle    = cms.untracked.InputTag("genParticles"), 
+  genParticle    = cms.untracked.InputTag("genParticles"),
+  caloMETPhi     = cms.untracked.InputTag("hltScoutingCaloPacker", "caloMetPhi", "HLT"),
+  caloMETPt      = cms.untracked.InputTag("hltScoutingCaloPacker", "caloMetPt", "HLT"),
+  rho            = cms.untracked.InputTag("hltScoutingCaloPacker", "rho", "HLT"),
 )
 
 isMC = True

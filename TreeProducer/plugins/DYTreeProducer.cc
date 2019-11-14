@@ -73,6 +73,8 @@ private:
   void Fill_L1( const edm::Event&, const edm::EventSetup& );
   void Fill_HLT( const edm::Event & );
   void Fill_ScoutingVertex( const edm::Event& );
+  void Fill_PixelVertex( const edm::Event& );
+  void Fill_PixelVertexNearMuon( const edm::Event& );
   void Fill_ScoutingMuon( const edm::Event& );
   void Fill_GenParticle( const edm::Event& );
 
@@ -86,6 +88,9 @@ private:
   // edm::EDGetTokenT< trigger::TriggerEvent >          t_triggerEvent_;
 
   edm::EDGetTokenT<std::vector<ScoutingVertex> >     t_scoutingVertex_;
+  edm::EDGetTokenT<std::vector<ScoutingVertex> >     t_pixelVertex_;
+  edm::EDGetTokenT<std::vector<ScoutingVertex> >     t_pixelVertexNearMuon_;
+
   edm::EDGetTokenT<std::vector<ScoutingMuon> >       t_scoutingMuon_;
 
   edm::EDGetTokenT< std::vector<PileupSummaryInfo> > t_PUSummaryInfo_;
@@ -94,6 +99,11 @@ private:
   edm::EDGetTokenT< reco::GenParticleCollection >    t_genParticle_;
 
   // const edm::EDGetTokenT<LHEEventProduct>         t_LHEEventProduct_; // -- it will be added later (if needed)
+
+  edm::EDGetTokenT< double >  t_caloMETPhi_;
+  edm::EDGetTokenT< double >  t_caloMETPt_;
+  edm::EDGetTokenT< double >  t_rho_;
+
 
   // -- variable for L1 information
   vector< std::string> vec_L1Seed_;
@@ -123,12 +133,41 @@ private:
   vector< double > vec_HLTObj_eta_;
   vector< double > vec_HLTObj_phi_;
 
-  // -- vertex information (@ HLT)
+  // -- dimuon vertex information (@ HLT)
   int nVtx_;
   double vtx_x_[arrSize_];
   double vtx_y_[arrSize_];
   double vtx_z_[arrSize_];
+  double vtx_xErr_[arrSize_];
+  double vtx_yErr_[arrSize_];
+  double vtx_zErr_[arrSize_];
   double vtx_chi2_[arrSize_];
+  int    vtx_nDOF_[arrSize_];
+  int    vtx_isValid_[arrSize_];
+
+  // -- pixel vertex information from full tracking @ HLT
+  int nPixelVtx_;
+  double pixelVtx_x_[arrSize_];
+  double pixelVtx_y_[arrSize_];
+  double pixelVtx_z_[arrSize_];
+  double pixelVtx_xErr_[arrSize_];
+  double pixelVtx_yErr_[arrSize_];
+  double pixelVtx_zErr_[arrSize_];
+  double pixelVtx_chi2_[arrSize_];
+  int    pixelVtx_nDOF_[arrSize_];
+  int    pixelVtx_isValid_[arrSize_];
+
+  // -- pixel vertex made by tracks near L3 muons @ HLT
+  int nPixelVtxMu_;
+  double pixelVtxMu_x_[arrSize_];
+  double pixelVtxMu_y_[arrSize_];
+  double pixelVtxMu_z_[arrSize_];
+  double pixelVtxMu_xErr_[arrSize_];
+  double pixelVtxMu_yErr_[arrSize_];
+  double pixelVtxMu_zErr_[arrSize_];
+  double pixelVtxMu_chi2_[arrSize_];
+  int    pixelVtxMu_nDOF_[arrSize_];
+  int    pixelVtxMu_isValid_[arrSize_];
 
   // -- muon information
   int nMuon_;
@@ -141,6 +180,7 @@ private:
   double muon_charge_[arrSize_];
 
   int muon_nPixelHit_[arrSize_];
+  int muon_nStripHit_[arrSize_];
   int muon_nTrackerLayer_[arrSize_];
   int muon_nMuonHit_[arrSize_];
   int muon_nMatchedStation_[arrSize_];
@@ -148,6 +188,7 @@ private:
   double muon_dxy_[arrSize_];
   double muon_dz_[arrSize_];
   double muon_trkIso_[arrSize_];
+  vector< vector<int> > muon_vtxIndex_;
 
   // -- generator level information
   int nGenParticle_;
@@ -178,17 +219,28 @@ private:
   int genParticle_fromHardProcessDecayed_[arrSize_];
   int genParticle_fromHardProcessFinalState_[arrSize_];
   int genParticle_isMostlyLikePythia6Status3_[arrSize_];
+
+  // -- MET, Calo info.
+  double caloMET_phi_;
+  double caloMET_pt_;
+  double rho_;
+
 };
 
 DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
-t_globalAlgBlk_   ( consumes< BXVector< GlobalAlgBlk > >       (iConfig.getUntrackedParameter<edm::InputTag>("globalAlgBlk")) ),
-t_triggerResults_ ( consumes< edm::TriggerResults >            (iConfig.getUntrackedParameter<edm::InputTag>("triggerResults")) ),
-// t_triggerEvent_   ( consumes< trigger::TriggerEvent >          (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ),
-t_scoutingVertex_ ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("scoutingVertex")) ),
-t_scoutingMuon_   ( consumes< std::vector<ScoutingMuon> >      (iConfig.getUntrackedParameter<edm::InputTag>("scoutingMuon")) ),
-t_PUSummaryInfo_  ( consumes< std::vector<PileupSummaryInfo> > (iConfig.getUntrackedParameter<edm::InputTag>("PUSummaryInfo")) ),
-t_genEventInfo_   ( consumes< GenEventInfoProduct >            (iConfig.getUntrackedParameter<edm::InputTag>("genEventInfo")) ),
-t_genParticle_    ( consumes< reco::GenParticleCollection >    (iConfig.getUntrackedParameter<edm::InputTag>("genParticle")) )
+t_globalAlgBlk_        ( consumes< BXVector< GlobalAlgBlk > >       (iConfig.getUntrackedParameter<edm::InputTag>("globalAlgBlk")) ),
+t_triggerResults_      ( consumes< edm::TriggerResults >            (iConfig.getUntrackedParameter<edm::InputTag>("triggerResults")) ),
+// t_triggerEvent_        ( consumes< trigger::TriggerEvent >          (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ),
+t_scoutingVertex_      ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("scoutingVertex")) ),
+t_pixelVertex_         ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertex")) ),
+t_pixelVertexNearMuon_ ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertexNearMuon")) ),
+t_scoutingMuon_        ( consumes< std::vector<ScoutingMuon> >      (iConfig.getUntrackedParameter<edm::InputTag>("scoutingMuon")) ),
+t_PUSummaryInfo_       ( consumes< std::vector<PileupSummaryInfo> > (iConfig.getUntrackedParameter<edm::InputTag>("PUSummaryInfo")) ),
+t_genEventInfo_        ( consumes< GenEventInfoProduct >            (iConfig.getUntrackedParameter<edm::InputTag>("genEventInfo")) ),
+t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.getUntrackedParameter<edm::InputTag>("genParticle")) ),
+t_caloMETPhi_          ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPhi")) ),
+t_caloMETPt_           ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPt")) ),
+t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) )
 {
    // usesResource("TFileService");
   vec_L1Seed_ = iConfig.getUntrackedParameter<std::vector<std::string> >("L1SeedList");
@@ -234,8 +286,26 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   Fill_L1(iEvent, iSetup);
   Fill_HLT(iEvent);
   Fill_ScoutingVertex(iEvent);
+  Fill_PixelVertex(iEvent);
+  Fill_PixelVertexNearMuon(iEvent);
   Fill_ScoutingMuon(iEvent);
   if( !isRealData ) Fill_GenParticle(iEvent);
+
+
+  // -- MET variables
+  edm::Handle<double> h_caloMETPhi;
+  iEvent.getByToken(t_caloMETPhi_, h_caloMETPhi);
+  if( h_caloMETPhi.isValid() ) caloMET_phi_ = *(h_caloMETPhi.product());
+
+  edm::Handle<double> h_caloMETPt;
+  iEvent.getByToken(t_caloMETPt_, h_caloMETPt);
+  if( h_caloMETPt.isValid() ) caloMET_pt_ = *(h_caloMETPt.product());
+
+  edm::Handle<double> h_rho;
+  iEvent.getByToken(t_rho_, h_rho);
+  if( h_rho.isValid() ) rho_ = *(h_rho.product());
+
+  // cout << "[MET] (phi, pt) = (" << caloMET_phi_ << ", " << caloMET_pt_ << ")" << endl;
 
   ntuple_->Fill();
 }
@@ -270,12 +340,39 @@ void DYTreeProducer::Init()
 
   // -- vertex information (@ HLT)
   nVtx_ = -999;
+  nPixelVtx_ = -999;
+  nPixelVtxMu_ = -999;
   for(Int_t i=0; i<arrSize_; i++)
   {
     vtx_x_[i] = -999;
     vtx_y_[i] = -999;
     vtx_z_[i] = -999;
+    vtx_xErr_[i] = -999;
+    vtx_yErr_[i] = -999;
+    vtx_zErr_[i] = -999;
     vtx_chi2_[i] = -999;
+    vtx_nDOF_[i] = -999;
+    vtx_isValid_[i] = 0;
+
+    pixelVtx_x_[i] = -999;
+    pixelVtx_y_[i] = -999;
+    pixelVtx_z_[i] = -999;
+    pixelVtx_xErr_[i] = -999;
+    pixelVtx_yErr_[i] = -999;
+    pixelVtx_zErr_[i] = -999;
+    pixelVtx_chi2_[i] = -999;
+    pixelVtx_nDOF_[i] = -999;
+    pixelVtx_isValid_[i] = 0;
+
+    pixelVtxMu_x_[i] = -999;
+    pixelVtxMu_y_[i] = -999;
+    pixelVtxMu_z_[i] = -999;
+    pixelVtxMu_xErr_[i] = -999;
+    pixelVtxMu_yErr_[i] = -999;
+    pixelVtxMu_zErr_[i] = -999;
+    pixelVtxMu_chi2_[i] = -999;
+    pixelVtxMu_nDOF_[i] = -999;
+    pixelVtxMu_isValid_[i] = 0;
   }
 
   // -- muon information
@@ -291,6 +388,7 @@ void DYTreeProducer::Init()
     muon_charge_[i] = -999;
 
     muon_nPixelHit_[i] = -999;
+    muon_nStripHit_[i] = -999;
     muon_nTrackerLayer_[i] = -999;
     muon_nMuonHit_[i] = -999;
     muon_nMatchedStation_[i] = -999;
@@ -299,6 +397,7 @@ void DYTreeProducer::Init()
     muon_dz_[i] = -999;
     muon_trkIso_[i] = -999;
   }
+  muon_vtxIndex_.clear();
 
   // -- generator level information
   nGenParticle_ = -999;
@@ -332,6 +431,10 @@ void DYTreeProducer::Init()
     genParticle_fromHardProcessFinalState_[i] = 0;
     genParticle_isMostlyLikePythia6Status3_[i] = 0;
   }
+
+  caloMET_phi_ = -999;
+  caloMET_pt_ = -999;
+  rho_ = -999;
 }
 
 void DYTreeProducer::Make_Branch()
@@ -354,7 +457,37 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("vtx_x", &vtx_x_, "vtx_x[nVtx]/D");
   ntuple_->Branch("vtx_y", &vtx_y_, "vtx_y[nVtx]/D");
   ntuple_->Branch("vtx_z", &vtx_z_, "vtx_z[nVtx]/D");
+  ntuple_->Branch("vtx_xErr", &vtx_xErr_, "vtx_xErr[nVtx]/D");
+  ntuple_->Branch("vtx_yErr", &vtx_yErr_, "vtx_yErr[nVtx]/D");
+  ntuple_->Branch("vtx_zErr", &vtx_zErr_, "vtx_zErr[nVtx]/D");
   ntuple_->Branch("vtx_chi2", &vtx_chi2_, "vtx_chi2[nVtx]/D");
+  ntuple_->Branch("vtx_nDOF", &vtx_nDOF_, "vtx_nDOF[nVtx]/I");
+  ntuple_->Branch("vtx_isValid", &vtx_isValid_, "vtx_isValid[nVtx]/I");
+
+
+  ntuple_->Branch("nPixelVtx", &nPixelVtx_, "nPixelVtx/I");
+  ntuple_->Branch("pixelVtx_x", &pixelVtx_x_, "pixelVtx_x[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_y", &pixelVtx_y_, "pixelVtx_y[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_z", &pixelVtx_z_, "pixelVtx_z[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_xErr", &pixelVtx_xErr_, "pixelVtx_xErr[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_yErr", &pixelVtx_yErr_, "pixelVtx_yErr[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_zErr", &pixelVtx_zErr_, "pixelVtx_zErr[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_chi2", &pixelVtx_chi2_, "pixelVtx_chi2[nPixelVtx]/D");
+  ntuple_->Branch("pixelVtx_nDOF", &pixelVtx_nDOF_, "pixelVtx_nDOF[nPixelVtx]/I");
+  ntuple_->Branch("pixelVtx_isValid", &pixelVtx_isValid_, "pixelVtx_isValid[nPixelVtx]/I");
+
+
+  ntuple_->Branch("nPixelVtxMu", &nPixelVtxMu_, "nPixelVtxMu/I");
+  ntuple_->Branch("pixelVtxMu_x", &pixelVtxMu_x_, "pixelVtxMu_x[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_y", &pixelVtxMu_y_, "pixelVtxMu_y[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_z", &pixelVtxMu_z_, "pixelVtxMu_z[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_xErr", &pixelVtxMu_xErr_, "pixelVtxMu_xErr[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_yErr", &pixelVtxMu_yErr_, "pixelVtxMu_yErr[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_zErr", &pixelVtxMu_zErr_, "pixelVtxMu_zErr[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_chi2", &pixelVtxMu_chi2_, "pixelVtxMu_chi2[nPixelVtxMu]/D");
+  ntuple_->Branch("pixelVtxMu_nDOF", &pixelVtxMu_nDOF_, "pixelVtxMu_nDOF[nPixelVtxMu]/I");
+  ntuple_->Branch("pixelVtxMu_isValid", &pixelVtxMu_isValid_, "pixelVtxMu_isValid[nPixelVtxMu]/I");
+
 
 
   ntuple_->Branch("nMuon", &nMuon_, "nMuon/I");
@@ -369,11 +502,13 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("muon_normChi2", &muon_normChi2_, "muon_normChi2[nMuon]/D");
   ntuple_->Branch("muon_nTrackerLayer", &muon_nTrackerLayer_, "muon_nTrackerLayer[nMuon]/I");
   ntuple_->Branch("muon_nPixelHit", &muon_nPixelHit_, "muon_nPixelHit[nMuon]/I");
+  ntuple_->Branch("muon_nStripHit", &muon_nStripHit_, "muon_nStripHit[nMuon]/I");
   ntuple_->Branch("muon_nMuonHit", &muon_nMuonHit_, "muon_nMuonHit[nMuon]/I");
   ntuple_->Branch("muon_nMatchedStation", &muon_nMatchedStation_, "muon_nMatchedStation[nMuon]/I");
   ntuple_->Branch("muon_dxy", &muon_dxy_, "muon_dxy[nMuon]/D");
   ntuple_->Branch("muon_dz",  &muon_dz_,  "muon_dz[nMuon]/D");
   ntuple_->Branch("muon_trkIso", &muon_trkIso_, "muon_trkIso[nMuon]/D");
+  ntuple_->Branch("muon_vtxIndex", &muon_vtxIndex_);
 
 
   ntuple_->Branch("genWeight", &genWeight_, "genWeight/D");
@@ -403,6 +538,10 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("genParticle_fromHardProcessDecayed", &genParticle_fromHardProcessDecayed_, "genParticle_fromHardProcessDecayed[nGenParticle]/I");
   ntuple_->Branch("genParticle_fromHardProcessFinalState", &genParticle_fromHardProcessFinalState_, "genParticle_fromHardProcessFinalState[nGenParticle]/I");
   ntuple_->Branch("genParticle_isMostlyLikePythia6Status3", &genParticle_isMostlyLikePythia6Status3_, "genParticle_isMostlyLikePythia6Status3[nGenParticle]/I");
+
+  ntuple_->Branch("caloMET_phi", &caloMET_phi_, "caloMET_phi/D");
+  ntuple_->Branch("caloMET_pt",  &caloMET_pt_,  "caloMET_pt/D");
+  ntuple_->Branch("rho",         &rho_,         "rho/D");
 }
 
 
@@ -526,12 +665,77 @@ void DYTreeProducer::Fill_ScoutingVertex( const edm::Event& iEvent )
       vtx_x_[i_vtx]    = scoutingVertex.x();
       vtx_y_[i_vtx]    = scoutingVertex.y();
       vtx_z_[i_vtx]    = scoutingVertex.z();
-      vtx_chi2_[i_vtx] = scoutingVertex.chi2();
+      vtx_xErr_[i_vtx]    = scoutingVertex.zError();
+      vtx_yErr_[i_vtx]    = scoutingVertex.yError();
+      vtx_zErr_[i_vtx]    = scoutingVertex.zError();
+      vtx_chi2_[i_vtx]    = scoutingVertex.chi2();
+      vtx_nDOF_[i_vtx]    = scoutingVertex.ndof();
+      vtx_isValid_[i_vtx] = scoutingVertex.isValidVtx();
 
       _nVtx++;
     }
 
     nVtx_ = _nVtx;
+  }
+
+}
+
+void DYTreeProducer::Fill_PixelVertex( const edm::Event& iEvent )
+{
+  Handle<std::vector<ScoutingVertex> > h_pixelVertex;
+  iEvent.getByToken(t_pixelVertex_, h_pixelVertex);
+
+  int _nPixelVtx = 0;
+  if( h_pixelVertex.isValid() )
+  {
+    for(unsigned int i_vtx=0; i_vtx<h_pixelVertex->size(); ++i_vtx)
+    {
+      const ScoutingVertex &scoutingVertex = (*h_pixelVertex)[i_vtx];
+
+      pixelVtx_x_[i_vtx]    = scoutingVertex.x();
+      pixelVtx_y_[i_vtx]    = scoutingVertex.y();
+      pixelVtx_z_[i_vtx]    = scoutingVertex.z();
+      pixelVtx_xErr_[i_vtx]    = scoutingVertex.zError();
+      pixelVtx_yErr_[i_vtx]    = scoutingVertex.yError();
+      pixelVtx_zErr_[i_vtx]    = scoutingVertex.zError();
+      pixelVtx_chi2_[i_vtx]    = scoutingVertex.chi2();
+      pixelVtx_nDOF_[i_vtx]    = scoutingVertex.ndof();
+      pixelVtx_isValid_[i_vtx] = scoutingVertex.isValidVtx();
+
+      _nPixelVtx++;
+    }
+
+    nPixelVtx_ = _nPixelVtx;
+  }
+
+}
+
+void DYTreeProducer::Fill_PixelVertexNearMuon( const edm::Event& iEvent )
+{
+  Handle<std::vector<ScoutingVertex> > h_pixelVertexNearMuon;
+  iEvent.getByToken(t_pixelVertexNearMuon_, h_pixelVertexNearMuon);
+
+  int _nPixelVtxMu = 0;
+  if( h_pixelVertexNearMuon.isValid() )
+  {
+    for(unsigned int i_vtx=0; i_vtx<h_pixelVertexNearMuon->size(); ++i_vtx)
+    {
+      const ScoutingVertex &scoutingVertex = (*h_pixelVertexNearMuon)[i_vtx];
+
+      pixelVtxMu_x_[i_vtx]    = scoutingVertex.x();
+      pixelVtxMu_y_[i_vtx]    = scoutingVertex.y();
+      pixelVtxMu_z_[i_vtx]    = scoutingVertex.z();
+      pixelVtxMu_xErr_[i_vtx]    = scoutingVertex.zError();
+      pixelVtxMu_yErr_[i_vtx]    = scoutingVertex.yError();
+      pixelVtxMu_zErr_[i_vtx]    = scoutingVertex.zError();
+      pixelVtxMu_chi2_[i_vtx]    = scoutingVertex.chi2();
+      pixelVtxMu_nDOF_[i_vtx]    = scoutingVertex.ndof();
+      pixelVtxMu_isValid_[i_vtx] = scoutingVertex.isValidVtx();
+
+      _nPixelVtxMu++;
+    }
+
+    nPixelVtxMu_ = _nPixelVtxMu;
   }
 
 }
@@ -559,6 +763,7 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
       muon_charge_[i_mu] = muon.charge();
 
       muon_nPixelHit_[i_mu]       = muon.nValidPixelHits();
+      muon_nStripHit_[i_mu]       = muon.nValidStripHits();
       muon_nTrackerLayer_[i_mu]   = muon.nTrackerLayersWithMeasurement();
       muon_nMuonHit_[i_mu]        = muon.nValidMuonHits();
       muon_nMatchedStation_[i_mu] = muon.nMatchedStations();
@@ -568,6 +773,10 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
       muon_dz_[i_mu]  = muon.dz();
 
       muon_trkIso_[i_mu] = muon.trackIso();
+
+      muon_vtxIndex_.push_back( muon.vtxIndx() );
+
+      // cout << "[Scouting muon: isolation] (ECAL, HCAL) = (" << muon.ecalIso() << ", " << muon.hcalIso() << ")" << endl; 
 
       _nMuon++;
     }
