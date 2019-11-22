@@ -149,8 +149,8 @@
     "isMC": 1,
     "xSec": 1.0,
     "sumWeight": -1.0,
-    "comment": "WARNING: Incompleted",
-    "list_dir": ["v1.2/QCDMuEnriched_Pt20to30_Incompleted"]
+    "comment": "",
+    "list_dir": ["v1.2/QCDMuEnriched_Pt20to30"]
   },
 
   {
