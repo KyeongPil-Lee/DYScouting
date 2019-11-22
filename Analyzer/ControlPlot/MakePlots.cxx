@@ -120,12 +120,41 @@ public:
   PlotTool::HistInfo histInfo_data_;
   vector<PlotTool::HistInfo> vec_MCHistInfo_;
 
+  // -- histograms
+  TH1D* h_data_;
+  TH1D* h_DYTauTau_;
+  TH1D* h_ttbar_;
+  TH1D* h_WJets_;
+  TH1D* h_QCDMuEnriched_;
+  TH1D* h_DYMuMu_;
+
   PlotProducer(TString histName )
   {
     histName_ = histName;
   }
 
   void Produce()
+  {
+    InitHistograms();
+    SetupHistograms();
+
+    Produce_StackedPlot();
+    Produce_FractionPlot();
+    Produce_NormHist(); // -- should be produced at the last step (as it normalized the original histograms)
+  }
+
+private:
+  void InitHistograms()
+  {
+    h_data_ = nullptr;
+    h_DYTauTau_ = nullptr;
+    h_ttbar_ = nullptr;
+    h_WJets_ = nullptr;
+    h_QCDMuEnriched_ = nullptr;
+    h_DYMuMu_ = nullptr;
+  }
+
+  void SetupHistograms()
   {
     // -- setup the histograms
     SampleInfo* sampleInfo_DYMuMu_M10to50  = new SampleInfo("DYMuMu_M10to50");
@@ -154,15 +183,15 @@ public:
     TH1D* h_DYMuMu_M10to50  = sampleInfo_DYMuMu_M10to50->Get_NormalizedHist(histName_);
     TH1D* h_DYMuMu_M50toInf = sampleInfo_DYMuMu_M50toInf->Get_NormalizedHist(histName_);
 
-    TH1D* h_DYMuMu = (TH1D*)h_DYMuMu_M10to50->Clone();
-    h_DYMuMu->Add( h_DYMuMu_M50toInf );
+    h_DYMuMu_ = (TH1D*)h_DYMuMu_M10to50->Clone();
+    h_DYMuMu_->Add( h_DYMuMu_M50toInf );
 
     // -- DYTauTau
     TH1D* h_DYTauTau_M10to50  = sampleInfo_DYTauTau_M10to50->Get_NormalizedHist(histName_);
     TH1D* h_DYTauTau_M50toInf = sampleInfo_DYTauTau_M50toInf->Get_NormalizedHist(histName_);
 
-    TH1D* h_DYTauTau = (TH1D*)h_DYTauTau_M10to50->Clone();
-    h_DYTauTau->Add( h_DYTauTau_M50toInf );
+    h_DYTauTau_ = (TH1D*)h_DYTauTau_M10to50->Clone();
+    h_DYTauTau_->Add( h_DYTauTau_M50toInf );
 
     // -- QCD
     TH1D* h_QCDMuEnriched_Pt15to20    = sampleInfo_QCDMuEnriched_Pt15to20->Get_NormalizedHist(histName_);
@@ -178,22 +207,22 @@ public:
     TH1D* h_QCDMuEnriched_Pt800to1000 = sampleInfo_QCDMuEnriched_Pt800to1000->Get_NormalizedHist(histName_);
     TH1D* h_QCDMuEnriched_Pt1000toInf = sampleInfo_QCDMuEnriched_Pt1000toInf->Get_NormalizedHist(histName_);
 
-    TH1D* h_QCDMuEnriched = (TH1D*)h_QCDMuEnriched_Pt15to20->Clone();
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt20to30 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt30to50 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt50to80 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt80to120 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt120to170 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt170to300 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt300to470 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt470to600 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt600to800 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt800to1000 );
-    h_QCDMuEnriched->Add( h_QCDMuEnriched_Pt1000toInf );
+    h_QCDMuEnriched_ = (TH1D*)h_QCDMuEnriched_Pt15to20->Clone();
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt20to30 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt30to50 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt50to80 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt80to120 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt120to170 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt170to300 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt300to470 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt470to600 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt600to800 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt800to1000 );
+    h_QCDMuEnriched_->Add( h_QCDMuEnriched_Pt1000toInf );
 
     // -- others
-    TH1D* h_ttbar = sampleInfo_ttbar->Get_NormalizedHist(histName_);
-    TH1D* h_WJets = sampleInfo_WJets->Get_NormalizedHist(histName_);
+    h_ttbar_ = sampleInfo_ttbar->Get_NormalizedHist(histName_);
+    h_WJets_ = sampleInfo_WJets->Get_NormalizedHist(histName_);
 
 
     // TH1D* h_data_RunA = PlotTool::Get_Hist("ROOTFile_MakeHist_Dimuon_noWeight_ScoutingCaloMuon_Run2018A.root", histName_); h_data_RunA->Sumw2();
@@ -211,10 +240,62 @@ public:
     // h_data->Add( h_data_RunC );
     // h_data->Add( h_data_RunD );
 
-    TH1D* h_data = PlotTool::Get_Hist("ROOTFile_MakeHist_Dimuon_noWeight_ScoutingCaloMuon_Run2018All.root", histName_); h_data->Sumw2();
+    h_data_ = PlotTool::Get_Hist("ROOTFile_MakeHist_Dimuon_noWeight_ScoutingCaloMuon_Run2018All.root", histName_); h_data_->Sumw2();
+  }
 
+  void Produce_FractionPlot()
+  {
+    TH1D* h_totMC = (TH1D*)h_DYTauTau_->Clone();
+    h_totMC->Add( h_ttbar_ );
+    h_totMC->Add( h_WJets_ );
+    h_totMC->Add( h_DYMuMu_ );
+    h_totMC->Add( h_QCDMuEnriched_ );
 
+    TH1D* h_frac_DYTauTau = (TH1D*)h_DYTauTau_->Clone();
+    h_frac_DYTauTau->Divide( h_DYTauTau_, h_totMC );
 
+    TH1D* h_frac_ttbar = (TH1D*)h_ttbar_->Clone();
+    h_frac_ttbar->Divide( h_ttbar_, h_totMC );
+
+    TH1D* h_frac_WJets = (TH1D*)h_WJets_->Clone();
+    h_frac_WJets->Divide( h_WJets_, h_totMC );
+
+    TH1D* h_frac_DYMuMu = (TH1D*)h_DYMuMu_->Clone();
+    h_frac_DYMuMu->Divide( h_DYMuMu_, h_totMC );
+
+    TH1D* h_frac_QCDMuEnriched = (TH1D*)h_QCDMuEnriched_->Clone();
+    h_frac_QCDMuEnriched->Divide( h_QCDMuEnriched_, h_totMC );
+
+    // -- plots
+    TString canvasName = histName_;
+    canvasName.ReplaceAll("h_", "c_frac_");
+
+    Bool_t isLogX, isLogY;
+    GetLogXY(isLogX, isLogY);
+    PlotTool::HistCanvas *canvas = new PlotTool::HistCanvas(canvasName, isLogX, 0);
+
+    canvas->Register(h_frac_DYTauTau,      "Z/#gamma #rightarrow #tau#tau (M > 10 GeV)", DYTool::kDYTauTau);
+    canvas->Register(h_frac_ttbar,         "t#bar{t} (leptonic)", DYTool::kTop);
+    canvas->Register(h_frac_WJets,         "W+jets", DYTool::kWJets);
+    canvas->Register(h_frac_DYMuMu,        "Z/#gamma #rightarrow #mu#mu (M > 10 GeV)", DYTool::kDY);
+    canvas->Register(h_frac_QCDMuEnriched, "QCD (p_{T}(#mu) > 5 GeV, #mu-enriched)", DYTool::kQCD);
+
+    SetRebin(canvas);
+
+    canvas->SetLegendColumn(2);
+    canvas->SetLegendPosition(0.40, 0.80, 0.95, 0.95);
+    TString titleX = GetTitleX();
+    canvas->SetTitle(titleX, "Fraction w.r.t. total MC");
+    
+    SetRangeX(canvas);
+    canvas->SetRangeY(0, 1.1);
+    canvas->Latex_CMSSim();
+    // canvas->RegisterLatex(0.75, 0.96, TString::Format("#font[42]{#scale[0.6]{%.1lf fb^{-1} (13 TeV)}}", lumi/1000.0));
+    canvas->Draw("HISTLP");
+  }
+
+  void Produce_StackedPlot()
+  {
     // -- plots
     TString canvasName = histName_;
     canvasName.ReplaceAll("h_", "c_");
@@ -222,23 +303,21 @@ public:
     GetLogXY(isLogX, isLogY);
     PlotTool::HistStackCanvaswRatio *canvas = new PlotTool::HistStackCanvaswRatio(canvasName, isLogX, isLogY);
 
-    canvas->RegisterData( h_data, "Data (Run2018A-D)", kBlack);
+    canvas->RegisterData(h_data_, "Data (Run2018A-D)", kBlack);
 
-    canvas->Register(h_DYTauTau,      "Z/#gamma #rightarrow #tau#tau (M > 10 GeV)", DYTool::kDYTauTau);
-    canvas->Register(h_ttbar,         "t#bar{t} (leptonic)", DYTool::kTop);
-    canvas->Register(h_WJets,         "W+jets", DYTool::kWJets);
+    canvas->Register(h_DYTauTau_,      "Z/#gamma #rightarrow #tau#tau (M > 10 GeV)", DYTool::kDYTauTau);
+    canvas->Register(h_ttbar_,         "t#bar{t} (leptonic)", DYTool::kTop);
+    canvas->Register(h_WJets_,         "W+jets", DYTool::kWJets);
     if( histName_.Contains("ZPeak") ) // -- DY is dominant ... it should come at the last step
     {
-      canvas->Register(h_QCDMuEnriched, "QCD (p_{T}(#mu) > 5 GeV, #mu-enriched)", DYTool::kQCD);
-      canvas->Register(h_DYMuMu,        "Z/#gamma #rightarrow #mu#mu (M > 10 GeV)", DYTool::kDY);
+      canvas->Register(h_QCDMuEnriched_, "QCD (p_{T}(#mu) > 5 GeV, #mu-enriched)", DYTool::kQCD);
+      canvas->Register(h_DYMuMu_,        "Z/#gamma #rightarrow #mu#mu (M > 10 GeV)", DYTool::kDY);
     }
     else
     {
-      canvas->Register(h_DYMuMu,        "Z/#gamma #rightarrow #mu#mu (M > 10 GeV)", DYTool::kDY);
-      canvas->Register(h_QCDMuEnriched, "QCD (p_{T}(#mu) > 5 GeV, #mu-enriched)", DYTool::kQCD);
+      canvas->Register(h_DYMuMu_,        "Z/#gamma #rightarrow #mu#mu (M > 10 GeV)", DYTool::kDY);
+      canvas->Register(h_QCDMuEnriched_, "QCD (p_{T}(#mu) > 5 GeV, #mu-enriched)", DYTool::kQCD);
     }
-
-
 
     SetRebin(canvas);
 
@@ -258,7 +337,43 @@ public:
     canvas->Draw();
   }
 
-private:
+  void Produce_NormHist()
+  {
+    // -- normalization
+    h_DYTauTau_->Scale( 1.0 / h_DYTauTau_->Integral() );
+    h_ttbar_->Scale( 1.0 / h_ttbar_->Integral() );
+    h_WJets_->Scale( 1.0 / h_WJets_->Integral() );
+    h_DYMuMu_->Scale( 1.0 / h_DYMuMu_->Integral() );
+    h_QCDMuEnriched_->Scale( 1.0 / h_QCDMuEnriched_->Integral() );
+
+    // -- plots
+    TString canvasName = histName_;
+    canvasName.ReplaceAll("h_", "c_norm_");
+
+    Bool_t isLogX, isLogY;
+    GetLogXY(isLogX, isLogY);
+    PlotTool::HistCanvas *canvas = new PlotTool::HistCanvas(canvasName, isLogX, 0);
+
+    canvas->Register(h_DYTauTau_,      "Z/#gamma #rightarrow #tau#tau (M > 10 GeV)", DYTool::kDYTauTau);
+    canvas->Register(h_ttbar_,         "t#bar{t} (leptonic)", DYTool::kTop);
+    canvas->Register(h_WJets_,         "W+jets", DYTool::kWJets);
+    canvas->Register(h_DYMuMu_,        "Z/#gamma #rightarrow #mu#mu (M > 10 GeV)", DYTool::kDY);
+    canvas->Register(h_QCDMuEnriched_, "QCD (p_{T}(#mu) > 5 GeV, #mu-enriched)", DYTool::kQCD);
+
+    SetRebin(canvas);
+
+    canvas->SetLegendColumn(2);
+    canvas->SetLegendPosition(0.40, 0.80, 0.95, 0.95);
+    TString titleX = GetTitleX();
+    canvas->SetTitle(titleX, "Entry (norm. to 1)");
+    
+    SetRangeX(canvas);
+    canvas->SetRangeY(0, 0.1);
+    canvas->Latex_CMSSim();
+    // canvas->RegisterLatex(0.75, 0.96, TString::Format("#font[42]{#scale[0.6]{%.1lf fb^{-1} (13 TeV)}}", lumi/1000.0));
+    canvas->Draw("HISTLP");
+  }
+
   void GetLogXY(Bool_t &isLogX, Bool_t &isLogY)
   {
     isLogX = 0;
@@ -266,14 +381,14 @@ private:
     // if( histName_.Contains("h_diMuM") ) isLogY = 1;
   }
 
-  void SetRebin(PlotTool::HistStackCanvaswRatio* canvas )
+  void SetRebin(PlotTool::HistCanvas* canvas )
   {
     if( histName_.Contains("h_diMuPt") )   canvas->SetRebin(5);
     if( histName_.Contains("h_pt") )       canvas->SetRebin(5);
     if( histName_.Contains("h_normChi2") ) canvas->SetRebin(5);
   }
 
-  void SetRangeX( PlotTool::HistStackCanvaswRatio* canvas )
+  void SetRangeX( PlotTool::CanvasBase* canvas )
   { 
     if( histName_.Contains("h_diMuM") )        canvas->SetRangeX( 10, 120 );
     if( histName_.Contains("ZPeak/h_diMuM") )  canvas->SetRangeX( 60, 120 );
@@ -291,6 +406,14 @@ private:
     if( histName_.Contains("h_diMuM") )   titleX = "m(#mu#mu) [GeV]";
     if( histName_.Contains("h_diMuRap") ) titleX = "y(#mu#mu)";
     if( histName_.Contains("h_diMuPt") )  titleX = "p_{T}(#mu#mu) [GeV]";
+    if( histName_.Contains("h_diMuOS") )  titleX = "Opposite sign";
+    if( histName_.Contains("h_diMuDEta") )  titleX = "#Delta#eta(#mu_{1}, #mu_{2})";
+    if( histName_.Contains("h_diMuDPhi") )  titleX = "#Delta#phi(#mu_{1}, #mu_{2})";
+    if( histName_.Contains("h_diMuAngle3D") )    titleX = "3D angle(#mu_{1}, #mu_{2})";
+    if( histName_.Contains("h_diMuDEtaCM") )     titleX = "#Delta#eta(#mu_{1}, #mu_{2}) (CM frame)";
+    if( histName_.Contains("h_diMuDPhiCM") )     titleX = "#Delta#phi(#mu_{1}, #mu_{2}) (CM frame)";
+    if( histName_.Contains("h_diMuAngle3DCM") )  titleX = "3D angle(#mu_{1}, #mu_{2}) (CM frame)";
+
 
     if( histName_.Contains("h_pt") )  titleX  = "p_{T}(#mu) [GeV]";
     if( histName_.Contains("h_eta") ) titleX = "#eta(#mu)";
@@ -319,16 +442,22 @@ void MakePlots()
     "ZPeak/h_pt", "ZPeak/h_eta", "ZPeak/h_phi", 
     "ZPeak/h_nMuonHit", "ZPeak/h_nMatchedStation", "ZPeak/h_nPixelHit", 
     "ZPeak/h_nTrackerLayer", "ZPeak/h_normChi2", "ZPeak/h_relTrkIso",
+    "ZPeak/h_diMuOS", "ZPeak/h_diMuDEta", "ZPeak/h_diMuDPhi", "ZPeak/h_diMuAngle3D", 
+    "ZPeak/h_diMuDEtaCM", "ZPeak/h_diMuDPhiCM", "ZPeak/h_diMuAngle3DCM",
 
     "M10to60/h_diMuM", "M10to60/h_diMuRap", "M10to60/h_diMuPt",
     "M10to60/h_pt", "M10to60/h_eta", "M10to60/h_phi", 
     "M10to60/h_nMuonHit", "M10to60/h_nMatchedStation", "M10to60/h_nPixelHit", 
     "M10to60/h_nTrackerLayer", "M10to60/h_normChi2", "M10to60/h_relTrkIso",
+    "M10to60/h_diMuOS", "M10to60/h_diMuDEta", "M10to60/h_diMuDPhi", "M10to60/h_diMuAngle3D", 
+    "M10to60/h_diMuDEtaCM", "M10to60/h_diMuDPhiCM", "M10to60/h_diMuAngle3DCM",
 
     "h_diMuM", "h_diMuRap", "h_diMuPt",
     "h_pt", "h_eta", "h_phi", 
     "h_nMuonHit", "h_nMatchedStation", "h_nPixelHit", 
-    "h_nTrackerLayer", "h_normChi2", "h_relTrkIso"
+    "h_nTrackerLayer", "h_normChi2", "h_relTrkIso",
+    "h_diMuOS", "h_diMuDEta", "h_diMuDPhi", "h_diMuAngle3D",
+    "h_diMuDEtaCM", "h_diMuDPhiCM", "h_diMuAngle3DCM"
   };
 
   for(const auto& histName : vec_histName )

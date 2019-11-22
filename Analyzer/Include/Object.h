@@ -269,6 +269,9 @@ public:
 
   Double_t normChi2;
 
+  Double_t r; // -- sqrt(x^x + y^y)
+  Double_t R; // -- sqrt(x^x + y^y + z*z)
+
   DimuonVertex()
   {
     Init();
@@ -297,6 +300,9 @@ public:
     isValid = ntuple->vtx_isValid[idx];
 
     if( nDOF != 0 ) normChi2 = chi2 / nDOF;
+
+    r = sqrt(x*x + y*y);
+    R = sqrt(x*x + y*y + z*z);
   }
 
 private:
@@ -313,6 +319,9 @@ private:
     Double_t chi2 = -999;
     Double_t nDOF = -999;
     Int_t isValid = -999;
+
+    r = -999;
+    R = -999;
   }
 };
 

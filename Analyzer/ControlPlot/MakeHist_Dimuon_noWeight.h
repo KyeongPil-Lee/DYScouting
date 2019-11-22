@@ -50,6 +50,11 @@ public:
   TH1D* h_diMuAngle3DCM_;
   TH1D* h_diMuHasVertex_;
   TH1D* h_diMuNormVtxChi2_;
+  TH1D* h_diMuVtx_x_;
+  TH1D* h_diMuVtx_y_;
+  TH1D* h_diMuVtx_z_;
+  TH1D* h_diMuVtx_r_;
+  TH1D* h_diMuVtx_R_;
 
   // -- cut variables
   TH1D* h_nMuonHit_;
@@ -64,6 +69,11 @@ public:
 
   TH1D* h_caloMET_pt_;
   TH1D* h_caloMET_phi_;
+
+  // -- vertex information
+  TH1D* h_nVtx_;
+  TH1D* h_nPixelVtx_;
+  TH1D* h_nPixelVtxMu_;
 
   HistContainer()
   {
@@ -96,9 +106,18 @@ public:
     h_diMuAngle3DCM_->Fill( muPair.angle3DCM, weight );
     h_diMuHasVertex_->Fill( muPair.hasVertex, weight );
     h_diMuNormVtxChi2_->Fill( muPair.normVtxChi2, weight );
+    h_diMuVtx_x_->Fill( muPair.vertex.x, weight );
+    h_diMuVtx_y_->Fill( muPair.vertex.y, weight );
+    h_diMuVtx_z_->Fill( muPair.vertex.z, weight );
+    h_diMuVtx_r_->Fill( muPair.vertex.r, weight );
+    h_diMuVtx_R_->Fill( muPair.vertex.R, weight );
 
     h_caloMET_pt_->Fill( ntuple->caloMET_pt, weight);
     h_caloMET_phi_->Fill( ntuple->caloMET_phi, weight);
+
+    h_nVtx_->Fill( ntuple->nVtx, weight );
+    h_nPixelVtx_->Fill( ntuple->nPixelVtx, weight );
+    h_nPixelVtxMu_->Fill( ntuple->nPixelVtxMu, weight );
   }
 
   void Write(TFile *f_output)
@@ -134,6 +153,11 @@ private:
     h_diMuAngle3DCM_  = new TH1D("h_diMuAngle3DCM", "", 40, 0, 4);
     h_diMuHasVertex_  = new TH1D("h_diMuHasVertex", "", 2,  0, 2);
     h_diMuNormVtxChi2_ = new TH1D("h_diMuNormVtxChi2", "", 40, 0, 40);
+    h_diMuVtx_x_ = new TH1D("h_diMuVtx_x", "", 200, -1, 1);
+    h_diMuVtx_y_ = new TH1D("h_diMuVtx_y", "", 200, -1, 1);
+    h_diMuVtx_z_ = new TH1D("h_diMuVtx_z", "", 2000, -10, 10);
+    h_diMuVtx_r_ = new TH1D("h_diMuVtx_r", "", 500,  0, 5);
+    h_diMuVtx_R_ = new TH1D("h_diMuVtx_R", "", 2000, 0, 20);
 
     h_nMuonHit_        = new TH1D("h_nMuonHit",        "", 100, 0, 100);
     h_nMatchedStation_ = new TH1D("h_nMatchedStation", "", 10, 0, 10);
@@ -146,6 +170,10 @@ private:
 
     h_caloMET_pt_        = new TH1D("h_caloMET_pt",  "", 1000, 0, 1000);
     h_caloMET_phi_       = new TH1D("h_caloMET_phi", "", 80, -4, 4);
+
+    h_nVtx_        = new TH1D("h_nVtx", "", 100, 0, 100);
+    h_nPixelVtx_   = new TH1D("h_nPixelVtx", "", 100, 0, 100);
+    h_nPixelVtxMu_ = new TH1D("h_nPixelVtxMu", "", 100, 0, 100);
 
 
     vec_hists_.push_back(h_pt_);
@@ -172,6 +200,11 @@ private:
     vec_hists_.push_back(h_diMuAngle3DCM_);
     vec_hists_.push_back(h_diMuHasVertex_);
     vec_hists_.push_back(h_diMuNormVtxChi2_);
+    vec_hists_.push_back(h_diMuVtx_x_);
+    vec_hists_.push_back(h_diMuVtx_y_);
+    vec_hists_.push_back(h_diMuVtx_z_);
+    vec_hists_.push_back(h_diMuVtx_r_);
+    vec_hists_.push_back(h_diMuVtx_R_);
 
     vec_hists_.push_back(h_nMuonHit_);
     vec_hists_.push_back(h_nMatchedStation_);
@@ -184,6 +217,10 @@ private:
 
     vec_hists_.push_back(h_caloMET_pt_);
     vec_hists_.push_back(h_caloMET_phi_);
+
+    vec_hists_.push_back(h_nVtx_);
+    vec_hists_.push_back(h_nPixelVtx_);
+    vec_hists_.push_back(h_nPixelVtxMu_);
 
     for(const auto& h: vec_hists_ )
       h->Sumw2();

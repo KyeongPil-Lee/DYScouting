@@ -22,7 +22,21 @@ TH1D* Get_Hist(TString fileName, TString histName, TString histName_new = "" )
   TH1::AddDirectory(kFALSE);
 
   TFile* f_input = TFile::Open( fileName );
-  TH1D* h_temp = (TH1D*)f_input->Get(histName)->Clone();
+  if( f_input == nullptr )
+  {
+    cout << "[PlotTool::Get_Hist] fileName = " << fileName << ": not found" << endl;
+    return nullptr;
+  }
+
+  TH1D* h_test = (TH1D*)f_input->Get(histName);
+  if( h_test == nullptr )
+  {
+    cout << "[PlotTool::Get_Hist] histName = " << histName << ": not found" << endl;
+    return nullptr;
+  }
+
+  TH1D* h_temp = (TH1D*)h_test->Clone();
+
   if( histName_new != "" )
     h_temp->SetName( histName_new );
 

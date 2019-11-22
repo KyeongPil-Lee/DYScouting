@@ -15,7 +15,7 @@
     "xSec": 35090.3,
     "sumWeight": -1.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (WARNING: PDF error is 57657.3 pb (164%)!!)",
-    "list_dir": ["v1.2/DYJetsToLL_M10to50_Madgraph"]
+    "list_dir": ["v1.2/DYJetsToLL_M10to50_Madgraph", "v1.2/DYJetsToLL_M10to50_Madgraph_ext"]
   },
 
   {
