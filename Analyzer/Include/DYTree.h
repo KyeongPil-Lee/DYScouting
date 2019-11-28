@@ -26,6 +26,8 @@ public:
 
   // -- trigger information
   vector< std::string >* vec_firedTrigger;
+  vector< Bool_t >* vec_L1Bit;
+  vector< Int_t >*  vec_L1Prescale;
 
   // -- vertex information (@ HLT)
   Int_t nVtx;
@@ -150,6 +152,8 @@ public:
     chain_->SetBranchStatus("genWeight", 1);
     chain_->SetBranchStatus("truePU", 1);
     chain_->SetBranchStatus("vec_firedTrigger", 1);
+    chain_->SetBranchStatus("vec_L1Bit", 1);
+    chain_->SetBranchStatus("vec_L1Prescale", 1);
     chain_->SetBranchStatus("caloMET_pt", 1);
     chain_->SetBranchStatus("caloMET_phi", 1);
     chain_->SetBranchStatus("rho", 1);
@@ -160,6 +164,8 @@ public:
     chain_->SetBranchAddress("genWeight",        &genWeight);
     chain_->SetBranchAddress("truePU",           &truePU);
     chain_->SetBranchAddress("vec_firedTrigger", &vec_firedTrigger);
+    chain_->SetBranchAddress("vec_L1Bit",      &vec_L1Bit);
+    chain_->SetBranchAddress("vec_L1Prescale", &vec_L1Prescale);
     chain_->SetBranchAddress("caloMET_pt", &caloMET_pt);
     chain_->SetBranchAddress("caloMET_phi", &caloMET_phi);
     chain_->SetBranchAddress("rho", &rho);
