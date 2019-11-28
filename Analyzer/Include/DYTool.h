@@ -413,6 +413,57 @@ DYTool::MuPair EventSelection_Tight(DYTool::DYTree *ntuple, Bool_t& doPass)
   }
 }
 
+// -- add L1 requirement
+DYTool::MuPair EventSelection_Tight_L1(DYTool::DYTree *ntuple, Bool_t& doPass)
+{
+  doPass = kFALSE;
+
+  DYTool::MuPair muPair_dummy;
+
+  if( ntuple->nVtx <= 0 ) return muPair_dummy;
+
+  // -- pass unprescaled L1 (only for 2018)
+  // -- 4 = L1_DoubleMu_15_7
+  // -- 11 = L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18
+  // -- 16 = L1_DoubleMu4p5_SQ_OS_dR_Max1p2
+  Bool_t doPassL1 = kFALSE;
+  if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(11) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE;
+
+  if( !doPassL1 ) return muPair_dummy;
+
+  // -- HLT
+  Bool_t doPassTrig = kFALSE;
+  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
+  {
+    TString tstr_firedTrig = firedTrigger;
+    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
+    {
+      doPassTrig = kTRUE;
+      break;
+    }
+  }
+
+  if( !doPassTrig ) return muPair_dummy;
+
+
+  vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+  vector< DYTool::MuPair > vec_goodMuPair;
+  for( auto& muPair : vec_muPair )
+    if( muPair.IsDYCandidate_Tight(ntuple) ) vec_goodMuPair.push_back( muPair );
+
+  if( vec_goodMuPair.size() == 1 ) // -- only takes the case when there's exact 1 muon pair
+  {
+    doPass = kTRUE;
+    return vec_goodMuPair[0];
+  }
+  else
+  {
+    doPass = kFALSE;
+    return muPair_dummy;
+  }
+}
+
 class PUReweightTool
 {
 public:
