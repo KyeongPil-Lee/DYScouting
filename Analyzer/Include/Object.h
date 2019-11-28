@@ -399,13 +399,13 @@ public:
       isWithinAcc = kTRUE;
 
     Bool_t isGoodMuon = kFALSE;
-    if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.15 &&
-        second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.15 )
+    if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.01 &&
+        second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.01 )
       isGoodMuon = kTRUE;
 
     CheckVertex(ntuple);
 
-    if( isWithinAcc && isGoodMuon ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && normVtxChi2 < 5.0 && isOS ) flag = kTRUE;
 
     return flag;
   }
