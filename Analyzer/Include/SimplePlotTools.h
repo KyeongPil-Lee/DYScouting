@@ -474,6 +474,11 @@ public:
     setRangeRatio_ = kTRUE;
   }
 
+  void SetAutoRangeY( Bool_t value = kTRUE )
+  {
+    setAutoRangeY_ = value;
+  }
+
   void Latex_CMSPre()
   {
     setLatexCMSPre_ = kTRUE;
@@ -631,27 +636,6 @@ public:
     }
   }
 
-  // -- for auto adjustment of Y-range
-  void SetAutoRangeY(vector<TH1D*> vec_hist)
-  {
-    Double_t globalMin = 9999;
-    Double_t globalMax = -9999;
-    for(const auto& h : vec_hist )
-    {
-      Double_t localMin = h->GetMinimum();
-      Double_t localMax = h->GetMaximum();
-      if( localMin < globalMin ) globalMin = localMin;
-      if( localMax > globalMax ) globalMax = localMax;
-    }
-
-    minY_ = globalMin > 0 ? 0 : globalMin * 1.3;
-    maxY_ = globalMax * 1.3;
-
-    // -- TO-DO: multiplication factor adjustment according to isLogY
-    if( minY_ == 0 && isLogY_ ) minY_ = 0.5;
-    if( isLogY_ ) maxY_ = globalMax * 1e2;
-  }
-
 }; // class CanvasBase
 
 class HistCanvas : public CanvasBase
@@ -694,6 +678,8 @@ public:
     PlotTool::SetLegend( legend, legendMinX_, legendMinY_, legendMaxX_, legendMaxY_ );
     if( setLegendColumn_ ) legend->SetNColumns(nLegendColumn_);
 
+    if( setAutoRangeY_ ) CalcAutoRangeY(histInfos_);
+
     // -- draw canvas
     SetCanvas_Square();
 
@@ -729,6 +715,29 @@ public:
 
     c_->SaveAs(".pdf");
   }
+
+  // -- for auto adjustment of Y-range
+  void CalcAutoRangeY(vector<HistInfo> vec_histInfo)
+  {
+    setRangeY_ = kTRUE; // -- turn on
+
+    Double_t globalMin = 9999;
+    Double_t globalMax = -9999;
+    for(const auto& histInfo : vec_histInfo )
+    {
+      Double_t localMin = histInfo.h->GetMinimum();
+      Double_t localMax = histInfo.h->GetMaximum();
+      if( localMin < globalMin ) globalMin = localMin;
+      if( localMax > globalMax ) globalMax = localMax;
+    }
+
+    minY_ = globalMin > 0 ? 0 : globalMin * 1.3;
+    maxY_ = globalMax * 1.3;
+
+    // -- TO-DO: multiplication factor adjustment according to isLogY
+    if( minY_ == 0 && isLogY_ ) minY_ = 0.5;
+    if( isLogY_ ) maxY_ = globalMax * 1e2;
+  }
 }; // -- class HistCanvas
 
 class HistCanvaswRatio: public HistCanvas
@@ -756,6 +765,8 @@ public:
     TLegend *legend;
     PlotTool::SetLegend( legend, legendMinX_, legendMinY_, legendMaxX_, legendMaxY_ );
     if( setLegendColumn_ ) legend->SetNColumns(nLegendColumn_);
+
+    if( setAutoRangeY_ ) CalcAutoRangeY(histInfos_);
 
     // -- draw canvas
     SetCanvas_Ratio();
@@ -884,6 +895,13 @@ public:
     SetDataHistogram(legend);
     SetMCStack(legend);
 
+    if( setAutoRangeY_ )
+    {
+      vector<HistInfo> vec_histInfo_All = histInfos_;
+      vec_histInfo_All.push_back( histInfo_data_ );
+      CalcAutoRangeY(vec_histInfo_All);
+    }
+
     // -- initialize the canvas
     SetCanvas_Ratio();
 
@@ -895,15 +913,6 @@ public:
     h_format->Draw("");
     PlotTool::SetAxis_TopPad( h_format->GetXaxis(), h_format->GetYaxis(), titleY_ );
     if( setRangeX_ ) h_format->GetXaxis()->SetRangeUser( minX_, maxX_ );
-
-    // -- automatic y-axis range
-    vector<TH1D*> vec_histAll;
-    vec_histAll.push_back( histInfo_data_.h );
-    for(const auto& histInfo: histInfos_ ) vec_histAll.push_back( histInfo.h );
-    SetAutoRangeY(vec_histAll);
-    h_format->GetYaxis()->SetRangeUser(minY_, maxY_);
-
-    // -- but if a specific y-range is provided, then it should override
     if( setRangeY_ ) h_format->GetYaxis()->SetRangeUser( minY_, maxY_ );
 
     hs->Draw("HISTSAME");
