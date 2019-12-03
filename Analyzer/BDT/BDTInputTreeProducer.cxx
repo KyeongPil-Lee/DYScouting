@@ -24,9 +24,9 @@ class TreeProducer
 {
 public:
   TString sampleType_;
-  TString nNeededEvent_;
+  Int_t nNeededEvent_;
 
-  TreeProducer( TString sampleType, TString nNeededEvent )
+  TreeProducer( TString sampleType, Int_t nNeededEvent )
   {
     sampleType_ = sampleType;
     nNeededEvent_ = nNeededEvent;
@@ -37,7 +37,7 @@ public:
     InitSetup();
 
     TString ntupleBasePath = gSystem->Getenv("DY_NTUPLE_PATH");
-    TString ntuplePath = ntupleBasePath + "/" + sampleType_ + "/*.root";
+    TString ntuplePath = ntupleBasePath + "/v1.2/" + sampleType_ + "/*.root";
 
     TChain *chain = new TChain("DYTree/ntuple");
     chain->Add(ntuplePath);
@@ -45,7 +45,8 @@ public:
     DYTool::DYTree *ntuple = new DYTool::DYTree( chain );
     
     Int_t nEvent = chain->GetEntries();
-    printf("# total events in the chain = %d: save only %d events passing baseline DY selection\n", nEvent, nNeededEvent_);
+    printf("ntuple path = %s\n", ntuplePath.Data());
+    printf("  -> # total events in the chain = %d: save only %d events passing baseline DY selection\n", nEvent, nNeededEvent_);
 
     Int_t nSavedEvent = 0;
     for(Int_t i=0; i<nEvent; i++)
@@ -54,11 +55,14 @@ public:
       
       ntuple->GetEvent(i);
 
+      TString type = sampleType_;
+      if( sampleType_ == "DYJetsToLL_M10to50_Madgraph" ) type = "DYMuMu_M10to50";
+
       // -- only DY->mumu or DY->ee events according to its name -- //
-      if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )
+      if( DYTool::SelectGenEventBySampleType(type, ntuple) )
       {
         Bool_t isDYEvent = kFALSE;
-        DYTool::MuPair DYMuPair = DYTool::EventSelection_L1Requirement_NoMassCut(ntuple, isDYEvent);
+        DYTool::MuPair DYMuPair = DYTool::EventSelection_BDTInput(ntuple, isDYEvent);
         if( isDYEvent )
         {
           if( DYMuPair.mass > 50.0 ) continue; // -- because the DY sample is truncated at M=50 GeV
@@ -249,7 +253,7 @@ void BDTInputTreeProducer()
 {
   // -- signal
   TString type_signal = "DYJetsToLL_M10to50_Madgraph";
-  TString nEvent_signal = 100000;
+  Int_t nEvent_signal = 100000;
 
   TreeProducer* signalTree = new TreeProducer(type_signal, nEvent_signal);
   signalTree->Produce();
@@ -265,7 +269,7 @@ void BDTInputTreeProducer()
   for(const auto& ptRange : vec_ptRange )
   {
     TString type_bkg = "QCDMuEnriched_"+ptRange;
-    Int_t nEvent_bkg = CalcNEvent_QCD( type );
+    Int_t nEvent_bkg = CalcNEvent_QCD( type_bkg );
     cout << "background type = " << type_bkg << " -> # events: " << nEvent_bkg << endl;
 
     TreeProducer* bkgTree = new TreeProducer(type_bkg, nEvent_bkg);
