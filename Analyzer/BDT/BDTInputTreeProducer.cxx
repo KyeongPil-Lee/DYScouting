@@ -67,9 +67,9 @@ public:
         {
           if( DYMuPair.mass > 50.0 ) continue; // -- because the DY sample is truncated at M=50 GeV
 
-          diMuM_ = DYMuPair.mass;
+          diMuM_   = DYMuPair.mass;
           diMuRap_ = DYMuPair.rap;
-          diMuPt_ = DYMuPair.pt;
+          diMuPt_  = DYMuPair.pt;
           diMuNormVtxChi2_ = DYMuPair.normVtxChi2;
           diMuDEta_ = DYMuPair.dEta;
           diMuDPhi_ = DYMuPair.dPhi;
@@ -107,6 +107,7 @@ public:
     TFile *f_output = TFile::Open(fileName, "RECREATE");
     f_output->cd();
     tree_->Write();
+    f_output->Close();
 
     cout << "The tree is saved in " << fileName << endl;
   }
@@ -229,8 +230,15 @@ Int_t CalcNEvent_QCD(TString type, Int_t nTotEvent = 100000)
 {
   Double_t xSec = Get_xSec(type);
 
+  // vector<TString> vec_ptRange = {
+  //   "Pt15to20", "Pt20to30", "Pt30to50", "Pt50to80", 
+  //   "Pt80to120", "Pt120to170", "Pt170to300", "Pt300to470", 
+  //   "Pt470to600", "Pt600to800", "Pt800to1000", "Pt1000toInf"
+  // };
+
+  // -- remove Pt15to20: only ~5000 events are included in the baseline selection
   vector<TString> vec_ptRange = {
-    "Pt15to20", "Pt20to30", "Pt30to50", "Pt50to80", 
+    "Pt20to30", "Pt30to50", "Pt50to80", 
     "Pt80to120", "Pt120to170", "Pt170to300", "Pt300to470", 
     "Pt470to600", "Pt600to800", "Pt800to1000", "Pt1000toInf"
   };
@@ -260,8 +268,15 @@ void BDTInputTreeProducer()
 
 
   // -- background
+  // vector<TString> vec_ptRange = {
+  //   "Pt15to20", "Pt20to30", "Pt30to50", "Pt50to80", 
+  //   "Pt80to120", "Pt120to170", "Pt170to300", "Pt300to470", 
+  //   "Pt470to600", "Pt600to800", "Pt800to1000", "Pt1000toInf"
+  // };
+
+  // -- remove Pt15to20: only ~5000 events are included in the baseline selection
   vector<TString> vec_ptRange = {
-    "Pt15to20", "Pt20to30", "Pt30to50", "Pt50to80", 
+    "Pt20to30", "Pt30to50", "Pt50to80", 
     "Pt80to120", "Pt120to170", "Pt170to300", "Pt300to470", 
     "Pt470to600", "Pt600to800", "Pt800to1000", "Pt1000toInf"
   };
@@ -269,7 +284,7 @@ void BDTInputTreeProducer()
   for(const auto& ptRange : vec_ptRange )
   {
     TString type_bkg = "QCDMuEnriched_"+ptRange;
-    Int_t nEvent_bkg = CalcNEvent_QCD( type_bkg );
+    Int_t nEvent_bkg = CalcNEvent_QCD( type_bkg, nEvent_signal );
     cout << "background type = " << type_bkg << " -> # events: " << nEvent_bkg << endl;
 
     TreeProducer* bkgTree = new TreeProducer(type_bkg, nEvent_bkg);
