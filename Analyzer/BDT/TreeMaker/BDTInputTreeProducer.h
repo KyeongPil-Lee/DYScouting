@@ -49,13 +49,6 @@ public:
       
       ntuple->GetEvent(i);
 
-      Double_t genWeight;
-      ntuple->genWeight < 0 ? genWeight = -1 : genWeight = 1;
-
-      // Double_t totWeight = sampleInfo_.normFactor * genWeight;
-      Double_t totWeight = genWeight;
-      if( sampleInfo_.isMC ) totWeight = genWeight * PUTool->Weight( ntuple->truePU );
-
       // -- only DY->mumu or DY->ee events according to its name -- //
       if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )
       {
