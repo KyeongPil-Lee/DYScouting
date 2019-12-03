@@ -405,7 +405,7 @@ public:
 
     CheckVertex(ntuple);
 
-    if( isWithinAcc && isGoodMuon && hasVertex && isOS ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && isOS && mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
