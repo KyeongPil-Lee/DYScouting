@@ -389,6 +389,27 @@ public:
     return flag;
   }
 
+  Bool_t IsDYCandidate_BDTInput(DYTool::DYTree *ntuple)
+  {
+    Bool_t flag = kFALSE;
+
+    Bool_t isWithinAcc = kFALSE;
+    if( first_.pt > 5  && fabs(first_.eta) < 2.4 &&
+        second_.pt > 5 && fabs(second_.eta) < 2.4 ) 
+      isWithinAcc = kTRUE;
+
+    Bool_t isGoodMuon = kFALSE;
+    if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.15 &&
+        second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.15 )
+      isGoodMuon = kTRUE;
+
+    CheckVertex(ntuple);
+
+    if( isWithinAcc && isGoodMuon && hasVertex && isOS ) flag = kTRUE;
+
+    return flag;
+  }
+
   Bool_t IsDYCandidate_Tight(DYTool::DYTree *ntuple)
   {
     Bool_t flag = kFALSE;
