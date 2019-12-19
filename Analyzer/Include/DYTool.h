@@ -425,6 +425,59 @@ DYTool::MuPair EventSelection_BDTInput(DYTool::DYTree *ntuple, Bool_t& doPass)
   }
 }
 
+// -- require unprescaled L1 fired
+DYTool::MuPair EventSelection_BDTInput_Loose(DYTool::DYTree *ntuple, Bool_t& doPass)
+{
+  doPass = kFALSE;
+
+  DYTool::MuPair muPair_dummy;
+
+  // -- at least 1 vertex in a event (not checking whether it is the vertex for selected muons, yet)
+  if( ntuple->nVtx <= 0 ) return muPair_dummy;
+
+  // -- pass unprescaled L1 (only for 2018)
+  // -- 4 = L1_DoubleMu_15_7
+  // -- 11 = L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18
+  // -- 16 = L1_DoubleMu4p5_SQ_OS_dR_Max1p2
+  Bool_t doPassL1 = kFALSE;
+  // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(11) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE;
+  if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE; // -- no L1 w/ mass cut
+
+  if( !doPassL1 ) return muPair_dummy;
+
+  // -- pass HLT
+  Bool_t doPassTrig = kFALSE;
+  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
+  {
+    TString tstr_firedTrig = firedTrigger;
+    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
+    {
+      doPassTrig = kTRUE;
+      break;
+    }
+  }
+
+  if( !doPassTrig ) return muPair_dummy;
+
+  // -- dimuon selection
+  vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+  vector< DYTool::MuPair > vec_goodMuPair;
+  for( auto& muPair : vec_muPair )
+    if( muPair.IsDYCandidate_BDTInput_Loose(ntuple) ) vec_goodMuPair.push_back( muPair );
+
+  if( vec_goodMuPair.size() == 1 ) // -- only takes the case when there's exact 1 muon pair
+  {
+    doPass = kTRUE;
+    return vec_goodMuPair[0];
+  }
+  else
+  {
+    doPass = kFALSE;
+    return muPair_dummy;
+  }
+}
+
 // -- L1 requirement: not yet
 DYTool::MuPair EventSelection_Tight(DYTool::DYTree *ntuple, Bool_t& doPass)
 {
