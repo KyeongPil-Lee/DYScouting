@@ -29,8 +29,8 @@ int TMVAClassification( TString myMethodList = "" )
   std::map<std::string,int> Use;
 
   // Cut optimisation
-  Use["Cuts"]            = 1;
-  Use["CutsD"]           = 1;
+  Use["Cuts"]            = 0;
+  Use["CutsD"]           = 0;
   Use["CutsPCA"]         = 0;
   Use["CutsGA"]          = 0;
   Use["CutsSA"]          = 0;
@@ -175,7 +175,6 @@ int TMVAClassification( TString myMethodList = "" )
   dataloader->AddVariable( "nTrackerLayer_sub",   "# tracker layers (sub-leading muon)", "", 'I' );
   dataloader->AddVariable( "normChi2_sub",        "Normalized chi2 (sub-leading muon)", "", 'F' );
   dataloader->AddVariable( "relTrkIso_sub",       "Relative tracker isolation (sub-leading muon)", "", 'F' );
-
   dataloader->AddVariable( "diMuPt",  "Dimuon pT",       "GeV", 'F' );
 
   // You can add so-called "Spectator variables", which are not used in the MVA training,
@@ -197,12 +196,12 @@ int TMVAClassification( TString myMethodList = "" )
   // Set individual event weights (the variables must exist in the original TTree)
   // -  for signal    : `dataloader->SetSignalWeightExpression    ("weight1*weight2");`
   // -  for background: `dataloader->SetBackgroundWeightExpression("weight1*weight2");`
-  dataloader->SetBackgroundWeightExpression( "weight" );
+  // dataloader->SetBackgroundWeightExpression( "weight" );
 
   // Apply additional cuts on the signal and background samples (can be different)
   TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
 
-  dataloader->PrepareTrainingAndTestTree( mycuts, "nTrain_Signal=100000:nTrain_Background=100000:SplitMode=random:!V" );
+  dataloader->PrepareTrainingAndTestTree( mycuts, "nTrain_Signal=50000:nTrain_Background=50000:nTest_Signal=50000:nTest_Background=50000:SplitMode=Random:!V" );
 
   // ### Book MVA methods
   //
@@ -372,16 +371,16 @@ int TMVAClassification( TString myMethodList = "" )
     dnnOptions.Append (":"); dnnOptions.Append (layoutString);
     dnnOptions.Append (":"); dnnOptions.Append (trainingStrategyString);
 
-    // Cuda implementation.
-    if (Use["DNN_GPU"]) {
-      TString gpuOptions = dnnOptions + ":Architecture=GPU";
-      factory->BookMethod(dataloader, TMVA::Types::kDL, "DNN_GPU", gpuOptions);
-    }
-    // Multi-core CPU implementation.
-    if (Use["DNN_CPU"]) {
-      TString cpuOptions = dnnOptions + ":Architecture=CPU";
-      factory->BookMethod(dataloader, TMVA::Types::kDL, "DNN_CPU", cpuOptions);
-    }
+    // // Cuda implementation.
+    // if (Use["DNN_GPU"]) {
+    //   TString gpuOptions = dnnOptions + ":Architecture=GPU";
+    //   factory->BookMethod(dataloader, TMVA::Types::kDL, "DNN_GPU", gpuOptions);
+    // }
+    // // Multi-core CPU implementation.
+    // if (Use["DNN_CPU"]) {
+    //   TString cpuOptions = dnnOptions + ":Architecture=CPU";
+    //   factory->BookMethod(dataloader, TMVA::Types::kDL, "DNN_CPU", cpuOptions);
+    // }
   }
 
   // CF(Clermont-Ferrand)ANN
@@ -460,15 +459,20 @@ int TMVAClassification( TString myMethodList = "" )
   return 0;
 }
 
-int main( int argc, char** argv )
+void BDTTraining()
 {
-  // Select methods (don't look at this code - not of interest)
-  TString methodList;
-  for (int i=1; i<argc; i++) {
-    TString regMethod(argv[i]);
-    if(regMethod=="-b" || regMethod=="--batch") continue;
-    if (!methodList.IsNull()) methodList += TString(",");
-    methodList += regMethod;
-  }
-  return TMVAClassification(methodList);
+  TMVAClassification();
 }
+
+// int main( int argc, char** argv )
+// {
+//   // Select methods (don't look at this code - not of interest)
+//   TString methodList;
+//   for (int i=1; i<argc; i++) {
+//     TString regMethod(argv[i]);
+//     if(regMethod=="-b" || regMethod=="--batch") continue;
+//     if (!methodList.IsNull()) methodList += TString(",");
+//     methodList += regMethod;
+//   }
+//   return TMVAClassification(methodList);
+// }
