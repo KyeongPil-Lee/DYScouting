@@ -124,8 +124,8 @@ int TMVAClassification( TString myMethodList = "" )
 
   // Read training and test data
   TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
-  TFile *f_input_signal = TFile::Open(analyzerPath+"/BDT/Trial/v02_RelaxPreSelection/TreeMaker/ROOTFile_BDTInputTree_DYJetsToLL_M10to50_Madgraph.root");
-  TFile *f_input_bkg    = TFile::Open(analyzerPath+"/BDT/Trial/v02_RelaxPreSelection/TreeMaker/ROOTFile_BDTInputTreeProducer_QCDMuEnriched.root");
+  TFile *f_input_signal = TFile::Open(analyzerPath+"/BDT/Trial/v02_RelaxPreSelection/TreeMaker/ROOTFile_BDTInputTreeProducer_DYMuMu_M10to50.root");
+  TFile *f_input_bkg    = TFile::Open(analyzerPath+"/BDT/Trial/v02_RelaxPreSelection/TreeMaker/ROOTFile_BDTInputTreeProducer_QCDMuEnriched_Pt15to170.root");
 
   TTree *signalTree     = (TTree*)f_input_signal->Get("BDTInput");
   TTree *background     = (TTree*)f_input_bkg->Get("BDTInput");
