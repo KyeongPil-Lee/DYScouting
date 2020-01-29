@@ -336,6 +336,7 @@ public:
   Double_t absRap;
 
   Bool_t isOS;
+  Double_t signSum;
 
   Double_t dEta;
   Double_t dPhi;
@@ -432,6 +433,23 @@ public:
     return flag;
   }
 
+  // -- w.r.t default BDTInput, no OS requirement & looser isolation condition
+  Bool_t IsDYCandidate_BDTInput_AlmostNoCut(DYTool::DYTree *ntuple)
+  {
+    Bool_t flag = kFALSE;
+
+    Bool_t isWithinAcc = kFALSE;
+    if( first_.pt > 5  && fabs(first_.eta) < 2.4 &&
+        second_.pt > 5 && fabs(second_.eta) < 2.4 ) 
+      isWithinAcc = kTRUE;
+
+    CheckVertex(ntuple);
+
+    if( isWithinAcc && hasVertex && mass > 10.0 ) flag = kTRUE;
+
+    return flag;
+  }
+
   Bool_t IsDYCandidate_Tight(DYTool::DYTree *ntuple)
   {
     Bool_t flag = kFALSE;
@@ -510,6 +528,7 @@ private:
     absRap = fabs(rap);
 
     isOS = first_.charge != second_.charge ? kTRUE : kFALSE;
+    signSum = first_.charge + second_.charge; // -- for TMVA (which can't recognize boolean as an input variable)
 
     dEta = fabs(first_.eta - second_.eta);
     dPhi = first_.vecP.DeltaPhi( second_.vecP );
@@ -533,6 +552,7 @@ private:
     mass = -999;
     rap = -999;
     absRap = -999;
+    signSum = -999;
 
     isOS = kFALSE;
 
