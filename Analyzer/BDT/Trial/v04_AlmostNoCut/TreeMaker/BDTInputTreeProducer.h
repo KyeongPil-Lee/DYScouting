@@ -58,7 +58,7 @@ public:
         {
           for( auto& DYMuPair: vec_DYMuPair ) // -- fill all pairs
           {
-            // if( DYMuPair.mass > 50.0 ) continue; // -- because the DY sample is truncated at M=50 GeV
+            if( DYMuPair.mass > 50.0 ) continue; // -- because the DY sample is truncated at M=50 GeV
 
             if( sampleInfo_.type.Contains("DYMuMu") && !DYTool::GenRecoMatching(DYMuPair, ntuple) ) continue; // -- for the signal, only pair passing gen-reco matching is used (1 pair per event)
 
