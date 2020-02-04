@@ -8,7 +8,7 @@
 //   Author:
 //   K.P.Lee           Seoul National University
 // 
-//  Reference: https://github.com/schhibra/DarkPhotonAnalysis/blob/master/CMSSW_9_4_14/src/ScoutingAnalysis/TreeMaker/plugins/TreeMaker.cc
+//  Reference: https://github.com/schhibra/DarkPhotonAnalysis/blob/master/CMSSW_9_4_14/src/ScoutingAnalysis/TreeMaker/plugins/TreeMaker.cc (By Simranjit)
 //--------------------------------------------------
 
 
@@ -35,6 +35,7 @@
 
 // -- scouting
 #include "DataFormats/Scouting/interface/ScoutingMuon.h"
+#include "DataFormats/Scouting/interface/ScoutingCaloJet.h"
 #include "DataFormats/Scouting/interface/ScoutingVertex.h"
 
 // -- GEN info
@@ -76,6 +77,7 @@ private:
   void Fill_PixelVertex( const edm::Event& );
   void Fill_PixelVertexNearMuon( const edm::Event& );
   void Fill_ScoutingMuon( const edm::Event& );
+  void Fill_ScoutingCaloJet( const edm::Event& );
   void Fill_GenParticle( const edm::Event& );
 
   bool SavedTriggerCondition( std::string& );
@@ -92,6 +94,7 @@ private:
   edm::EDGetTokenT<std::vector<ScoutingVertex> >     t_pixelVertexNearMuon_;
 
   edm::EDGetTokenT<std::vector<ScoutingMuon> >       t_scoutingMuon_;
+  edm::EDGetTokenT<std::vector<ScoutingCaloJet> >    t_scoutingCaloJet_;
 
   edm::EDGetTokenT< std::vector<PileupSummaryInfo> > t_PUSummaryInfo_;
   
@@ -190,6 +193,26 @@ private:
   double muon_trkIso_[arrSize_];
   vector< vector<int> > muon_vtxIndex_;
 
+  // -- jet information
+  int nCaloJet_;
+  double caloJet_pt_[arrSize_];
+  double caloJet_eta_[arrSize_];
+  double caloJet_phi_[arrSize_];
+  double caloJet_m_[arrSize_];
+  double caloJet_jetArea_[arrSize_];
+  double caloJet_maxEInEmTowers_[arrSize_];
+  double caloJet_maxEInHadTowers_[arrSize_];
+  double caloJet_hadEnergyInHB_[arrSize_];
+  double caloJet_hadEnergyInHE_[arrSize_];
+  double caloJet_hadEnergyInHF_[arrSize_];
+  double caloJet_emEnergyInEB_[arrSize_];
+  double caloJet_emEnergyInEE_[arrSize_];
+  double caloJet_emEnergyInHF_[arrSize_];
+  double caloJet_towersArea_[arrSize_];
+  double caloJet_mvaDiscriminator_[arrSize_];
+  double caloJet_btagDiscriminator_[arrSize_];
+
+
   // -- generator level information
   int nGenParticle_;
   int genParticle_ID_[arrSize_];
@@ -235,6 +258,7 @@ t_scoutingVertex_      ( consumes< std::vector<ScoutingVertex> >    (iConfig.get
 t_pixelVertex_         ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertex")) ),
 t_pixelVertexNearMuon_ ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertexNearMuon")) ),
 t_scoutingMuon_        ( consumes< std::vector<ScoutingMuon> >      (iConfig.getUntrackedParameter<edm::InputTag>("scoutingMuon")) ),
+t_scoutingCaloJet_     ( consumes< std::vector<ScoutingCaloJet> >   (iConfig.getUntrackedParameter<edm::InputTag>("scoutingCaloJet")) ),
 t_PUSummaryInfo_       ( consumes< std::vector<PileupSummaryInfo> > (iConfig.getUntrackedParameter<edm::InputTag>("PUSummaryInfo")) ),
 t_genEventInfo_        ( consumes< GenEventInfoProduct >            (iConfig.getUntrackedParameter<edm::InputTag>("genEventInfo")) ),
 t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.getUntrackedParameter<edm::InputTag>("genParticle")) ),
@@ -289,6 +313,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   Fill_PixelVertex(iEvent);
   Fill_PixelVertexNearMuon(iEvent);
   Fill_ScoutingMuon(iEvent);
+  Fill_ScoutingCaloJet(iEvent);
   if( !isRealData ) Fill_GenParticle(iEvent);
 
 
@@ -399,6 +424,28 @@ void DYTreeProducer::Init()
   }
   muon_vtxIndex_.clear();
 
+  // -- jet information
+  int nCaloJet_ = -999;
+  for(Int_t i=0; i<arrSize_; i++)
+  {
+    caloJet_pt_[i] = -999;
+    caloJet_eta_[i] = -999;
+    caloJet_phi_[i] = -999;
+    caloJet_m_[i] = -999;
+    caloJet_jetArea_[i] = -999;
+    caloJet_maxEInEmTowers_[i] = -999;
+    caloJet_maxEInHadTowers_[i] = -999;
+    caloJet_hadEnergyInHB_[i] = -999;
+    caloJet_hadEnergyInHE_[i] = -999;
+    caloJet_hadEnergyInHF_[i] = -999;
+    caloJet_emEnergyInEB_[i] = -999;
+    caloJet_emEnergyInEE_[i] = -999;
+    caloJet_emEnergyInHF_[i] = -999;
+    caloJet_towersArea_[i] = -999;
+    caloJet_mvaDiscriminator_[i] = -999;
+    caloJet_btagDiscriminator_[i] = -999;
+  }
+
   // -- generator level information
   nGenParticle_ = -999;
   for(Int_t i=0; i<arrSize_; i++)
@@ -489,7 +536,6 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("pixelVtxMu_isValid", &pixelVtxMu_isValid_, "pixelVtxMu_isValid[nPixelVtxMu]/I");
 
 
-
   ntuple_->Branch("nMuon", &nMuon_, "nMuon/I");
   ntuple_->Branch("muon_pt", &muon_pt_, "muon_pt[nMuon]/D");
   ntuple_->Branch("muon_eta", &muon_eta_, "muon_eta[nMuon]/D");
@@ -509,6 +555,26 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("muon_dz",  &muon_dz_,  "muon_dz[nMuon]/D");
   ntuple_->Branch("muon_trkIso", &muon_trkIso_, "muon_trkIso[nMuon]/D");
   ntuple_->Branch("muon_vtxIndex", &muon_vtxIndex_);
+
+
+  ntuple_->Branch("nCaloJet", &nCaloJet_, "nCaloJet/I");
+  ntuple_->Branch("caloJet_pt",  &caloJet_pt_,  "caloJet_pt[nCaloJet]/D");
+  ntuple_->Branch("caloJet_eta", &caloJet_eta_, "caloJet_eta[nCaloJet]/D");
+  ntuple_->Branch("caloJet_phi", &caloJet_phi_, "caloJet_phi[nCaloJet]/D");
+  ntuple_->Branch("caloJet_m",   &caloJet_m_,   "caloJet_m[nCaloJet]/D");
+  ntuple_->Branch("caloJet_jetArea",        &caloJet_jetArea_,           "caloJet_jetArea[nCaloJet]/D");
+  ntuple_->Branch("caloJet_maxEInEmTowers", &caloJet_maxEInEmTowers_,    "caloJet_maxEInEmTowers[nCaloJet]/D");
+  ntuple_->Branch("caloJet_maxEInHadTowers_", &caloJet_maxEInHadTowers_, "caloJet_maxEInHadTowers_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_hadEnergyInHB_",   &caloJet_hadEnergyInHB_,   "caloJet_hadEnergyInHB_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_hadEnergyInHE_",   &caloJet_hadEnergyInHE_,   "caloJet_hadEnergyInHE_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_hadEnergyInHF_",   &caloJet_hadEnergyInHF_,   "caloJet_hadEnergyInHF_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_emEnergyInEB_",    &caloJet_emEnergyInEB_,    "caloJet_emEnergyInEB_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_emEnergyInEE_",    &caloJet_emEnergyInEE_,    "caloJet_emEnergyInEE_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_emEnergyInHF_",    &caloJet_emEnergyInHF_,    "caloJet_emEnergyInHF_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_towersArea_",      &caloJet_towersArea_,      "caloJet_towersArea_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_mvaDiscriminator_",  &caloJet_mvaDiscriminator_,  "caloJet_mvaDiscriminator_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_btagDiscriminator_", &caloJet_btagDiscriminator_, "caloJet_btagDiscriminator_[nCaloJet]/D");
+
 
 
   ntuple_->Branch("genWeight", &genWeight_, "genWeight/D");
@@ -782,6 +848,45 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
     }
 
     nMuon_ = _nMuon;
+  }
+
+}
+
+void DYTreeProducer::Fill_ScoutingCaloJet( cons edm::Event& iEvent )
+{
+  Handle<std::vector<ScoutingCaloJet> > h_scoutingCaloJet;
+  iEvent.getByToken(t_scoutingCaloJet_, h_scoutingCaloJet);
+
+  int _nCaloJet = 0;
+  if( h_scoutingCaloJet.isValid() )
+  {
+    for(unsigned int i_jet=0; i_jet<h_scoutingCaloJet->size(); ++i_jet)
+    {
+      const ScoutingCaloJet& caloJet = (*h_scoutingCaloJet)[i_jet];
+
+      caloJet_pt_[i_jet]   = caloJet.pt();
+      caloJet_eta_[i_jet]  = caloJet.eta();
+      caloJet_phi_[i_jet]  = caloJet.phi();
+      caloJet_m_[i_jet]    = caloJet.m();
+
+      caloJet_jetArea_[i_jet]         = caloJet.jetArea();
+      caloJet_maxEInEmTowers_[i_jet]  = caloJet.maxEInEmTowers();
+      caloJet_maxEInHadTowers_[i_jet] = caloJet.maxEInHadTowers();
+      caloJet_hadEnergyInHB_[i_jet]   = caloJet.hadEnergyInHB();
+      caloJet_hadEnergyInHE_[i_jet]   = caloJet.hadEnergyInHE();
+      caloJet_hadEnergyInHF_[i_jet]   = caloJet.hadEnergyInHF();
+      caloJet_emEnergyInEB_[i_jet]    = caloJet.emEnergyInEB();
+      caloJet_emEnergyInEE_[i_jet]    = caloJet.emEnergyInEE();
+      caloJet_emEnergyInHF_[i_jet]    = caloJet.emEnergyInHF();
+      caloJet_towersArea_[i_jet]      = caloJet.towersArea();
+
+      caloJet_mvaDiscriminator_[i_jet]  = caloJet.mvaDiscriminator();
+      caloJet_btagDiscriminator_[i_jet] = caloJet.btagDiscriminator();
+
+      _nCaloJet++;
+    }
+
+    nCaloJet_ = _nCaloJet;
   }
 
 }
