@@ -425,7 +425,7 @@ void DYTreeProducer::Init()
   muon_vtxIndex_.clear();
 
   // -- jet information
-  int nCaloJet_ = -999;
+  nCaloJet_ = -999;
   for(Int_t i=0; i<arrSize_; i++)
   {
     caloJet_pt_[i] = -999;
@@ -564,16 +564,16 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("caloJet_m",   &caloJet_m_,   "caloJet_m[nCaloJet]/D");
   ntuple_->Branch("caloJet_jetArea",        &caloJet_jetArea_,           "caloJet_jetArea[nCaloJet]/D");
   ntuple_->Branch("caloJet_maxEInEmTowers", &caloJet_maxEInEmTowers_,    "caloJet_maxEInEmTowers[nCaloJet]/D");
-  ntuple_->Branch("caloJet_maxEInHadTowers_", &caloJet_maxEInHadTowers_, "caloJet_maxEInHadTowers_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_hadEnergyInHB_",   &caloJet_hadEnergyInHB_,   "caloJet_hadEnergyInHB_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_hadEnergyInHE_",   &caloJet_hadEnergyInHE_,   "caloJet_hadEnergyInHE_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_hadEnergyInHF_",   &caloJet_hadEnergyInHF_,   "caloJet_hadEnergyInHF_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_emEnergyInEB_",    &caloJet_emEnergyInEB_,    "caloJet_emEnergyInEB_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_emEnergyInEE_",    &caloJet_emEnergyInEE_,    "caloJet_emEnergyInEE_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_emEnergyInHF_",    &caloJet_emEnergyInHF_,    "caloJet_emEnergyInHF_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_towersArea_",      &caloJet_towersArea_,      "caloJet_towersArea_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_mvaDiscriminator_",  &caloJet_mvaDiscriminator_,  "caloJet_mvaDiscriminator_[nCaloJet]/D");
-  ntuple_->Branch("caloJet_btagDiscriminator_", &caloJet_btagDiscriminator_, "caloJet_btagDiscriminator_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_maxEInHadTowers", &caloJet_maxEInHadTowers_, "caloJet_maxEInHadTowers_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_hadEnergyInHB",   &caloJet_hadEnergyInHB_,   "caloJet_hadEnergyInHB_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_hadEnergyInHE",   &caloJet_hadEnergyInHE_,   "caloJet_hadEnergyInHE_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_hadEnergyInHF",   &caloJet_hadEnergyInHF_,   "caloJet_hadEnergyInHF_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_emEnergyInEB",    &caloJet_emEnergyInEB_,    "caloJet_emEnergyInEB_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_emEnergyInEE",    &caloJet_emEnergyInEE_,    "caloJet_emEnergyInEE_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_emEnergyInHF",    &caloJet_emEnergyInHF_,    "caloJet_emEnergyInHF_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_towersArea",      &caloJet_towersArea_,      "caloJet_towersArea_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_mvaDiscriminator",  &caloJet_mvaDiscriminator_,  "caloJet_mvaDiscriminator_[nCaloJet]/D");
+  ntuple_->Branch("caloJet_btagDiscriminator", &caloJet_btagDiscriminator_, "caloJet_btagDiscriminator_[nCaloJet]/D");
 
 
 
@@ -852,7 +852,7 @@ void DYTreeProducer::Fill_ScoutingMuon( const edm::Event& iEvent )
 
 }
 
-void DYTreeProducer::Fill_ScoutingCaloJet( cons edm::Event& iEvent )
+void DYTreeProducer::Fill_ScoutingCaloJet( const edm::Event& iEvent )
 {
   Handle<std::vector<ScoutingCaloJet> > h_scoutingCaloJet;
   iEvent.getByToken(t_scoutingCaloJet_, h_scoutingCaloJet);

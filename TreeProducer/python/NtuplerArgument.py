@@ -1,6 +1,6 @@
 
 
-def GetArgument(self, sampleType):
+def GetArgument(sampleType):
     exampleEDMFile = ''
     globalTag = ''
     isMC = ''
@@ -14,6 +14,9 @@ def GetArgument(self, sampleType):
         exampleEDMFile = 'file:/u/user/kplee/scratch/Physics/AODSIM_Autumn18_DY10to50_MadgraphMLM.root'
         globalTag = '102X_upgrade2018_realistic_v15'
         isMC = True
+
+    else:
+        print "[GetArgument] type = %s is not available sample type" % (sampleType)
 
 
     return exampleEDMFile, globalTag, isMC

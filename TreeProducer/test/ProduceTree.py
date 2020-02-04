@@ -3,16 +3,21 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("TreeProducer")
 
 import sys
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
     print "usage: cmsRun ProduceTree.py <sample type>"
     print "   * available sample type: refer to DYScouting/TreeProducer/NtuplerArgument"
     sys.exit()
 
-sampleType = sys.argv[1] # -- take
+sampleType = sys.argv[2] # -- take
 print "input sample type = ", sampleType
 
 from DYScouting.TreeProducer.NtuplerArgument import GetArgument
 theExampleFile, theGlobalTag, isMC = GetArgument( sampleType )
+
+print "   [exampple file] ", theExampleFile
+print "   [global tag]    ", theGlobalTag
+print "   [isMC]          ", isMC
+print ""
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(theExampleFile), # -- @ KNU
