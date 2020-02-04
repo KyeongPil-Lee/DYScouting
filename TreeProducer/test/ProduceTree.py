@@ -1,23 +1,29 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("TreeProducer")
+# -- usage: usage: cmsRun ProduceTree.py sampleType=<sample type>
 
-import sys
-if len(sys.argv) < 3:
-    print "usage: cmsRun ProduceTree.py <sample type>"
-    print "   * available sample type: refer to DYScouting/TreeProducer/NtuplerArgument"
-    sys.exit()
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing('analysis')
 
-sampleType = sys.argv[2] # -- take
-print "input sample type = ", sampleType
+options.register('sampleType',
+                  "none", # default value
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.string,         # string, int, or float
+                  "Sample type defined in DYScouting/TreeProducer/NtuplerArgument.py")
+
+options.parseArguments()
+
+print "input sample type = ", options.sampleType
 
 from DYScouting.TreeProducer.NtuplerArgument import GetArgument
-theExampleFile, theGlobalTag, isMC = GetArgument( sampleType )
+theExampleFile, theGlobalTag, isMC = GetArgument( options.sampleType )
 
 print "   [exampple file] ", theExampleFile
 print "   [global tag]    ", theGlobalTag
 print "   [isMC]          ", isMC
 print ""
+
+process = cms.Process("TreeProducer")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(theExampleFile), # -- @ KNU
