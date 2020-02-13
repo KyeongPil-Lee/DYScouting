@@ -44,6 +44,7 @@ class MultiJobGenerator:
 
         self.GenerateFullScript()
         self.GenerateFullHADDScript()
+        self.PrintCMDForTestRun()
 
     def CreateWorkspace(self):
         i = 1
@@ -82,6 +83,12 @@ class MultiJobGenerator:
 
         print "[MultiJobGenerator] Do hadd for all samples"
         print "source %s\n" % scriptPath
+
+    def PrintCMDForTestRun(self):
+        randomSample = self.dic_nJob.keys()[0]
+        randomPath = "%s/%s/Job_v000/Run.cxx" % (self.WSPath, randomSample)
+        print "[MultiJobGenerator] If you want to run a test job:"
+        print "root -l -b -q %s >&testRun.log& tail -f testRun.log" % randomPath
 
 
     def CheckOptions(self):
