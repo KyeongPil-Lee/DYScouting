@@ -86,9 +86,12 @@ class MultiJobGenerator:
 
     def PrintCMDForTestRun(self):
         randomSample = self.dic_nJob.keys()[0]
-        randomPath = "%s/%s/Job_v000/Run.cxx" % (self.WSPath, randomSample)
+        randomPath = "%s/%s/Job_v000" % (self.WSPath, randomSample)
         print "[MultiJobGenerator] If you want to run a test job:"
-        print "root -l -b -q %s >&testRun.log& tail -f testRun.log" % randomPath
+        print "cd %s" % (randomPath)
+        print "root -l -b -q Run.cxx++ >&Run.log&"
+        print "cd %s" % (os.getcwd())
+        print "tail -f %s/Run.log" % randomPath
 
 
     def CheckOptions(self):
