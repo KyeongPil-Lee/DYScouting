@@ -414,6 +414,9 @@ public:
   // -- for auto-adjustment of y-axis
   Bool_t setAutoRangeY_;
 
+  Bool_t setMarkerSize_ = kFALSE;
+  Double_t markerSize_ = 1.3;
+
   CanvasBase()
   {
     Init();
@@ -502,6 +505,12 @@ public:
     setLatexInfo_ = kTRUE;
     LatexInfo latexInfo{x, y, content};
     latexInfos_.push_back( latexInfo );
+  }
+
+  void SetMarkerSize( Double_t size )
+  {
+    setMarkerSize_ = kTRUE;
+    markerSize_ = size;
   }
 
   // -- implemented later
@@ -646,6 +655,9 @@ public:
   Double_t nRebin_ = 0;
   Bool_t setRebin_ = kFALSE;
 
+  Bool_t fillHist_ = kFALSE;
+  Double_t fillAlpha_ = 0;
+
   HistCanvas()
   {
     // -- member variables are initialized by Init() in CanvasBase()
@@ -668,6 +680,12 @@ public:
   {
     nRebin_ = n;
     setRebin_ = kTRUE;
+  }
+
+  void FillHist( Double_t fillAlpha )
+  {
+    fillHist_ = kTRUE;
+    fillAlpha_ = 0.5;
   }
 
   void Draw( TString drawOp = "EPSAME" )
@@ -699,7 +717,15 @@ public:
       h->SetMarkerStyle(20);
       h->SetMarkerColor(color);
       h->SetLineColor(color);
-      h->SetFillColorAlpha(kWhite, 0); 
+      if( fillHist_ ) h->SetFillColorAlpha(color, fillAlpha_); 
+      else            h->SetFillColorAlpha(kWhite, 0);
+
+      if( fillHist_ )
+      {
+        h->SetMarkerSize(0);
+        h->SetLineWidth(0);
+      }
+      
       h->SetTitle("");
 
       if( i == 0 ) PlotTool::SetAxis_SinglePad( h->GetXaxis(), h->GetYaxis(), titleX_, titleY_ );
@@ -1071,6 +1097,7 @@ public:
       g->SetMarkerStyle(20);
       g->SetMarkerColor(color);
       g->SetMarkerSize(1.3);
+      if( setMarkerSize_ ) g->SetMarkerSize(markerSize_);
 
       g->SetLineColor(color);
       g->SetLineWidth(1.0);
@@ -1137,6 +1164,7 @@ public:
       g->SetMarkerStyle(20);
       g->SetMarkerColor(color);
       g->SetMarkerSize(1.3);
+      if( setMarkerSize_ ) g->SetMarkerSize(markerSize_);
 
       g->SetLineColor(color);
       g->SetLineWidth(1.0);
@@ -1173,6 +1201,7 @@ public:
       g_ratio->SetMarkerStyle(20);
       g_ratio->SetMarkerColor(color);
       g_ratio->SetMarkerSize(1.3);
+      if( setMarkerSize_ ) g_ratio->SetMarkerSize(markerSize_);
 
       g_ratio->SetLineColor(color);
       g_ratio->SetLineWidth(1.0);
