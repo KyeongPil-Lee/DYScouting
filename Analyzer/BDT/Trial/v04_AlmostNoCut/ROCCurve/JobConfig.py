@@ -4,7 +4,7 @@ generator = MultiJobGenerator()
 
 generator.jobType = "HTCondor"
 generator.jobName = "MVAPlot" # -- used for workspace name
-generator.classCodePath = "BDT/ROCCurve/Trial/v04_AlmostNoCut/MVAPlotProducer.h"
+generator.classCodePath = "BDT/Trial/v04_AlmostNoCut/ROCCurve/MVAPlotProducer.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now
