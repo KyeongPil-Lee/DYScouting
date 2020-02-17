@@ -312,7 +312,7 @@ public:
           };
 
           Double_t mvaValue = BDTClassifier->GetMvaValue( vec_BDTInputVar );
-          Double_t WP = 0.0; // -- XX% signal efficiency with XX% background rejection
+          Double_t WP = 0.466016; // -- 78% signal efficiency with 90% background rejection
 
           if (mvaValue > WP )
           {
