@@ -71,6 +71,7 @@ public:
           diMuNormVtxChi2_ = DYMuPair.normVtxChi2;
           diMuDEta_ = DYMuPair.dEta;
           diMuDPhi_ = DYMuPair.dPhi;
+          diMuOS_   = (Int_t)DYMuPair.isOS;
 
           caloMET_pt_ = ntuple->caloMET_pt;
           caloMET_phi_ = ntuple->caloMET_phi;
@@ -116,6 +117,7 @@ private:
   Double_t diMuNormVtxChi2_;
   Double_t diMuDEta_;
   Double_t diMuDPhi_;
+  Int_t    diMuOS_;
 
   Double_t caloMET_pt_;
   Double_t caloMET_phi_;
@@ -153,6 +155,7 @@ private:
     tree_->Branch("diMuNormVtxChi2", &diMuNormVtxChi2_, "diMuNormVtxChi2/D");
     tree_->Branch("diMuDEta", &diMuDEta_, "diMuDEta/D");
     tree_->Branch("diMuDPhi", &diMuDPhi_, "diMuDPhi/D");
+    tree_->Branch("diMuOS", &diMuOS_, "diMuOS/I");
     tree_->Branch("caloMET_pt", &caloMET_pt_, "caloMET_pt/D");
     tree_->Branch("caloMET_phi", &caloMET_phi_, "caloMET_phi/D");
 
@@ -181,6 +184,7 @@ private:
     diMuNormVtxChi2_ = 0;
     diMuDEta_ = 0;
     diMuDPhi_ = 0;
+    diMuOS_   = 0;
 
     caloMET_pt_ = 0;
     caloMET_phi_ = 0;
