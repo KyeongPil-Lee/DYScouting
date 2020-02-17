@@ -123,7 +123,7 @@ int TMVAClassification( TString myMethodList = "" )
   // Here the preparation phase begins
 
   // Read training and test data
-  TFile *f_input_signal = TFile::Open("TreeMaker/ROOTFile_BDTInputTreeProducer_DYJetsToLL_Madgraph_All.root");
+  TFile *f_input_signal = TFile::Open("TreeMaker/ROOTFile_BDTInputTreeProducer_DYMuMu_All.root");
   TFile *f_input_bkg    = TFile::Open("TreeMaker/ROOTFile_BDTInputTreeProducer_QCDMuEnriched_All.root");
 
   TTree *signalTree     = (TTree*)f_input_signal->Get("BDTInput");
