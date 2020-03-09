@@ -362,23 +362,23 @@ public:
       TString tag = vec_tag[i];
       f_output->mkdir(tag);
       f_output->cd(tag);
-      vec_hists[i]->Write();
+      vec_hists[i]->Write(f_output);
 
       f_output->mkdir(tag+"/ZPeak");
       f_output->cd(tag+"/ZPeak");
-      vec_hists_ZPeak[i]->Write();
+      vec_hists_ZPeak[i]->Write(f_output);
 
       f_output->mkdir(tag+"/M10to60");
       f_output->cd(tag+"/M10to60");
-      vec_hists_M10to60[i]->Write();
+      vec_hists_M10to60[i]->Write(f_output);
 
       f_output->mkdir(tag+"/M10to60_OS");
       f_output->cd(tag+"/M10to60_OS");
-      vec_hists_M10to60_OS[i]->Write();
+      vec_hists_M10to60_OS[i]->Write(f_output);
 
       f_output->mkdir(tag+"/M10to60_SS");
       f_output->cd(tag+"/M10to60_SS");
-      vec_hists_M10to60_SS[i]->Write();
+      vec_hists_M10to60_SS[i]->Write(f_output);
     }
     f_output->Close();
 
