@@ -331,17 +331,17 @@ public:
             {
               Double_t mass = DYMuPair.mass;
               if( mass > 10 )
-                hists[i]->Fill(ntuple, DYMuPair, totWeight);
+                vec_hists[i]->Fill(ntuple, DYMuPair, totWeight);
 
               if( 60 < mass && mass < 120 )
-                hists_ZPeak[i]->Fill(ntuple, DYMuPair, totWeight);
+                vec_hists_ZPeak[i]->Fill(ntuple, DYMuPair, totWeight);
 
               if( 10 < mass && mass < 60 )
               {
-                hists_M10to60[i]->Fill(ntuple, DYMuPair, totWeight);
+                vec_hists_M10to60[i]->Fill(ntuple, DYMuPair, totWeight);
 
-                if( DYMuPair.isOS ) hists_M10to60_OS[i]->Fill(ntuple, DYMuPair, totWeight);
-                else                hists_M10to60_SS[i]->Fill(ntuple, DYMuPair, totWeight);
+                if( DYMuPair.isOS ) vec_hists_M10to60_OS[i]->Fill(ntuple, DYMuPair, totWeight);
+                else                vec_hists_M10to60_SS[i]->Fill(ntuple, DYMuPair, totWeight);
               }
             } // -- end of WP check
 
@@ -362,23 +362,23 @@ public:
       TString tag = vec_tag[i];
       f_output->mkdir(tag);
       f_output->cd(tag);
-      hists[i]->Write();
+      vec_hists[i]->Write();
 
       f_output->mkdir(tag+"/ZPeak");
       f_output->cd(tag+"/ZPeak");
-      hists_ZPeak[i]->Write();
+      vec_hists_ZPeak[i]->Write();
 
       f_output->mkdir(tag+"/M10to60");
       f_output->cd(tag+"/M10to60");
-      hists_M10to60[i]->Write();
+      vec_hists_M10to60[i]->Write();
 
       f_output->mkdir(tag+"/M10to60_OS");
       f_output->cd(tag+"/M10to60_OS");
-      hists_M10to60_OS[i]->Write();
+      vec_hists_M10to60_OS[i]->Write();
 
       f_output->mkdir(tag+"/M10to60_SS");
       f_output->cd(tag+"/M10to60_SS");
-      hists_M10to60_SS[i]->Write();
+      vec_hists_M10to60_SS[i]->Write();
     }
     f_output->Close();
 
