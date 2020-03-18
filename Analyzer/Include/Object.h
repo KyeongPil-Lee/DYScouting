@@ -143,6 +143,10 @@ public:
   Double_t rap;
   Double_t absRap;
 
+  Double_t dEta;
+  Double_t dPhi;
+  Double_t angle3D;
+
   GenPair() {}
 
   GenPair(GenParticle genParticle1, GenParticle genParticle2)
@@ -173,6 +177,10 @@ private:
     mass = vecP.M();
     rap = vecP.Rapidity();
     absRap = fabs(rap);
+
+    dEta = fabs(first_.eta - second_.eta);
+    dPhi = first_.vecP.DeltaPhi( second_.vecP );
+    angle3D = first_.vecP.Angle( second_.vecP.Vect() );
   }
 };
 
