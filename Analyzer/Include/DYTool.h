@@ -545,6 +545,67 @@ DYTool::MuPair EventSelection_BDTInput_noOS(DYTool::DYTree *ntuple, Bool_t& doPa
   }
 }
 
+// -- remove OS requirement (to use OS/SS distribution for the BDT) + smallest vertex chi2 + remove L1 with OS requirement
+DYTool::MuPair EventSelection_BDTInput_noOS_noOSL1(DYTool::DYTree *ntuple, Bool_t& doPass)
+{
+  doPass = kFALSE;
+
+  DYTool::MuPair muPair_dummy;
+
+  // -- at least 1 vertex in a event (not checking whether it is the vertex for selected muons, yet)
+  if( ntuple->nVtx <= 0 ) return muPair_dummy;
+
+  // -- pass unprescaled L1 (only for 2018)
+  // -- 4 = L1_DoubleMu_15_7
+  // -- 11 = L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18
+  // -- 16 = L1_DoubleMu4p5_SQ_OS_dR_Max1p2
+  Bool_t doPassL1 = kFALSE;
+  // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(11) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE;
+  // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE; // -- no L1 w/ mass cut
+  if( ntuple->vec_L1Bit->at(4) ) doPassL1 = kTRUE; // -- only L1_DoubleMu_15_7
+
+  if( !doPassL1 ) return muPair_dummy;
+
+  // -- pass HLT
+  Bool_t doPassTrig = kFALSE;
+  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
+  {
+    TString tstr_firedTrig = firedTrigger;
+    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
+    {
+      doPassTrig = kTRUE;
+      break;
+    }
+  }
+
+  if( !doPassTrig ) return muPair_dummy;
+
+  // -- dimuon selection
+  vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+  vector< DYTool::MuPair > vec_goodMuPair;
+  for( auto& muPair : vec_muPair )
+    if( muPair.IsDYCandidate_BDTInput_noOS(ntuple) ) vec_goodMuPair.push_back( muPair );
+
+  Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
+  if( nGoodPair == 0 )
+  {
+    doPass = kFALSE;
+    return muPair_dummy;
+  }
+  else if( nGoodPair == 1) // -- exactly one pair: no sort is needed
+  {
+    doPass = kTRUE;
+    return vec_goodMuPair[0];
+  }
+  else // -- multiple pair: take the pair with the smallest chi2
+  {
+    doPass = kTRUE;
+    std::sort(vec_goodMuPair.begin(), vec_goodMuPair.end(), DYTool::CompareMuonPair_SmallerVtxChi2);
+    return vec_goodMuPair[0]; // -- pair with smallest vertex chi2 value
+  }
+}
+
 
 // -- require unprescaled L1 fired
 DYTool::MuPair EventSelection_BDTInput_Loose(DYTool::DYTree *ntuple, Bool_t& doPass)
