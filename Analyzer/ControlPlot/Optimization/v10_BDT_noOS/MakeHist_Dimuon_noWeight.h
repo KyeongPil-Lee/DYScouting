@@ -40,6 +40,7 @@ public:
   TH1D* h_phi_sub_;
 
   TH1D* h_diMuM_;
+  TH1D* h_diMuM_lowM_fineBin_;
   TH1D* h_diMuRap_;
   TH1D* h_diMuPt_;
   TH1D* h_diMuOS_;
@@ -96,6 +97,7 @@ public:
     h_phi_sub_ ->Fill( muPair.second_.phi, weight );
 
     h_diMuM_->Fill( muPair.mass, weight );
+    h_diMuM_lowM_fineBin_->Fill( muPair.mass, weight );
     h_diMuRap_->Fill( muPair.rap, weight );
     h_diMuPt_->Fill( muPair.pt, weight );
     h_diMuOS_->Fill( muPair.isOS, weight );
@@ -142,7 +144,8 @@ private:
     h_phi_lead_ = new TH1D("h_phi_lead", "", 80, -4, 4);
     h_phi_sub_  = new TH1D("h_phi_sub",  "", 80, -4, 4);
 
-    h_diMuM_   = new TH1D("h_diMuM",     "", 10000, 0, 10000);
+    h_diMuM_                = new TH1D("h_diMuM",             "", 10000, 0, 10000);
+    h_diMuM_lowM_fineBin_   = new TH1D("h_diMuM_lowM_fineBin","", 200, 0, 20);
     h_diMuPt_  = new TH1D("h_diMuPt",   "", 10000, 0, 10000);
     h_diMuRap_ = new TH1D("h_diMuRap", "", 60, -3, 3);
     h_diMuOS_  = new TH1D("h_diMuOS", "", 2, 0, 2);
@@ -190,6 +193,7 @@ private:
     vec_hists_.push_back(h_phi_sub_);
 
     vec_hists_.push_back(h_diMuM_);
+    vec_hists_.push_back(h_diMuM_lowM_fineBin_);
     vec_hists_.push_back(h_diMuRap_);
     vec_hists_.push_back(h_diMuPt_);
     vec_hists_.push_back(h_diMuOS_);
