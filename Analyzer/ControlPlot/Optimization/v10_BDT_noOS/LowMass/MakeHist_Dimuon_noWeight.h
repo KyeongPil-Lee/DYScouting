@@ -321,13 +321,12 @@ public:
           if (mvaValue > WP )
           {
             Double_t mass = DYMuPair.mass;
-            if( mass > 10 )
-              hists->Fill(ntuple, DYMuPair, totWeight);
+            hists->Fill(ntuple, DYMuPair, totWeight);
 
             if( 60 < mass && mass < 120 )
               hists_ZPeak->Fill(ntuple, DYMuPair, totWeight);
 
-            if( 10 < mass && mass < 60 )
+            if( mass < 60 )
             {
               hists_M10to60->Fill(ntuple, DYMuPair, totWeight);
 
