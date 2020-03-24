@@ -440,6 +440,27 @@ public:
     return flag;
   }
 
+  Bool_t IsDYCandidate_BDTInput_noOS_noMassCut(DYTool::DYTree *ntuple)
+  {
+    Bool_t flag = kFALSE;
+
+    Bool_t isWithinAcc = kFALSE;
+    if( first_.pt > 5  && fabs(first_.eta) < 2.4 &&
+        second_.pt > 5 && fabs(second_.eta) < 2.4 ) 
+      isWithinAcc = kTRUE;
+
+    Bool_t isGoodMuon = kFALSE;
+    if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.15 &&
+        second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.15 )
+      isGoodMuon = kTRUE;
+
+    CheckVertex(ntuple);
+
+    if( isWithinAcc && isGoodMuon && hasVertex ) flag = kTRUE;
+
+    return flag;
+  }
+
   // -- w.r.t default BDTInput, no OS requirement & looser isolation condition
   Bool_t IsDYCandidate_BDTInput_Loose(DYTool::DYTree *ntuple)
   {
