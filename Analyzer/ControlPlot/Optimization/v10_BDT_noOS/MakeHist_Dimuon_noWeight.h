@@ -41,6 +41,7 @@ public:
 
   TH1D* h_diMuM_;
   TH1D* h_diMuM_lowM_fineBin_;
+  TH1D* h_diMuM_Upsilon_;
   TH1D* h_diMuRap_;
   TH1D* h_diMuPt_;
   TH1D* h_diMuOS_;
@@ -98,6 +99,7 @@ public:
 
     h_diMuM_->Fill( muPair.mass, weight );
     h_diMuM_lowM_fineBin_->Fill( muPair.mass, weight );
+    h_diMuM_Upsilon_->Fill( muPair.mass, weight );
     h_diMuRap_->Fill( muPair.rap, weight );
     h_diMuPt_->Fill( muPair.pt, weight );
     h_diMuOS_->Fill( muPair.isOS, weight );
@@ -146,6 +148,7 @@ private:
 
     h_diMuM_                = new TH1D("h_diMuM",             "", 10000, 0, 10000);
     h_diMuM_lowM_fineBin_   = new TH1D("h_diMuM_lowM_fineBin","", 200, 0, 20);
+    h_diMuM_Upsilon_        = new TH1D("h_diMuM_Upsilon",     "", 600, 7, 13); // -- 0.01 GeV bin size
     h_diMuPt_  = new TH1D("h_diMuPt",   "", 10000, 0, 10000);
     h_diMuRap_ = new TH1D("h_diMuRap", "", 60, -3, 3);
     h_diMuOS_  = new TH1D("h_diMuOS", "", 2, 0, 2);
@@ -194,6 +197,7 @@ private:
 
     vec_hists_.push_back(h_diMuM_);
     vec_hists_.push_back(h_diMuM_lowM_fineBin_);
+    vec_hists_.push_back(h_diMuM_Upsilon_);
     vec_hists_.push_back(h_diMuRap_);
     vec_hists_.push_back(h_diMuPt_);
     vec_hists_.push_back(h_diMuOS_);
