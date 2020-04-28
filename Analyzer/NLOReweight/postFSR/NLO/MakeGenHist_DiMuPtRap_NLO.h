@@ -128,14 +128,20 @@ private:
 
   void InitHist()
   {
-    h_pt_  = new TH1D("h_pt", "", 10000, 0, 10000);
-    h_eta_ = new TH1D("h_eta", "", 400, -20, 20);
+    const Int_t nPtBin = 17;
+    Double_t arr_ptBinEdge[nPtBin+1] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40, 50, 100, 1000};
 
-    h_diMuPt_  = new TH1D("h_diMuPt", "", 10000, 0, 10000);
-    h_diMuRap_ = new TH1D("h_diMuRap", "", 400, -20, 20);
+    const Int_t nRapBin = 10;
+    Double_t arr_rapBinEdge[nRapBin+1] = {-10, -4, -2, -1, -0.5, 0, 0.5, 1, 2, 4, 10};
+
+    h_pt_  = new TH1D("h_pt", "", nPtBin, arr_ptBinEdge);
+    h_eta_ = new TH1D("h_eta", "", nRapBin, arr_rapBinEdge);
+
+    h_diMuPt_  = new TH1D("h_diMuPt", "", nPtBin, arr_ptBinEdge);
+    h_diMuRap_ = new TH1D("h_diMuRap", "", nRapBin, arr_rapBinEdge);
     h_diMuM_   = new TH1D("h_diMuM", "", 10000, 0, 10000);
 
-    h_diMuRapPt_ = new TH2D("h_diMuRapPt", "", 200, -10, 10, 100, 0, 100);
+    h_diMuRapPt_ = new TH2D("h_diMuRapPt", "", nRapBin, arr_rapBinEdge, nPtBin, arr_ptBinEdge);
   }
 
   TLorentzVector GetMuonMomentumVector(Int_t i_mu)
