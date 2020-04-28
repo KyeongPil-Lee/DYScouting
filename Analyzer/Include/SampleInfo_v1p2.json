@@ -19,6 +19,15 @@
   },
 
   {
+    "tag": "DYMuMu_M10to50_2016",
+    "isMC": 1,
+    "xSec": 9999.0,
+    "sumWeight": -1.0,
+    "comment": "To calculate reweighting factor (LO -> NLO)",
+    "list_dir": ["2016Tree/DYLL_M10to50_ext1v1", "2016Tree/DYLL_M10to50_v1", "2016Tree/DYLL_M10to50_v2"]
+  },
+
+  {
     "tag": "DYMuMu_M15to50",
     "isMC": 1,
     "xSec": 2384.97,
