@@ -6,6 +6,9 @@ class NLOWeightTool
 public:
   TH2D* h2D_weight_;
 
+  Int_t nBinX_;
+  Int_t nBinY_;
+
   NLOWeightTool()
   {
     cout << "[NLOWeightTool] Default constructor: use the default ROOT file" << endl;
@@ -14,6 +17,8 @@ public:
     cout << "---> root file path = " << rootFilePath << endl;
 
     h2D_weight_ = PlotTool::Get_Hist2D(rootFilePath, "h_diMuRapPt_weight");
+    nBinX_ = h2D_weight_->GetNbinsX();
+    nBinY_ = h2D_weight_->GetNbinsY();
   }
 
   NLOWeightTool(TString fileName, TString histName)
@@ -22,6 +27,8 @@ public:
     cout << "---> root file path = " << fileName << ", histName = " << histName << endl;
 
     h2D_weight_ = PlotTool::Get_Hist2D(fileName, histName);
+    nBinX_ = h2D_weight_->GetNbinsX();
+    nBinY_ = h2D_weight_->GetNbinsY();
   }
 
   Double_t GetWeight( DYTool::DYTree *ntuple )
@@ -40,12 +47,20 @@ public:
   }
 
   Double_t GetWeight( Double_t diMuPt, Double_t diMuRap )
-  {
+  {    
     // -- x-axis: dimuon rapidity
     Int_t i_binX = h2D_weight_->GetXaxis()->FindBin(diMuRap);
 
+    // -- under/overflow: extrapolation
+    if( i_binX == 0 )        i_binX = 1;
+    if (i_binX == nBinsX_+1) i_binX = nBinsX;
+
     // -- y-axis: dimuon pt
     Int_t i_binY = h2D_weight_->GetYaxis()->FindBin(diMuPt);
+
+    // -- under/overflow: extrapolation
+    if( i_binY == 0 )        i_binY = 1;
+    if (i_binY == nBinsY_+1) i_binY = nBinsY;
 
     return h2D_weight_->GetBinContent(i_binX, i_binY);
   }
