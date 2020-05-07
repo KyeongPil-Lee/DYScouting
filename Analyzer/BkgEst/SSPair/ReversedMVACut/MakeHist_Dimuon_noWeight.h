@@ -20,6 +20,7 @@
 
 #include <Include/DYTool.h>
 #include <BDT/Trial/v06_noOS/dataset/weights/TMVAClassification_BDTG.class.C>
+#include <NLOReweight/postFSR/Weight/NLOWeightTool.h>
 
 class HistContainer
 {
@@ -268,6 +269,7 @@ public:
     cout << "\t[Total Events: " << nEvent << "]" << endl;
 
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
+    NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
     HistContainer* hists            = new HistContainer();
     HistContainer* hists_ZPeak      = new HistContainer();
@@ -300,6 +302,10 @@ public:
       // -- only DY->mumu or DY->ee events according to its name -- //
       if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )
       {
+        // -- DY low mass sample: apply NLO/LO k-factor
+        if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
+          totWeight *= nloWeightTool->GetWeight(ntuple);
+        
         Bool_t isDYEvent = kFALSE;
         DYTool::MuPair DYMuPair = DYTool::EventSelection_BDTInput_noOS(ntuple, isDYEvent);
         if( isDYEvent )
