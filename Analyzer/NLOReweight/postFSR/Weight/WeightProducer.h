@@ -11,6 +11,7 @@ public:
 
   TH2D* h_diMuRapPt_weight_;
 
+  // Bool_t debug_ = kTRUE;
   Bool_t debug_ = kFALSE;
 
   NLOWeightProducer(TString fileName_LO, TString fileName_NLO)
@@ -22,7 +23,7 @@ public:
     sumWeight_NLO_ = GetValue_OneBinHist( fileName_NLO, "h_sumWeight" );
 
     if( debug_ )
-      cout << "[Sum of weight] LO = " << sumWeight_LO_ << ", NLO = " << sumWeight_NLO_ << endl;
+      printf("[Sum of weight] LO = %.0lf, NLO = %.0lf\n", sumWeight_LO_, sumWeight_NLO_);
   }
 
   void Set_Debug(Bool_t flag = kTRUE ) { debug_ = flag; }
