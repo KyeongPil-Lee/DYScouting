@@ -52,15 +52,15 @@ public:
     Int_t i_binX = h2D_weight_->GetXaxis()->FindBin(diMuRap);
 
     // -- under/overflow: extrapolation
-    if( i_binX == 0 )        i_binX = 1;
-    if (i_binX == nBinsX_+1) i_binX = nBinsX;
+    if( i_binX == 0 )       i_binX = 1;
+    if (i_binX == nBinX_+1) i_binX = nBinX_;
 
     // -- y-axis: dimuon pt
     Int_t i_binY = h2D_weight_->GetYaxis()->FindBin(diMuPt);
 
     // -- under/overflow: extrapolation
-    if( i_binY == 0 )        i_binY = 1;
-    if (i_binY == nBinsY_+1) i_binY = nBinsY;
+    if( i_binY == 0 )       i_binY = 1;
+    if (i_binY == nBinY_+1) i_binY = nBinY_;
 
     return h2D_weight_->GetBinContent(i_binX, i_binY);
   }
