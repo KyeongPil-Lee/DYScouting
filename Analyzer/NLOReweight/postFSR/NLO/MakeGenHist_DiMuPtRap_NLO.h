@@ -43,6 +43,8 @@ public:
 
     Int_t nEvent = chain->GetEntries();
     cout << "\t[Total Events: " << nEvent << "]" << endl;
+
+    Double_t sumWeight = 0;
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
@@ -72,9 +74,14 @@ public:
         TLorentzVector vecP_mu2 = GetMuonMomentumVector( vec_index_genMuonHP[1] );
 
         FillHistogram( vecP_mu1, vecP_mu2, totWeight );
+
+        sumWeight += totWeight;
       }
 
     } // -- event iteration
+
+    h_sumWeight_->SetBinContent(1, sumWeight);
+    h_sumWeight_->SetBinError(1, 0);
 
     TString outputName = TString::Format("ROOTFile_MakeGenHist_Dimuon_%s_NLO.root", sampleInfo_.type.Data());
     TFile *f_output = TFile::Open(outputName, "RECREATE");
@@ -102,6 +109,8 @@ private:
   TH1D* h_diMuRap_;
   TH1D* h_diMuM_;
   TH2D* h_diMuRapPt_;
+
+  TH1D* h_sumWeight_;
 
   void InitChain(TChain *chain)
   {
@@ -142,6 +151,8 @@ private:
     h_diMuM_   = new TH1D("h_diMuM", "", 10000, 0, 10000);
 
     h_diMuRapPt_ = new TH2D("h_diMuRapPt", "", nRapBin, arr_rapBinEdge, nPtBin, arr_ptBinEdge);
+
+    h_sumWeight_ = new TH1D("h_sumWeight", "", 1, 0, 1);
   }
 
   TLorentzVector GetMuonMomentumVector(Int_t i_mu)
@@ -186,6 +197,8 @@ private:
     h_diMuRap_->Write();
     h_diMuM_->Write();
     h_diMuRapPt_->Write();
+
+    h_sumWeight_->Write();
   }
 
 };

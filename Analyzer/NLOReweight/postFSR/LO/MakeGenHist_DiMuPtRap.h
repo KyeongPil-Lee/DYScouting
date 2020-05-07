@@ -45,6 +45,8 @@ public:
 
     // DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
 
+    Double_t sumWeight = 0;
+
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
@@ -76,9 +78,13 @@ public:
           // hists->Fill(muonPair, totWeight);
 
           FillHistogram( vec_genLepton[0], vec_genLepton[1], totWeight );
+          sumWeight += totWeight;
         }
       }
     }
+    
+    h_sumWeight_->SetBinContent(1, sumWeight);
+    h_sumWeight_->SetBinError(1, 0);
 
     TString outputName = TString::Format("ROOTFile_MakeGenHist_Dimuon_%s.root", sampleInfo_.type.Data());
     TFile *f_output = TFile::Open(outputName, "RECREATE");
@@ -98,6 +104,8 @@ private:
   TH1D* h_diMuM_;
   TH2D* h_diMuRapPt_;
 
+  TH1D* h_sumWeight_;
+
   void InitHist()
   {
     const Int_t nPtBin = 17;
@@ -114,6 +122,8 @@ private:
     h_diMuM_   = new TH1D("h_diMuM", "", 10000, 0, 10000);
 
     h_diMuRapPt_ = new TH2D("h_diMuRapPt", "", nRapBin, arr_rapBinEdge, nPtBin, arr_ptBinEdge);
+
+    h_sumWeight_ = new TH1D("h_sumWeight", "", 1, 0, 1);
   }
 
   void FillHistogram( DYTool::GenParticle& genLepton1, DYTool::GenParticle& genLepton2, Double_t weight )
@@ -143,6 +153,8 @@ private:
     h_diMuRap_->Write();
     h_diMuM_->Write();
     h_diMuRapPt_->Write();
+
+    h_sumWeight_->Write();
   }
 
 };
