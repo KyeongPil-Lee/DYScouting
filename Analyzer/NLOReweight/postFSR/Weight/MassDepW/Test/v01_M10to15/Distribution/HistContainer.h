@@ -59,6 +59,7 @@ private:
   TH1D* h_diMuPt_;
   TH1D* h_diMuRap_;
   TH1D* h_diMuM_;
+  TH1D* h_diMuMFineBin_;
   TH2D* h_diMuRapPt_;
 
   TH1D* h_sumWeight_;
@@ -76,7 +77,8 @@ private:
 
     h_diMuPt_  = new TH1D("h_diMuPt", "", nPtBin, arr_ptBinEdge);
     h_diMuRap_ = new TH1D("h_diMuRap", "", nRapBin, arr_rapBinEdge);
-    h_diMuM_   = new TH1D("h_diMuM", "", 10000, 0, 10000);
+    h_diMuM_   = new TH1D("h_diMuM", "",     10000, 0, 10000);
+    h_diMuMFineBin_   = new TH1D("h_diMuMFineBin", "", 500, 10, 15);
 
     h_diMuRapPt_ = new TH2D("h_diMuRapPt", "", nRapBin, arr_rapBinEdge, nPtBin, arr_ptBinEdge);
 
