@@ -19,7 +19,7 @@
 #include <vector>
 
 #include <Include/DYTool.h>
-#include <NLOReweight/postFSR/Weight/MassDepW/Distribution/HistContainer.h>
+#include <NLOReweight/postFSR/Weight/MassDepW/Validation/HistContainer.h>
 #include <NLOReweight/postFSR/Weight/MassDepW/NLOWeightTool.h>
 
 class HistProducer: public DYTool::ClassTemplate
@@ -35,7 +35,7 @@ public:
     CheckSampleInfo();
     StartTimer();
 
-    LargeHistContainer* hists = new LargeHistContainer();
+    HistContainer* hists = new HistContainer();
 
     TChain *chain = new TChain("DYTree/ntuple");
     DYTool::AddNtupleToChain(chain, sampleInfo_.ntuplePathFile);

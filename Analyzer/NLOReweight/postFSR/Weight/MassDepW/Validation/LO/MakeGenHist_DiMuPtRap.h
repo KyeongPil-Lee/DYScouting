@@ -19,8 +19,7 @@
 #include <vector>
 
 #include <Include/DYTool.h>
-#include <NLOReweight/postFSR/Weight/MassDepW/Distribution/HistContainer.h>
-#include <NLOReweight/postFSR/Weight/MassDepW/NLOWeightTool.h>
+#include <NLOReweight/postFSR/Weight/MassDepW/Validation/HistContainer.h>
 
 class HistProducer: public DYTool::ClassTemplate
 {
@@ -35,7 +34,7 @@ public:
     CheckSampleInfo();
     StartTimer();
 
-    LargeHistContainer* hists = new LargeHistContainer();
+    HistContainer* hists = new HistContainer();
 
     TChain *chain = new TChain("DYTree/ntuple");
     DYTool::AddNtupleToChain(chain, sampleInfo_.ntuplePathFile);
@@ -46,7 +45,6 @@ public:
     cout << "\t[Total Events: " << nEvent << "]" << endl;
 
     // DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
-    NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
     for(Int_t i=0; i<nEvent; i++)
     {
@@ -58,7 +56,7 @@ public:
       ntuple->genWeight < 0 ? genWeight = -1 : genWeight = 1;
 
       // Double_t totWeight = sampleInfo_.normFactor * genWeight;
-      // Double_t totWeight = genWeight;
+      Double_t totWeight = genWeight;
 
       // -- only DY->mumu or DY->ee events according to its name -- //
       if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )
@@ -74,19 +72,15 @@ public:
 
         Int_t nGenLeptonHP = (Int_t)vec_genLepton.size();
         if( nGenLeptonHP == 2 )
-        {
-          Double_t nloWeight = nloWeightTool->GetWeight(ntuple);
-          Double_t totWeight = genWeight * nloWeight;
-
           hists->FillHistogram( vec_genLepton[0], vec_genLepton[1], totWeight );
-        }
       }
     }
-
+    
     TString outputName = TString::Format("ROOTFile_MakeGenHist_Dimuon_%s.root", sampleInfo_.type.Data());
     TFile *f_output = TFile::Open(outputName, "RECREATE");
     f_output->cd();
     hists->SaveHistogram(f_output);
+
     f_output->Close();
 
     PrintRunTime();
