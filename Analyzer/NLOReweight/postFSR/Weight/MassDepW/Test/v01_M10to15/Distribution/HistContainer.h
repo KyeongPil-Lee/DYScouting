@@ -35,6 +35,7 @@ public:
     h_diMuPt_->Fill( vecP_diMu.Pt(), weight );
     h_diMuRap_->Fill( vecP_diMu.Rapidity(), weight );
     h_diMuM_->Fill( vecP_diMu.M(), weight );
+    h_diMuMFineBin_->Fill( vecP_diMu.M(), weight );
 
     h_diMuRapPt_->Fill( vecP_diMu.Rapidity(), vecP_diMu.Pt(), weight );
 
@@ -48,6 +49,7 @@ public:
     h_diMuPt_->Write();
     h_diMuRap_->Write();
     h_diMuM_->Write();
+    h_diMuMFineBin_->Write();
     h_diMuRapPt_->Write();
 
     h_sumWeight_->Write();
