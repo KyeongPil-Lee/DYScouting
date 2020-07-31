@@ -51,7 +51,7 @@ public:
 
     // DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
-    TString fileName_nloWeight = analyzerPath+"/NLOReweight/postFSR/Test_v01_SubMassRange/M10to11/Weight/ROOTFile_NLOWeight.root";
+    TString fileName_nloWeight = analyzerPath+"/NLOReweight/postFSR/Test_v01_SubMassRange/M10to30/Weight/ROOTFile_NLOWeight.root";
     TString histName_nloWeight = "h_diMuRapPt_weight";
     NLOWeightTool* nloWeightTool = new NLOWeightTool(fileName_nloWeight, histName_nloWeight);
 
