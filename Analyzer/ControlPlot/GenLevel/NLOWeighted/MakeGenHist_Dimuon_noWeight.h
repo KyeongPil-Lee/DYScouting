@@ -19,7 +19,8 @@
 #include <vector>
 
 #include <Include/DYTool.h>
-#include <NLOReweight/postFSR/Weight/NLOWeightTool.h>
+// #include <NLOReweight/postFSR/Weight/NLOWeightTool.h>
+#include <NLOReweight/NLOWeightTool.h>
 
 class HistContainer
 {

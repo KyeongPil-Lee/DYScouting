@@ -22,7 +22,7 @@ generator.jsonName = "SampleInfo_v1p2.json" # -- under DY_ANALYZER_PATH/Include
 
 generator.dic_nJob = { 
   "DYMuMu_M10to50":    20,
-  "DYMuMu_M50toInf":   10,
+  # "DYMuMu_M50toInf":   10,
   }
 
 # generator.outputPath = "/scratch/kplee/DYScoutingJob"
