@@ -387,7 +387,7 @@ public:
   NLOWeightProducerPerMassBin(TString fileName_LO, TString fileName_NLO)
   {
     vector<Double_t> vec_temp = {
-      10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+      0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
       23, 26, 29, 32, 35, 38, 41, 44, 47, 50};
     vec_massBinEdge_ = vec_temp;
     Init(fileName_LO, fileName_NLO);
