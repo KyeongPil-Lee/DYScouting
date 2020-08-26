@@ -16,7 +16,7 @@ public:
   {
     cout << "[NLOWeightTool] Default constructor: use the default ROOT file" << endl;
     TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
-    TString rootFilePath = analyzerPath+"/NLOReweight/postFSR/Weight/MassDepW/v01_FinerMassBin/ROOTFile_NLOWeight.root";
+    TString rootFilePath = analyzerPath+"/NLOReweight/ROOTFile_NLOWeight.root";
     cout << "---> root file path = " << rootFilePath << endl;
 
     vector<Double_t> vec_temp = {
