@@ -14,7 +14,7 @@ generator = MultiJobGenerator()
 
 generator.jobType = "HTCondor"
 generator.jobName = "ControlPlot" # -- used for workspace name
-generator.classCodePath = GetCWD()+"/MakeHist_Dimuon_noWeight.h"
+generator.classCodePath = GetCWD()+"/MakeHist_Dimuon_noWeight_reversedWP.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now

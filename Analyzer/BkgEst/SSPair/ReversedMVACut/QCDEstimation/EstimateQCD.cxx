@@ -3,7 +3,8 @@
 // #include <ControlPlot/DYHistInfo.h>
 #include <Include/SimplePlotTools.h>
 
-const Double_t lumi = 61300; // -- 61.3 /fb
+// const Double_t lumi = 61300; // -- 61.3 /fb
+const Double_t lumi = 59740.565202; // -- 59.7  /fb
 
 class HistContainer
 {
@@ -168,8 +169,11 @@ private:
   Double_t Get_xSec(TString tag)
   {
     Double_t xSec = 0;
+    Double_t kFactor_M40to50_NNLOtoNLO = 1.0684240278;
 
-    if( tag == "DYMuMu_M10to50" )                 xSec = 6270.0;
+    // if( tag == "DYMuMu_M10to50" )                 xSec = 6270.0;
+    if( tag == "DYMuMu_M10to50" )                 xSec = 6203.3333; // -- 18610 / 3
+    // if( tag == "DYMuMu_M10to50" )                 xSec = 6203.3333 * kFactor_M40to50_NNLOtoNLO;
     else if( tag == "DYMuMu_M50toInf" )           xSec = 2009.41;
     else if( tag == "DYTauTau_M10to50" )          xSec = 6270.0;
     else if( tag == "DYTauTau_M50toInf" )         xSec = 2009.41;
@@ -516,7 +520,7 @@ private:
     canvas->SetRangeX(10, 60);
 
     canvas->SetAutoRangeY();
-    canvas->SetRangeRatio(0.2, 1.4);
+    canvas->SetRangeRatio(0.7, 1.3);
 
     canvas->Latex_CMSPre();
     canvas->RegisterLatex(0.75, 0.96, TString::Format("#font[42]{#scale[0.6]{%.1lf fb^{-1} (13 TeV)}}", lumi/1000.0));
@@ -595,7 +599,9 @@ private:
 void EstimateQCD()
 {
   TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
-  TString basePath_R1 = analyzerPath+"/ControlPlot/Optimization/v10_BDT_noOS"; // -- in the region with nominal MVA cut (signal-dominant in OS)
+
+  // TString basePath_R1 = analyzerPath+"/ControlPlot/Optimization/v10_BDT_noOS"; // -- in the region with nominal MVA cut (signal-dominant in OS)
+  TString basePath_R1 = analyzerPath+"/ControlPlot/Optimization/v13_NLOWeighted"; // -- in the region with nominal MVA cut (signal-dominant in OS)
   TString basePath_R2 = analyzerPath+"/BkgEst/SSPair/ReversedMVACut"; // -- in the region with reversed MVA cut (background-dominant)
 
   QCDEstimator* estimator = new QCDEstimator(basePath_R1, basePath_R2);

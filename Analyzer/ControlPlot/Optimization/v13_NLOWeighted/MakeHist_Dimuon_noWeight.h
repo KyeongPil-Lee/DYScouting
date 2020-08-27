@@ -20,7 +20,7 @@
 
 #include <Include/DYTool.h>
 #include <BDT/Trial/v06_noOS/dataset/weights/TMVAClassification_BDTG.class.C>
-#include <NLOReweight/postFSR/Weight/NLOWeightTool.h>
+#include <NLOReweight/NLOWeightTool.h>
 
 class HistContainer
 {
