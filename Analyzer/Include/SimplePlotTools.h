@@ -146,7 +146,7 @@ void DrawLine( TF1*& f_line, Int_t color = kRed )
   f_line = new TF1("f_line", "1", -10000, 10000);
   f_line->SetLineColor(color);
   f_line->SetLineWidth(1);
-  f_line->Draw("PSAME");
+  f_line->Draw("LSAME");
 }
 
 TH1D* DivideEachBin_ByBinWidth( TH1D* h, TString HistName = "" )

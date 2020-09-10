@@ -12,7 +12,9 @@
 namespace DYTool
 {
 
-const Double_t lumi = 0; // -- will be set later
+const Double_t LUMI_2016 = 0; // -- will be set later
+const Double_t LUMI_2017 = 0; // -- will be set later
+const Double_t LUMI_2018 = 59740.565202; // -- 59.7  /fb
 
 enum ColorCode
 {
@@ -1079,6 +1081,122 @@ static inline void loadBar(int x, int n, int r, int w)
   cout << "]\r" << flush;
 
 }
+
+class SimpleSampleInfo
+{
+public:
+  TString type_ = "";
+
+  Double_t xSec_      = 0;
+  Double_t sumWeight_ = 0;
+
+  SimpleSampleInfo()
+  {
+    cout << "Default constructor: type should be given to set internal variables" << endl;
+    cout << "   ---> Use Set_Type(TString type)" << endl;
+    cout << endl;
+  }
+
+  SimpleSampleInfo(TString type)
+  {
+    Set_Type(type);
+  }
+
+  void Set_Type(TString type)
+  {
+    type_ = type;
+    Init();
+  }
+
+  Double_t NormFactorToLumi(int year)
+  {
+    Double_t theLumi = 0;
+    if(year == 2016)      theLumi = DYTool::LUMI_2016;
+    else if(year == 2017) theLumi = DYTool::LUMI_2017; 
+    else if(year == 2018) theLumi = DYTool::LUMI_2018;
+    else                  cout << "year = " << year << "is not recognizable" << endl;
+
+    return (xSec_ * theLumi) / sumWeight_;
+  }
+
+  // -- if luminosity is directly given as the argument
+  Double_t NormFactorToLumi(Double_t theLumi)
+  {
+    return (xSec_ * theLumi) / sumWeight_;
+  }
+
+  Double_t Get_SumWeight() { return sumWeight_; }
+  Double_t Get_xSec()      { return xSec_; }
+
+private:
+  void Init()
+  {
+    Set_SumWeight();
+    Set_xSec();
+  }
+
+  void Set_SumWeight()
+  {
+    if( type_ == "DYMuMu_M10to50" )                 sumWeight_ = 28985097.0;
+    else if( type_ == "DYMuMu_M50toInf" )           sumWeight_ = 44318555.0;
+    else if( type_ == "DYTauTau_M10to50" )          sumWeight_ = 28843598.0;
+    else if( type_ == "DYTauTau_M50toInf" )         sumWeight_ = 44279551.0;
+    else if( type_ == "ttbar" )                     sumWeight_ = 63811310.0;
+    else if( type_ == "WJets" )                     sumWeight_ = 71061720.0;
+    else if( type_ == "QCDMuEnriched_Pt20toInf" )   sumWeight_ = 22165320.0;
+    else if( type_ == "QCDMuEnriched_Pt15to20" )    sumWeight_ = 4572168.0;
+    else if( type_ == "QCDMuEnriched_Pt20to30" )    sumWeight_ = 26549827.0;
+    else if( type_ == "QCDMuEnriched_Pt30to50" )    sumWeight_ = 30431342.0;
+    else if( type_ == "QCDMuEnriched_Pt50to80" )    sumWeight_ = 20360155.0;
+    else if( type_ == "QCDMuEnriched_Pt80to120" )   sumWeight_ = 25652280.0;
+    else if( type_ == "QCDMuEnriched_Pt120to170" )  sumWeight_ = 21315922.0;
+    else if( type_ == "QCDMuEnriched_Pt170to300" )  sumWeight_ = 36372547.0;
+    else if( type_ == "QCDMuEnriched_Pt300to470" )  sumWeight_ = 29488563.0;
+    else if( type_ == "QCDMuEnriched_Pt470to600" )  sumWeight_ = 20542857.0;
+    else if( type_ == "QCDMuEnriched_Pt600to800" )  sumWeight_ = 16891461.0;
+    else if( type_ == "QCDMuEnriched_Pt800to1000" ) sumWeight_ = 16749914.0;
+    else if( type_ == "QCDMuEnriched_Pt1000toInf" ) sumWeight_ = 11039499.0;
+    else
+    {
+      cout << "no information for type = " << type_ << endl;
+      sumWeight_ = 0;
+    }
+  }
+
+  void Set_xSec()
+  {
+    // -- temporary k-factor for low mass sample
+    Double_t kFactor_M40to50_NNLOtoNLO = 1.0684240278;
+
+    // if( type_ == "DYMuMu_M10to50" )                 xSec_ = 6270.0; # -- 
+    // if( type_ == "DYMuMu_M10to50" )                 xSec_ = 6203.3333; // -- 18610 / 3
+    if( type_ == "DYMuMu_M10to50" )                 xSec_ = 6203.3333 * kFactor_M40to50_NNLOtoNLO;
+    else if( type_ == "DYMuMu_M50toInf" )           xSec_ = 2009.41;
+    else if( type_ == "DYTauTau_M10to50" )          xSec_ = 6270.0;
+    else if( type_ == "DYTauTau_M50toInf" )         xSec_ = 2009.41;
+    else if( type_ == "ttbar" )                     xSec_ = 88.29;
+    else if( type_ == "WJets" )                     xSec_ = 61526.7;
+    else if( type_ == "QCDMuEnriched_Pt20toInf" )   xSec_ = 239400.0;
+    else if( type_ == "QCDMuEnriched_Pt15to20" )    xSec_ = 2799000.0;
+    else if( type_ == "QCDMuEnriched_Pt20to30" )    xSec_ = 2526000.0;
+    else if( type_ == "QCDMuEnriched_Pt30to50" )    xSec_ = 1362000.0;
+    else if( type_ == "QCDMuEnriched_Pt50to80" )    xSec_ = 376600.0;
+    else if( type_ == "QCDMuEnriched_Pt80to120" )   xSec_ = 88930.0;
+    else if( type_ == "QCDMuEnriched_Pt120to170" )  xSec_ = 21230.0;
+    else if( type_ == "QCDMuEnriched_Pt170to300" )  xSec_ = 7055.0;
+    else if( type_ == "QCDMuEnriched_Pt300to470" )  xSec_ = 797.3; // -- TuneCUETP8M1
+    else if( type_ == "QCDMuEnriched_Pt470to600" )  xSec_ = 59.24;
+    else if( type_ == "QCDMuEnriched_Pt600to800" )  xSec_ = 25.25; // -- TuneCUETP8M1
+    else if( type_ == "QCDMuEnriched_Pt800to1000" ) xSec_ = 4.723; // -- TuneCUETP8M1
+    else if( type_ == "QCDMuEnriched_Pt1000toInf" ) xSec_ = 1.613; // -- TuneCUETP8M1
+    else
+    {
+      cout << "no information for type = " << type_ << endl;
+      xSec_ = 0;
+    }
+  }
+
+};
 
 
 }; // -- end of namespace DYTool

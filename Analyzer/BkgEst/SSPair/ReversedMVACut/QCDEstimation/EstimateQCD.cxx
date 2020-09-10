@@ -3,8 +3,6 @@
 // #include <ControlPlot/DYHistInfo.h>
 #include <Include/SimplePlotTools.h>
 
-// const Double_t lumi = 61300; // -- 61.3 /fb
-const Double_t lumi = 59740.565202; // -- 59.7  /fb
 
 class HistContainer
 {
@@ -100,9 +98,8 @@ private:
 
     if( tag != tag_data_ ) // -- MC
     {
-      Double_t xSec      = Get_xSec(tag);
-      Double_t sumWeight = Get_SumWeight(tag);
-      Double_t normFactor = (lumi * xSec ) / sumWeight;
+      DYTool::SimpleSampleInfo sampleInfo(tag);
+      Double_t normFactor = sampleInfo.NormFactorToLumi(2018);
       h->Scale( normFactor );
     }
   }
@@ -133,78 +130,13 @@ private:
       else               h->Add( h_temp );
     }
   }
-
-  Double_t Get_SumWeight(TString tag)
-  {
-    Double_t sumWeight = 0;
-
-    if( tag == "DYMuMu_M10to50" )                 sumWeight = 28985097.0;
-    else if( tag == "DYMuMu_M50toInf" )           sumWeight = 44318555.0;
-    else if( tag == "DYTauTau_M10to50" )          sumWeight = 28843598.0;
-    else if( tag == "DYTauTau_M50toInf" )         sumWeight = 44279551.0;
-    else if( tag == "ttbar" )                     sumWeight = 63811310.0;
-    else if( tag == "WJets" )                     sumWeight = 71061720.0;
-    else if( tag == "QCDMuEnriched_Pt20toInf" )   sumWeight = 22165320.0;
-    else if( tag == "QCDMuEnriched_Pt15to20" )    sumWeight = 4572168.0;
-    else if( tag == "QCDMuEnriched_Pt20to30" )    sumWeight = 26549827.0;
-    else if( tag == "QCDMuEnriched_Pt30to50" )    sumWeight = 30431342.0;
-    else if( tag == "QCDMuEnriched_Pt50to80" )    sumWeight = 20360155.0;
-    else if( tag == "QCDMuEnriched_Pt80to120" )   sumWeight = 25652280.0;
-    else if( tag == "QCDMuEnriched_Pt120to170" )  sumWeight = 21315922.0;
-    else if( tag == "QCDMuEnriched_Pt170to300" )  sumWeight = 36372547.0;
-    else if( tag == "QCDMuEnriched_Pt300to470" )  sumWeight = 29488563.0;
-    else if( tag == "QCDMuEnriched_Pt470to600" )  sumWeight = 20542857.0;
-    else if( tag == "QCDMuEnriched_Pt600to800" )  sumWeight = 16891461.0;
-    else if( tag == "QCDMuEnriched_Pt800to1000" ) sumWeight = 16749914.0;
-    else if( tag == "QCDMuEnriched_Pt1000toInf" ) sumWeight = 11039499.0;
-    else
-    {
-      cout << "no information for tag = " << tag << endl;
-      sumWeight = 0;
-    }
-
-    return sumWeight;
-  }
-
-  Double_t Get_xSec(TString tag)
-  {
-    Double_t xSec = 0;
-    Double_t kFactor_M40to50_NNLOtoNLO = 1.0684240278;
-
-    // if( tag == "DYMuMu_M10to50" )                 xSec = 6270.0;
-    if( tag == "DYMuMu_M10to50" )                 xSec = 6203.3333; // -- 18610 / 3
-    // if( tag == "DYMuMu_M10to50" )                 xSec = 6203.3333 * kFactor_M40to50_NNLOtoNLO;
-    else if( tag == "DYMuMu_M50toInf" )           xSec = 2009.41;
-    else if( tag == "DYTauTau_M10to50" )          xSec = 6270.0;
-    else if( tag == "DYTauTau_M50toInf" )         xSec = 2009.41;
-    else if( tag == "ttbar" )                     xSec = 88.29;
-    else if( tag == "WJets" )                     xSec = 61526.7;
-    else if( tag == "QCDMuEnriched_Pt20toInf" )   xSec = 239400.0;
-    else if( tag == "QCDMuEnriched_Pt15to20" )    xSec = 2799000.0;
-    else if( tag == "QCDMuEnriched_Pt20to30" )    xSec = 2526000.0;
-    else if( tag == "QCDMuEnriched_Pt30to50" )    xSec = 1362000.0;
-    else if( tag == "QCDMuEnriched_Pt50to80" )    xSec = 376600.0;
-    else if( tag == "QCDMuEnriched_Pt80to120" )   xSec = 88930.0;
-    else if( tag == "QCDMuEnriched_Pt120to170" )  xSec = 21230.0;
-    else if( tag == "QCDMuEnriched_Pt170to300" )  xSec = 7055.0;
-    else if( tag == "QCDMuEnriched_Pt300to470" )  xSec = 797.3; // -- TuneCUETP8M1
-    else if( tag == "QCDMuEnriched_Pt470to600" )  xSec = 59.24;
-    else if( tag == "QCDMuEnriched_Pt600to800" )  xSec = 25.25; // -- TuneCUETP8M1
-    else if( tag == "QCDMuEnriched_Pt800to1000" ) xSec = 4.723; // -- TuneCUETP8M1
-    else if( tag == "QCDMuEnriched_Pt1000toInf" ) xSec = 1.613; // -- TuneCUETP8M1
-    else
-    {
-      cout << "no information for tag = " << tag << endl;
-      xSec = 0;
-    }
-
-    return xSec;
-  }
 };
 
 class QCDEstimator
 {
 public:
+  Double_t lumi = DYTool::LUMI_2018; // -- 2018 only for now
+  
   // -- in the region with nominal MVA cut (signal-dominant in OS)
   HistContainer* hists_R1OS_;
   HistContainer* hists_R1SS_;
