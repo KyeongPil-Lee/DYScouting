@@ -348,6 +348,7 @@ public:
 
   Double_t dEta;
   Double_t dPhi;
+  Double_t dR;
   Double_t angle3D;
 
   Double_t dEtaCM;
@@ -582,6 +583,7 @@ private:
 
     dEta = fabs(first_.eta - second_.eta);
     dPhi = first_.vecP.DeltaPhi( second_.vecP );
+    dR   = sqrt(dEta*dEta + dPhi*dPhi);
     angle3D = first_.vecP.Angle( second_.vecP.Vect() );
 
     // -- boost to CM frame
