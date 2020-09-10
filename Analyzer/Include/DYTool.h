@@ -960,6 +960,72 @@ DYTool::MuPair EventSelection_Tight_L1_NoMassCut(DYTool::DYTree *ntuple, Bool_t&
   }
 }
 
+Bool_t CompareMuonPair_LargerDimuonPt( DYTool::MuPair pair1, DYTool::MuPair pair2 )
+{
+  return pair1.pt > pair2.pt; 
+}
+
+// -- mimic the selection used in EXO-19-018
+DYTool::MuPair EventSelection_EXO19018(DYTool::DYTree *ntuple, Bool_t& doPass)
+{
+  doPass = kFALSE;
+
+  DYTool::MuPair muPair_dummy;
+
+  // -- at least 1 vertex in a event (not checking whether it is the vertex for selected muons, yet)
+  if( ntuple->nVtx <= 0 ) return muPair_dummy;
+
+  // -- pass unprescaled L1 (only for 2018)
+  // -- 4 = L1_DoubleMu_15_7
+  // -- 11 = L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18
+  // -- 16 = L1_DoubleMu4p5_SQ_OS_dR_Max1p2
+  Bool_t doPassL1 = kFALSE;
+  if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(11) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE;
+  // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE; // -- no L1 w/ mass cut
+
+  if( !doPassL1 ) return muPair_dummy;
+
+  // -- pass HLT
+  Bool_t doPassTrig = kFALSE;
+  for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
+  {
+    TString tstr_firedTrig = firedTrigger;
+    if( tstr_firedTrig.Contains("DST_DoubleMu3_noVtx_CaloScouting_v") )
+    {
+      doPassTrig = kTRUE;
+      break;
+    }
+  }
+
+  if( !doPassTrig ) return muPair_dummy;
+
+  // -- dimuon selection
+  vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+  vector< DYTool::MuPair > vec_goodMuPair;
+  for( auto& muPair : vec_muPair )
+    if( muPair.IsDiMuCandidate_EXO19018(ntuple) ) vec_goodMuPair.push_back( muPair );
+
+  Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
+  if( nGoodPair == 0 )
+  {
+    doPass = kFALSE;
+    return muPair_dummy;
+  }
+  else if( nGoodPair == 1) // -- exactly one pair: no sort is needed
+  {
+    doPass = kTRUE;
+    return vec_goodMuPair[0];
+  }
+  else // -- multiple pair: take the pair with the largest dimuon pT
+  {
+    doPass = kTRUE;
+    std::sort(vec_goodMuPair.begin(), vec_goodMuPair.end(), DYTool::CompareMuonPair_LargerDimuonPt);
+    return vec_goodMuPair[0]; // -- pair with the largest dimuon pT
+  }
+}
+
+
 Bool_t GenRecoMatching(DYTool::Muon muon, DYTool::DYTree *ntuple)
 {
   Bool_t flag = kFALSE;
