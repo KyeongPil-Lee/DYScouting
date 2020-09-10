@@ -1003,13 +1003,18 @@ class PUReweightTool
 {
 public:
   TString type_;
-  TH1D* h_PUWeight_;
+  TH1D* h_PUWeight_ = nullptr;
   Double_t lastPUBin_;
 
   PUReweightTool(TString type)
   {
     type_ = type;
     Init();
+  }
+
+  PUReweightTool(TString fileName, TString histName)
+  {
+    h_PUWeight_ = PlotTool::Get_Hist(fileName, histName);
   }
 
   Double_t Weight( Int_t truePU )
@@ -1022,18 +1027,22 @@ public:
 private:
   void Init()
   {
-    TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
-    if( type_ == "2018" )
+    if( h_PUWeight_ == nullptr ) // -- if it is not set yet
     {
-      TString rootFilePath = analyzerPath+"/Include/Pileup/ROOTFile_PUReweighting_2018.root";
-      h_PUWeight_ = PlotTool::Get_Hist(rootFilePath, "h_ratio");
+      TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
+      if( type_ == "2018" )
+      {
+        TString rootFilePath = analyzerPath+"/Include/Pileup/ROOTFile_PUReweighting_2018.root";
+        h_PUWeight_ = PlotTool::Get_Hist(rootFilePath, "h_ratio");
+      }
+      else
+      {
+        cout << "[PUReweightTool] type = " << type_ << " is not recognizable" << endl;
+        h_PUWeight_ = nullptr;
+        lastPUBin_ = -999;
+      }
     }
-    else
-    {
-      cout << "[PUReweightTool] type = " << type_ << " is not recognizable" << endl;
-      h_PUWeight_ = nullptr;
-      lastPUBin_ = -999;
-    }
+
 
     if( h_PUWeight_ != nullptr )
     {

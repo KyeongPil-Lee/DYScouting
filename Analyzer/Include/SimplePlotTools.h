@@ -429,6 +429,14 @@ public:
     isLogY_ = isLogY;
   }
 
+  void SetLogXY(Bool_t flagX, Bool_t flagY)
+  {
+    isLogX_ = flagX;
+    isLogY_ = flagY;
+  }
+
+  void SetCanvasName(TString canvasName) { canvasName_ = canvasName; }
+
   void SetTitle( TString titleX, TString titleY )
   {
     titleX_ = titleX;

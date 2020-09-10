@@ -116,7 +116,8 @@ private:
 void ExampleAnalyzer()
 {
   TString dataType = "DYMuMu_M10to50";
-  TString ntuplePath = "/Users/KyeongPil_Lee/Physics/DYScouting/Analyzer/Include/Example/ntuple_MC_DY_M10to50_v1p2.root";
+  // TString ntuplePath = "/Users/KyeongPil_Lee/Physics/DYScouting/Analyzer/Include/Example/ntuple_MC_DY_M10to50_v1p2.root";
+  TString ntuplePath = "./ntuple_MC_98.root";
   Bool_t isMC = kTRUE;
 
   HistProducer* producer = new HistProducer(dataType, ntuplePath, isMC);
