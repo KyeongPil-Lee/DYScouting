@@ -323,29 +323,34 @@ public:
           if( mass > 10 )
           {
             hists->Fill(ntuple, DYMuPair, totWeight);
-            hists_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+            if( sampleInfo_.isMC ) hists_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+            else                   hists_effSF->Fill(ntuple, DYMuPair, totWeight); // -- do not apply to data
           }
 
           if( 60 < mass && mass < 120 )
           {
             hists_ZPeak->Fill(ntuple, DYMuPair, totWeight);
-            hists_ZPeak_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+            if( sampleInfo_.isMC ) hists_ZPeak_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+            else                   hists_ZPeak_effSF->Fill(ntuple, DYMuPair, totWeight);
           }
 
           if( 10 < mass && mass < 60 )
           {
             hists_M10to60->Fill(ntuple, DYMuPair, totWeight);
-            hists_M10to60_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
-
+            if( sampleInfo_.isMC ) hists_M10to60_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+            else                   hists_M10to60_effSF->Fill(ntuple, DYMuPair, totWeight);
+            
             if( DYMuPair.isOS ) 
             {
               hists_M10to60_OS->Fill(ntuple, DYMuPair, totWeight);
-              hists_M10to60_OS_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+              if( sampleInfo_.isMC ) hists_M10to60_OS_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+              else                   hists_M10to60_OS_effSF->Fill(ntuple, DYMuPair, totWeight);
             }
             else
             {
               hists_M10to60_SS->Fill(ntuple, DYMuPair, totWeight);
-              hists_M10to60_SS_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+              if( sampleInfo_.isMC ) hists_M10to60_SS_effSF->Fill(ntuple, DYMuPair, totWeight*effSF);
+              else                   hists_M10to60_SS_effSF->Fill(ntuple, DYMuPair, totWeight); 
             }
 
           }
