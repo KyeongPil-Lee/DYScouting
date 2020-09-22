@@ -417,6 +417,9 @@ public:
   Bool_t setMarkerSize_ = kFALSE;
   Double_t markerSize_ = 1.3;
 
+  Bool_t setSavePath_ = kFALSE;
+  TString savePath_ = "";
+
   CanvasBase()
   {
     Init();
@@ -521,6 +524,11 @@ public:
     markerSize_ = size;
   }
 
+  void SetSavePath( TString path )
+  {
+    setSavePath_ = kTRUE;
+    savePath_ = path;
+  }
   // -- implemented later
   virtual void Draw( TString drawOp )
   {
@@ -747,7 +755,8 @@ public:
 
     DrawLatexAll();
 
-    c_->SaveAs(".pdf");
+    if( setSavePath_ ) c_->SaveAs(savePath_);
+    else               c_->SaveAs(".pdf");
   }
 
   // -- for auto adjustment of Y-range
@@ -862,7 +871,8 @@ public:
     TF1 *f_line;
     PlotTool::DrawLine(f_line);
 
-    c_->SaveAs(".pdf");
+    if( setSavePath_ ) c_->SaveAs(savePath_);
+    else               c_->SaveAs(".pdf");
   }
 
   void CalcRatioHist()
@@ -895,6 +905,9 @@ public:
 
   THStack *hs;
   TH1D* h_ratio_dataToStack_;
+
+  Bool_t showDataMCRatio_ = kFALSE;
+  Double_t overallRatio_ = -1;
 
 
   HistStackCanvaswRatio()
@@ -978,7 +991,20 @@ public:
     TF1 *f_line;
     PlotTool::DrawLine(f_line);
 
-    c_->SaveAs(".pdf");
+    TLatex latex_ratio;
+    if( showDataMCRatio_ )
+    {
+      TString ratioInfo = TString::Format("Overall %s = %.3lf", titleRatio_.Data(), overallRatio_);
+      latex_ratio.DrawLatexNDC(0.16, 0.85, "#font[42]{#scale[1.5]{#color[2]{"+ratioInfo+"}}}");
+    }
+
+    if( setSavePath_ ) c_->SaveAs(savePath_);
+    else               c_->SaveAs(".pdf");
+  }
+
+  void ShowDataMCRatio(Bool_t flag=kTRUE)
+  {
+    showDataMCRatio_ = flag;
   }
 
 
@@ -1052,6 +1078,35 @@ private:
 
     h_ratio_dataToStack_ = (TH1D*)h_data->Clone();
     h_ratio_dataToStack_->Divide( h_data, h_totStack );
+
+    if( showDataMCRatio_ )
+    {
+      Double_t entry_data  = CountEntry_GivenRange(h_data);
+      Double_t entry_stack = CountEntry_GivenRange(h_totStack);
+      overallRatio_ = entry_data / entry_stack;
+    }
+  }
+
+  Double_t CountEntry_GivenRange( TH1D* h )
+  {
+    Double_t theEntry = 0;
+    if( setRangeX_ ) // -- if x range is set: count the entry only within the given x range
+    {
+      Int_t nBin = h->GetNbinsX();
+      for(Int_t i=0; i<nBin; i++)
+      {
+        Int_t i_bin = i+1;
+        Double_t lowerEdge = h->GetBinLowEdge(i_bin);
+        Double_t upperEdge = h->GetBinLowEdge(i_bin+1);
+
+        if( minX_ <= lowerEdge && upperEdge <= maxX_ )
+          theEntry += h->GetBinContent(i_bin);
+      }
+    }
+    else // -- if not: count total entry
+      theEntry = h->Integral();
+
+    return theEntry;
   }
 
 };
@@ -1124,7 +1179,8 @@ public:
 
     DrawLatexAll();
 
-    c_->SaveAs(".pdf");
+    if( setSavePath_ ) c_->SaveAs(savePath_);
+    else               c_->SaveAs(".pdf");
   }
 };
 
@@ -1225,7 +1281,8 @@ public:
     TF1 *f_line;
     PlotTool::DrawLine(f_line);
 
-    c_->SaveAs(".pdf");
+    if( setSavePath_ ) c_->SaveAs(savePath_);
+    else               c_->SaveAs(".pdf");
   }
 
   void CalcRatioGraph()
