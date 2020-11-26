@@ -92,7 +92,7 @@ private:
       for(auto h : vec_hist_ )
       {
         TString histName_before = h->GetName();
-        h->SetName( TString::Format("%s_%s", histName_before.Data(), type_.Data()) )
+        h->SetName( TString::Format("%s_%s", histName_before.Data(), type_.Data()) );
       }
     }
   }
