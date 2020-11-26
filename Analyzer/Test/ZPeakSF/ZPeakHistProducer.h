@@ -59,9 +59,14 @@ public:
         DYTool::MuPair DYMuPair = DYTool::EventSelection_BDTInput_noOS(ntuple, isDYEvent);
         if( isDYEvent )
         {
-          Int_t runIndex = FindRunIndex(ntuple->runNum);
-          if( runIndex != -1 ) vec_histContainer_[runIndex]->Fill( DYMuPair, totWeight );
-          else                 hist_unknownRun->Fill( DYMuPair, totWeight );
+          Double_t diMuM = DYMuPair.mass;
+          if( 81 < diMuM && diMuM < 101 ) // -- only the events close to Z peak
+          {
+            Int_t runIndex = FindRunIndex(ntuple->runNum);
+            if( runIndex != -1 ) vec_histContainer_[runIndex]->Fill( DYMuPair, totWeight );
+            else                 hist_unknownRun->Fill( DYMuPair, totWeight );
+          }
+
 
           // -- if BDT needs to be applied, comment "on" below lines
           // vector<Double_t> vec_BDTInputVar = {
