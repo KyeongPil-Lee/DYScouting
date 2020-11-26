@@ -27,7 +27,7 @@ public:
   TH1D* h_diMu_rap_;
   TH1D* h_diMu_pt_;
 
-  void ZPeakHistContainer(TString type)
+  ZPeakHistContainer(TString type)
   {
     type_ = type;
     Init();
@@ -35,16 +35,16 @@ public:
 
   void Fill(DYTool::MuPair& muPair, Double_t weight)
   {
-    Fill_SingleMu( muPair.first_ );
-    Fill_SingleMu( muPair.second_ );
+    Fill_SingleMu( muPair.first_, weight );
+    Fill_SingleMu( muPair.second_, weight );
 
-    h_mu_pt_lead_->Fill( muPair.first_pt, weight );
-    h_mu_eta_lead_->Fill( muPair.first_eta, weight );
-    h_mu_phi_lead_->Fill( muPair.first_phi, weight );
+    h_mu_pt_lead_->Fill( muPair.first_.pt, weight );
+    h_mu_eta_lead_->Fill( muPair.first_.eta, weight );
+    h_mu_phi_lead_->Fill( muPair.first_.phi, weight );
 
-    h_mu_pt_sub_->Fill( muPair.second_pt, weight );
-    h_mu_eta_sub_->Fill( muPair.second_eta, weight );
-    h_mu_phi_sub_->Fill( muPair.second_phi, weight );
+    h_mu_pt_sub_->Fill( muPair.second_.pt, weight );
+    h_mu_eta_sub_->Fill( muPair.second_.eta, weight );
+    h_mu_phi_sub_->Fill( muPair.second_.phi, weight );
 
     h_diMu_mass_->Fill( muPair.mass, weight );
     h_diMu_rap_->Fill( muPair.rap, weight );
@@ -150,8 +150,8 @@ public:
         if( isDYEvent )
         {
           Int_t runIndex = FindRunIndex(ntuple->runNum);
-          if( runIndex ! = -1 ) vec_histContainer_[runIndex]->Fill( DYMuPair, totWeight );
-          else                  hist_unknownRun->Fill( DYMuPair, totWeight );
+          if( runIndex != -1 ) vec_histContainer_[runIndex]->Fill( DYMuPair, totWeight );
+          else                 hist_unknownRun->Fill( DYMuPair, totWeight );
 
           // -- if BDT needs to be applied, comment "on" below lines
           // vector<Double_t> vec_BDTInputVar = {
@@ -195,10 +195,10 @@ private:
 
   void Setup()
   {
-    Int_t nRun = (Int_t)vec_run.size();
+    Int_t nRun = (Int_t)vec_run_.size();
     for(Int_t i_run=0; i_run<nRun; i_run++)
     {
-      TString str_run = TString::Format("%d", vec_run[i_run]);
+      TString str_run = TString::Format("%d", vec_run_[i_run]);
       ZPeakHistContainer* hist_temp = new ZPeakHistContainer(str_run);
       vec_histContainer_.push_back(hist_temp);
     }
@@ -207,9 +207,9 @@ private:
   Int_t FindRunIndex(Int_t runNum)
   {
     Int_t theIndex = -1;
-    for(auto i_run=0; i_run<vec_run.size(); i_run++)
+    for(UInt_t i_run=0; i_run<vec_run_.size(); i_run++)
     {
-      if( runNum == vec_run[i_run] )
+      if( runNum == vec_run_[i_run] )
       {
         theIndex = i_run;
         break;
