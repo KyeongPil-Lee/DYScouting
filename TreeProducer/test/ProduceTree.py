@@ -1,5 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
+"The HLT objects saved in the tree are the ones matched with the filter names from 2018 HLT menu"
+"DYTreeProducer::SavedFilterCondition should be updated if you want to run it on 2016 or 17!"
+
 # -- usage: usage: cmsRun ProduceTree.py sampleType=<sample type>
 
 from FWCore.ParameterSet.VarParsing import VarParsing
@@ -16,11 +19,12 @@ options.parseArguments()
 print "input sample type = ", options.sampleType
 
 from DYScouting.TreeProducer.NtuplerArgument import GetArgument
-theExampleFile, theGlobalTag, isMC = GetArgument( options.sampleType )
+theExampleFile, theGlobalTag, isMC, isMiniAOD = GetArgument( options.sampleType )
 
-print "   [exampple file] ", theExampleFile
-print "   [global tag]    ", theGlobalTag
-print "   [isMC]          ", isMC
+print "   [example file] ", theExampleFile
+print "   [global tag]   ", theGlobalTag
+print "   [isMC]         ", isMC
+print "   [isMiniAOD]    ", isMiniAOD
 print ""
 
 process = cms.Process("TreeProducer")
@@ -71,7 +75,22 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
   caloMETPhi     = cms.untracked.InputTag("hltScoutingCaloPacker", "caloMetPhi", "HLT"),
   caloMETPt      = cms.untracked.InputTag("hltScoutingCaloPacker", "caloMetPt", "HLT"),
   rho            = cms.untracked.InputTag("hltScoutingCaloPacker", "rho", "HLT"),
+
+  isMiniAOD              = cms.untracked.bool(isMiniAOD),
+  triggerObject_miniAOD  = cms.untracked.InputTag("notUsed"),
+  offlineMuon            = cms.untracked.InputTag("notUsed"),
+  offlineVertex          = cms.untracked.InputTag("notUsed"),
 )
+
+if isMiniAOD:
+  print "[ProduceTree.py] run with miniAOD mode"
+  process.DYTree.isMiniAOD             = cms.untracked.bool(True)
+  process.DYTree.genParticle           = cms.untracked.InputTag("prunedGenParticles")
+  process.DYTree.PUSummaryInfo         = cms.untracked.InputTag("slimmedAddPileupInfo")
+  process.DYTree.triggerObject_miniAOD = cms.untracked.InputTag("slimmedPatTrigger")
+  process.DYTree.offlineMuon           = cms.untracked.InputTag("slimmedMuons")
+  process.DYTree.offlineVertex         = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
+
 
 if isMC : 
     process.p = cms.Path(process.DYTree)

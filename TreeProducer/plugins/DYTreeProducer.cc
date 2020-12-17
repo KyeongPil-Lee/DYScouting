@@ -44,6 +44,24 @@
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
+// -- offline objects
+#include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+#include "DataFormats/MuonReco/interface/MuonTrackLinks.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+// #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
+// #include "DataFormats/RecoCandidate/interface/IsoDepositFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/Scalers/interface/LumiScalers.h"
+
 // -- others
 #include "CommonTools/UtilAlgos/interface/TFileService.h" 
 
@@ -79,9 +97,11 @@ private:
   void Fill_ScoutingMuon( const edm::Event& );
   void Fill_ScoutingCaloJet( const edm::Event& );
   void Fill_GenParticle( const edm::Event& );
+  void Fill_OfflineMuon( const edm::Event& );
 
   bool SavedTriggerCondition( std::string& );
   bool SavedFilterCondition( std::string& );
+
 
   // -- tokens
   edm::EDGetTokenT< BXVector<GlobalAlgBlk> >         t_globalAlgBlk_;
@@ -111,6 +131,15 @@ private:
   // -- variable for L1 information
   vector< std::string> vec_L1Seed_;
   l1t::L1TGlobalUtil   *L1GtUtils_;
+
+  // -- isMiniAOD?
+  bool isMiniAOD_;
+  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> > t_trigObj_miniAOD_;
+  edm::EDGetTokenT< reco::VertexCollection >                    t_offlineVertex_;
+  edm::EDGetTokenT< edm::View<reco::Muon> >                     t_offlineMuon_;
+
+  // -- debugging switch
+  bool debug_ = false;
 
   // -- tree
   TTree* ntuple_;
@@ -172,7 +201,7 @@ private:
   int    pixelVtxMu_nDOF_[arrSize_];
   int    pixelVtxMu_isValid_[arrSize_];
 
-  // -- muon information
+  // -- muon information (scouting)
   int nMuon_;
   double muon_pt_[arrSize_];
   double muon_eta_[arrSize_];
@@ -248,6 +277,70 @@ private:
   double caloMET_pt_;
   double rho_;
 
+  // -- offline objects
+  int nVertex_;
+
+  // -- offline muon: offMuon_* (to distinguish with scouting muons)
+  int nOffMuon_;
+
+  double offMuon_pt_[arrSize_];
+  double offMuon_eta_[arrSize_];
+  double offMuon_phi_[arrSize_];
+  double offMuon_px_[arrSize_];
+  double offMuon_py_[arrSize_];
+  double offMuon_pz_[arrSize_];
+  double offMuon_dB_[arrSize_];
+  double offMuon_charge_[arrSize_];
+  int offMuon_isGLB_[arrSize_];
+  int offMuon_isSTA_[arrSize_];
+  int offMuon_isTRK_[arrSize_];
+  int offMuon_isPF_[arrSize_];
+  int offMuon_isTight_[arrSize_];
+  int offMuon_isMedium_[arrSize_];
+  int offMuon_isLoose_[arrSize_];
+  int offMuon_isHighPt_[arrSize_];
+  int offMuon_isSoft_[arrSize_];
+
+  double offMuon_iso03_sumPt_[arrSize_];
+  double offMuon_iso03_hadEt_[arrSize_];
+  double offMuon_iso03_emEt_[arrSize_];
+
+  double offMuon_PFIso03_charged_[arrSize_];
+  double offMuon_PFIso03_neutral_[arrSize_];
+  double offMuon_PFIso03_photon_[arrSize_];
+  double offMuon_PFIso03_sumPU_[arrSize_];
+
+  double offMuon_PFIso04_charged_[arrSize_];
+  double offMuon_PFIso04_neutral_[arrSize_];
+  double offMuon_PFIso04_photon_[arrSize_];
+  double offMuon_PFIso04_sumPU_[arrSize_];
+
+  double offMuon_PFCluster03_ECAL_[arrSize_];
+  double offMuon_PFCluster03_HCAL_[arrSize_];
+
+  double offMuon_PFCluster04_ECAL_[arrSize_];
+  double offMuon_PFCluster04_HCAL_[arrSize_];
+
+  double offMuon_normChi2_global_[arrSize_];
+  int offMuon_nTrackerHit_global_[arrSize_];
+  int offMuon_nTrackerLayer_global_[arrSize_];
+  int offMuon_nPixelHit_global_[arrSize_];
+  int offMuon_nMuonHit_global_[arrSize_];
+
+  double offMuon_normChi2_inner_[arrSize_];
+  int offMuon_nTrackerHit_inner_[arrSize_];
+  int offMuon_nTrackerLayer_inner_[arrSize_];
+  int offMuon_nPixelHit_inner_[arrSize_];
+
+  double offMuon_pt_tuneP_[arrSize_];
+  double offMuon_ptError_tuneP_[arrSize_];
+
+  double offMuon_dxyVTX_best_[arrSize_];
+  double offMuon_dzVTX_best_[arrSize_];
+
+  int offMuon_nMatchedStation_[arrSize_];
+  int offMuon_nMatchedRPCLayer_[arrSize_];
+  int offMuon_stationMask_[arrSize_];
 };
 
 DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
@@ -264,11 +357,17 @@ t_genEventInfo_        ( consumes< GenEventInfoProduct >            (iConfig.get
 t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.getUntrackedParameter<edm::InputTag>("genParticle")) ),
 t_caloMETPhi_          ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPhi")) ),
 t_caloMETPt_           ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPt")) ),
-t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) )
+t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- not used in AOD case
+t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
+t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) )
 {
    // usesResource("TFileService");
   vec_L1Seed_ = iConfig.getUntrackedParameter<std::vector<std::string> >("L1SeedList");
   L1GtUtils_  = new l1t::L1TGlobalUtil(iConfig, consumesCollector());
+
+  isMiniAOD_ = iConfig.getUntrackedParameter<bool>("isMiniAOD");
+  if( debug_ ) cout << "isMiniAOD_ = " << isMiniAOD_ << endl;
 }
 
 DYTreeProducer::~DYTreeProducer()
@@ -306,6 +405,17 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
     } // -- end of if ( token exists )
   } // -- end of isMC -- //
 
+  // -- offline vertex, if available
+  edm::Handle<reco::VertexCollection> h_offlineVertex;
+  if( iEvent.getByToken(t_offlineVertex_, h_offlineVertex) )
+  {
+    int nGoodVtx = 0;
+    for(reco::VertexCollection::const_iterator it = h_offlineVertex->begin(); it != h_offlineVertex->end(); ++it)
+      if( it->isValid() ) nGoodVtx++;
+
+    nVertex_ = nGoodVtx;
+  }
+
   // -- fill each object
   Fill_L1(iEvent, iSetup);
   Fill_HLT(iEvent);
@@ -314,6 +424,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   Fill_PixelVertexNearMuon(iEvent);
   Fill_ScoutingMuon(iEvent);
   Fill_ScoutingCaloJet(iEvent);
+  Fill_OfflineMuon(iEvent);
   if( !isRealData ) Fill_GenParticle(iEvent);
 
 
@@ -482,6 +593,71 @@ void DYTreeProducer::Init()
   caloMET_phi_ = -999;
   caloMET_pt_ = -999;
   rho_ = -999;
+
+  nVertex_ = 0;
+
+  nOffMuon_ = 0;
+  for( int i=0; i<arrSize_; i++)
+  {
+    offMuon_pt_[i] = -999;
+    offMuon_eta_[i] = -999;
+    offMuon_phi_[i] = -999;
+    offMuon_px_[i] = -999;
+    offMuon_py_[i] = -999;
+    offMuon_pz_[i] = -999;
+    offMuon_dB_[i] = -999;
+    offMuon_charge_[i] = -999;
+    offMuon_isGLB_[i] = 0;
+    offMuon_isSTA_[i] = 0;
+    offMuon_isTRK_[i] = 0;
+    offMuon_isPF_[i] = 0;
+    offMuon_isTight_[i] = 0;
+    offMuon_isMedium_[i] = 0;
+    offMuon_isLoose_[i] = 0;
+    offMuon_isHighPt_[i] = 0;
+    offMuon_isSoft_[i] = 0;
+
+    offMuon_iso03_sumPt_[i] = -999;
+    offMuon_iso03_hadEt_[i] = -999;
+    offMuon_iso03_emEt_[i] = -999;
+
+    offMuon_PFIso03_charged_[i] = -999;
+    offMuon_PFIso03_neutral_[i] = -999;
+    offMuon_PFIso03_photon_[i] = -999;
+    offMuon_PFIso03_sumPU_[i] = -999;
+
+    offMuon_PFIso04_charged_[i] = -999;
+    offMuon_PFIso04_neutral_[i] = -999;
+    offMuon_PFIso04_photon_[i] = -999;
+    offMuon_PFIso04_sumPU_[i] = -999;
+
+    offMuon_PFCluster03_ECAL_[i] = -999;
+    offMuon_PFCluster03_HCAL_[i] = -999;
+
+    offMuon_PFCluster04_ECAL_[i] = -999;
+    offMuon_PFCluster04_HCAL_[i] = -999;
+
+    offMuon_normChi2_global_[i] = -999;
+    offMuon_nTrackerHit_global_[i] = -999;
+    offMuon_nTrackerLayer_global_[i] = -999;
+    offMuon_nPixelHit_global_[i] = -999;
+    offMuon_nMuonHit_global_[i] = -999;
+
+    offMuon_normChi2_inner_[i] = -999;
+    offMuon_nTrackerHit_inner_[i] = -999;
+    offMuon_nTrackerLayer_inner_[i] = -999;
+    offMuon_nPixelHit_inner_[i] = -999;
+
+    offMuon_pt_tuneP_[i] = -999;
+    offMuon_ptError_tuneP_[i] = -999;
+
+    offMuon_dxyVTX_best_[i] = -999;
+    offMuon_dzVTX_best_[i] = -999;
+
+    offMuon_nMatchedStation_[i] = -999;
+    offMuon_nMatchedRPCLayer_[i] = -999;
+    offMuon_stationMask_[i] = -999;
+  }
 }
 
 void DYTreeProducer::Make_Branch()
@@ -608,6 +784,60 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("caloMET_phi", &caloMET_phi_, "caloMET_phi/D");
   ntuple_->Branch("caloMET_pt",  &caloMET_pt_,  "caloMET_pt/D");
   ntuple_->Branch("rho",         &rho_,         "rho/D");
+
+  ntuple_->Branch("nVertex", &nVertex_, "nVertex/I");
+
+  ntuple_->Branch("nOffMuon", &nOffMuon_, "nOffMuon/I");
+  ntuple_->Branch("offMuon_pt", &offMuon_pt_, "offMuon_pt[nOffMuon]/D");
+  ntuple_->Branch("offMuon_eta", &offMuon_eta_, "offMuon_eta[nOffMuon]/D");
+  ntuple_->Branch("offMuon_phi", &offMuon_phi_, "offMuon_phi[nOffMuon]/D");
+  ntuple_->Branch("offMuon_px", &offMuon_px_, "offMuon_px[nOffMuon]/D");
+  ntuple_->Branch("offMuon_py", &offMuon_py_, "offMuon_py[nOffMuon]/D");
+  ntuple_->Branch("offMuon_pz", &offMuon_pz_, "offMuon_pz[nOffMuon]/D");
+  ntuple_->Branch("offMuon_dB", &offMuon_dB_, "offMuon_dB[nOffMuon]/D");
+  ntuple_->Branch("offMuon_charge", &offMuon_charge_, "offMuon_charge[nOffMuon]/D");
+  ntuple_->Branch("offMuon_isGLB", &offMuon_isGLB_, "offMuon_isGLB[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isSTA", &offMuon_isSTA_, "offMuon_isSTA[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isTRK", &offMuon_isTRK_, "offMuon_isTRK[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isPF", &offMuon_isPF_, "offMuon_isPF[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isTight", &offMuon_isTight_, "offMuon_isTight[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isMedium", &offMuon_isMedium_, "offMuon_isMedium[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isLoose", &offMuon_isLoose_, "offMuon_isLoose[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isHighPt", &offMuon_isHighPt_, "offMuon_isHighPt[nOffMuon]/I");
+  ntuple_->Branch("offMuon_isSoft", &offMuon_isSoft_, "offMuon_isSoft[nOffMuon]/I");
+
+  ntuple_->Branch("offMuon_iso03_sumPt", &offMuon_iso03_sumPt_, "offMuon_iso03_sumPt[nOffMuon]/D");
+  ntuple_->Branch("offMuon_iso03_hadEt", &offMuon_iso03_hadEt_, "offMuon_iso03_hadEt[nOffMuon]/D");
+  ntuple_->Branch("offMuon_iso03_emEt", &offMuon_iso03_emEt_, "offMuon_iso03_emEt[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso03_charged", &offMuon_PFIso03_charged_, "offMuon_PFIso03_charged[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso03_neutral", &offMuon_PFIso03_neutral_, "offMuon_PFIso03_neutral[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso03_photon", &offMuon_PFIso03_photon_, "offMuon_PFIso03_photon[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso03_sumPU", &offMuon_PFIso03_sumPU_, "offMuon_PFIso03_sumPU[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso04_charged", &offMuon_PFIso04_charged_, "offMuon_PFIso04_charged[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso04_neutral", &offMuon_PFIso04_neutral_, "offMuon_PFIso04_neutral[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso04_photon", &offMuon_PFIso04_photon_, "offMuon_PFIso04_photon[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFIso04_sumPU", &offMuon_PFIso04_sumPU_, "offMuon_PFIso04_sumPU[nOffMuon]/D");
+
+  ntuple_->Branch("offMuon_PFCluster03_ECAL", &offMuon_PFCluster03_ECAL_, "offMuon_PFCluster03_ECAL[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFCluster03_HCAL", &offMuon_PFCluster03_HCAL_, "offMuon_PFCluster03_HCAL[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFCluster04_ECAL", &offMuon_PFCluster04_ECAL_, "offMuon_PFCluster04_ECAL[nOffMuon]/D");
+  ntuple_->Branch("offMuon_PFCluster04_HCAL", &offMuon_PFCluster04_HCAL_, "offMuon_PFCluster04_HCAL[nOffMuon]/D");
+  ntuple_->Branch("offMuon_normChi2_global", &offMuon_normChi2_global_, "offMuon_normChi2_global[nOffMuon]/D");
+  ntuple_->Branch("offMuon_nTrackerHit_global", &offMuon_nTrackerHit_global_, "offMuon_nTrackerHit_global[nOffMuon]/I");
+  ntuple_->Branch("offMuon_nTrackerLayer_global", &offMuon_nTrackerLayer_global_, "offMuon_nTrackerLayer_global[nOffMuon]/I");
+  ntuple_->Branch("offMuon_nPixelHit_global", &offMuon_nPixelHit_global_, "offMuon_nPixelHit_global[nOffMuon]/I");
+  ntuple_->Branch("offMuon_nMuonHit_global", &offMuon_nMuonHit_global_, "offMuon_nMuonHit_global[nOffMuon]/I");
+  ntuple_->Branch("offMuon_normChi2_inner", &offMuon_normChi2_inner_, "offMuon_normChi2_inner[nOffMuon]/D");
+  ntuple_->Branch("offMuon_nTrackerHit_inner", &offMuon_nTrackerHit_inner_, "offMuon_nTrackerHit_inner[nOffMuon]/I");
+  ntuple_->Branch("offMuon_nTrackerLayer_inner", &offMuon_nTrackerLayer_inner_, "offMuon_nTrackerLayer_inner[nOffMuon]/I");
+  ntuple_->Branch("offMuon_nPixelHit_inner", &offMuon_nPixelHit_inner_, "offMuon_nPixelHit_inner[nOffMuon]/I");
+  ntuple_->Branch("offMuon_pt_tuneP", &offMuon_pt_tuneP_, "offMuon_pt_tuneP[nOffMuon]/D");
+  ntuple_->Branch("offMuon_ptError_tuneP", &offMuon_ptError_tuneP_, "offMuon_ptError_tuneP[nOffMuon]/D");
+  ntuple_->Branch("offMuon_dxyVTX_best", &offMuon_dxyVTX_best_, "offMuon_dxyVTX_best[nOffMuon]/D");
+  ntuple_->Branch("offMuon_dzVTX_best", &offMuon_dzVTX_best_, "offMuon_dzVTX_best[nOffMuon]/D");
+  ntuple_->Branch("offMuon_nMatchedStation", &offMuon_nMatchedStation_, "offMuon_nMatchedStation[nOffMuon]/I");
+  ntuple_->Branch("offMuon_nMatchedRPCLayer", &offMuon_nMatchedRPCLayer_, "offMuon_nMatchedRPCLayer[nOffMuon]/I");
+  ntuple_->Branch("offMuon_stationMask", &offMuon_stationMask_, "offMuon_stationMask[nOffMuon]/I");
 }
 
 
@@ -710,6 +940,35 @@ void DYTreeProducer::Fill_HLT(const edm::Event &iEvent)
   //     }
   //   } // -- end of if( muon filters )-- //
   // } // -- end of filter iteration -- //
+
+  if( isMiniAOD_ )
+  {
+    edm::Handle< std::vector<pat::TriggerObjectStandAlone> > h_triggerObject;
+    iEvent.getByToken(t_trigObj_miniAOD_, h_triggerObject);
+
+    for( pat::TriggerObjectStandAlone triggerObj : *h_triggerObject)
+    {
+      triggerObj.unpackNamesAndLabels(iEvent, *h_triggerResults);
+
+      for( size_t i_filter = 0; i_filter < triggerObj.filterLabels().size(); ++i_filter )
+      {
+        // if( debug_ ) cout << "i_filter = " << i_filter << endl;
+        std::string filterName = triggerObj.filterLabels()[i_filter];
+        if( SavedFilterCondition(filterName) )
+        {
+          // if( debug_ ) cout << "  pass SavedFilterCondition" << endl;
+          // if( debug_ ) cout << "  --> Trigger object: (pt, eta, phi) = (" << triggerObj.pt() << ", " << triggerObj.eta() << ", " << triggerObj.phi() << ")" << endl;
+
+          vec_filterName_.push_back( filterName );
+          vec_HLTObj_pt_.push_back( triggerObj.pt() );
+          vec_HLTObj_eta_.push_back( triggerObj.eta() );
+          vec_HLTObj_phi_.push_back( triggerObj.phi() );
+        }
+
+      } // -- loop over filters
+
+    } // -- loop over trigger objects
+  }
   
 }
 
@@ -915,12 +1174,20 @@ bool DYTreeProducer::SavedTriggerCondition( std::string& pathName )
 
   // -- muon triggers
   if( pathName.find("DST_DoubleMu") != std::string::npos ||
-      pathName.find("HLT_Mu")       != std::string::npos ||
+      pathName.find("HLT_IsoMu")    != std::string::npos ||
+      pathName.find("HLT_Mu8")      != std::string::npos ||
+      pathName.find("HLT_Mu17")     != std::string::npos ||
+      pathName.find("HLT_Mu50")     != std::string::npos ||
       pathName.find("HLT_OldMu")    != std::string::npos ||
       pathName.find("HLT_TkMu")     != std::string::npos ||
       pathName.find("HLT_IsoTkMu")  != std::string::npos ||
       pathName.find("HLT_DoubleMu") != std::string::npos ||
-      pathName.find("HLT_Mu8_T")    != std::string::npos ) flag = true;
+      pathName.find("HLT_Ele32_WPTight_Gsf")                  != std::string::npos || // -- for Egamma, unprescaled triggers
+      pathName.find("HLT_Ele115_CaloIdVT_GsfTrkIdT")          != std::string::npos ||
+      pathName.find("HLT_Photon200")                          != std::string::npos ||
+      pathName.find("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL") != std::string::npos ||
+      pathName.find("HLT_DoubleEle25_CaloIdL_MW")             != std::string::npos ||
+      pathName.find("HLT_DoublePhoton70")                     != std::string::npos ) flag = true;
 
   return flag;
 }
@@ -930,19 +1197,145 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
 {
   bool flag = false;
 
-  // -- muon filters (single muon)
-  if( (filterName.find("sMu") != std::string::npos || filterName.find("SingleMu") != std::string::npos) &&
-       filterName.find("Tau")      == std::string::npos &&
-       filterName.find("EG")       == std::string::npos &&
-       filterName.find("MultiFit") == std::string::npos ) flag = true;
+  // // -- muon filters (single muon)
+  // if( (filterName.find("sMu") != std::string::npos || filterName.find("SingleMu") != std::string::npos) &&
+  //      filterName.find("Tau")      == std::string::npos &&
+  //      filterName.find("EG")       == std::string::npos &&
+  //      filterName.find("MultiFit") == std::string::npos ) flag = true;
 
-  // -- muon filters (double muon)
-  if( (filterName.find("Dimuon") != std::string::npos || filterName.find("DoubleMu") != std::string::npos) &&
-       filterName.find("Tau")      == std::string::npos &&
-       filterName.find("EG")       == std::string::npos &&
-       filterName.find("MultiFit") == std::string::npos ) flag = true;
+  // // -- muon filters (double muon)
+  // if( (filterName.find("Dimuon") != std::string::npos || filterName.find("DoubleMu") != std::string::npos) &&
+  //      filterName.find("Tau")      == std::string::npos &&
+  //      filterName.find("EG")       == std::string::npos &&
+  //      filterName.find("MultiFit") == std::string::npos ) flag = true;
+
+  // if( (filterName.find("sMu")    != std::string::npos || filterName.find("SingleMu") != std::string::npos || 
+  //      filterName.find("Dimuon") != std::string::npos || filterName.find("DoubleMu") != std::string::npos) ) flag = true;
+
+  // -- keep only relavent trigger objects to reduce tree size
+  // ---- DST_DoubleMu3_noVtx_CaloScouting_v*
+  // ---- HLT_IsoMu24_v*
+  // ---- HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*
+  // ---- HLT_Mu50_v*
+  // ---- CAVEAT: the filter names are for 2018 setup; it needs to be checked (and updated if needed) if you want to run on 2016 or 17!
+  if( filterName.find("hltL1sDoubleMuIorTripleMuIorQuadMu") != std::string::npos || 
+      filterName.find("hltDimuon3L1Filtered0")              != std::string::npos || 
+      filterName.find("hltDoubleMu3L3FilteredNoVtx")        != std::string::npos || 
+      filterName.find("hltL1sSingleMu22")                                            != std::string::npos || 
+      filterName.find("hltL1fL1sMu22L1Filtered0")                                    != std::string::npos || 
+      filterName.find("hltL3fL1sSingleMu22L1f0L2f10QL3Filtered24Q")                  != std::string::npos || 
+      filterName.find("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07") != std::string::npos || 
+      filterName.find("hltL1sDoubleMu125to157")                        != std::string::npos || 
+      filterName.find("hltL1fL1sDoubleMu155L1Filtered0")               != std::string::npos || 
+      filterName.find("hltL3fL1DoubleMu155fPreFiltered8")              != std::string::npos || 
+      filterName.find("hltL3fL1DoubleMu155fFiltered17")                != std::string::npos || 
+      filterName.find("hltDiMuon178RelTrkIsoFiltered0p4")              != std::string::npos || 
+      filterName.find("hltDiMuon178RelTrkIsoFiltered0p4DzFiltered0p2") != std::string::npos || 
+      filterName.find("hltDiMuon178Mass3p8Filtered")                   != std::string::npos || 
+      filterName.find("hltL1sSingleMu22or25")                     != std::string::npos || 
+      filterName.find("hltL1fL1sMu22or25L1Filtered0")             != std::string::npos || 
+      filterName.find("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q") != std::string::npos ) flag = true;
 
   return flag;
+}
+
+void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent)
+{
+  edm::Handle< edm::View<reco::Muon> > h_offlineMuon;
+  iEvent.getByToken(t_offlineMuon_, h_offlineMuon);
+
+  if( debug_ ) cout << "h_offlineMuon.isValid() = " << h_offlineMuon.isValid() << endl;
+
+  if( h_offlineMuon.isValid() ) // -- only when the dataset has offline muon collection (e.g. AOD or miniAOD) -- //
+  {
+    edm::Handle<reco::VertexCollection> h_offlineVertex;
+    iEvent.getByToken(t_offlineVertex_, h_offlineVertex);
+    const reco::Vertex & pv = h_offlineVertex->at(0);
+
+    int _nOffMuon = 0;
+    for(auto mu=h_offlineMuon->begin(); mu!=h_offlineMuon->end(); ++mu)
+    {
+      offMuon_pt_[_nOffMuon]  = mu->pt();
+      offMuon_eta_[_nOffMuon] = mu->eta();
+      offMuon_phi_[_nOffMuon] = mu->phi();
+      offMuon_px_[_nOffMuon]  = mu->px();
+      offMuon_py_[_nOffMuon]  = mu->py();
+      offMuon_pz_[_nOffMuon]  = mu->pz();
+      offMuon_charge_[_nOffMuon] = mu->charge();
+      // if( isMiniAOD_ ) offMuon_dB_[_nOffMuon] = mu->dB(); // -- dB is only availabe in pat::Muon -- //
+
+      if( mu->isGlobalMuon() )     offMuon_isGLB_[_nOffMuon] = 1;
+      if( mu->isStandAloneMuon() ) offMuon_isSTA_[_nOffMuon] = 1;
+      if( mu->isTrackerMuon() )    offMuon_isTRK_[_nOffMuon] = 1;
+      if( mu->isPFMuon() )         offMuon_isPF_[_nOffMuon] = 1;
+
+      // -- defintion of ID functions: http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_9_4_0/doc/html/da/d18/namespacemuon.html#ac122b2516e5711ce206256d7945473d2 -- //
+      if( muon::isTightMuon( (*mu), pv ) )  offMuon_isTight_[_nOffMuon] = 1;
+      if( muon::isMediumMuon( (*mu) ) )     offMuon_isMedium_[_nOffMuon] = 1;
+      if( muon::isLooseMuon( (*mu) ) )      offMuon_isLoose_[_nOffMuon] = 1;
+      if( muon::isHighPtMuon( (*mu), pv ) ) offMuon_isHighPt_[_nOffMuon] = 1;
+
+      // -- bool muon::isSoftMuon(const reco::Muon& muon, const reco::Vertex& vtx, bool run2016_hip_mitigation)
+      // -- it is different under CMSSW_8_0_29: bool muon::isSoftMuon(const reco::Muon& muon, const reco::Vertex& vtx)
+      // -- Remove this part to avoid compile error (and soft muon would not be used for now) - need to be fixed at some point
+      // if( muon::isSoftMuon( (*mu), pv, 0) ) offMuon_isSoft_[_nOffMuon] = 1;
+
+      offMuon_iso03_sumPt_[_nOffMuon] = mu->isolationR03().sumPt;
+      offMuon_iso03_hadEt_[_nOffMuon] = mu->isolationR03().hadEt;
+      offMuon_iso03_emEt_[_nOffMuon]  = mu->isolationR03().emEt;
+
+      offMuon_PFIso03_charged_[_nOffMuon] = mu->pfIsolationR03().sumChargedHadronPt;
+      offMuon_PFIso03_neutral_[_nOffMuon] = mu->pfIsolationR03().sumNeutralHadronEt;
+      offMuon_PFIso03_photon_[_nOffMuon]  = mu->pfIsolationR03().sumPhotonEt;
+      offMuon_PFIso03_sumPU_[_nOffMuon]   = mu->pfIsolationR03().sumPUPt;
+
+      offMuon_PFIso04_charged_[_nOffMuon] = mu->pfIsolationR04().sumChargedHadronPt;
+      offMuon_PFIso04_neutral_[_nOffMuon] = mu->pfIsolationR04().sumNeutralHadronEt;
+      offMuon_PFIso04_photon_[_nOffMuon]  = mu->pfIsolationR04().sumPhotonEt;
+      offMuon_PFIso04_sumPU_[_nOffMuon]   = mu->pfIsolationR04().sumPUPt;
+
+      reco::TrackRef globalTrk = mu->globalTrack();
+      if( globalTrk.isNonnull() )
+      {
+        offMuon_normChi2_global_[_nOffMuon] = globalTrk->normalizedChi2();
+
+        const reco::HitPattern & globalTrkHit = globalTrk->hitPattern();
+        offMuon_nTrackerHit_global_[_nOffMuon]   = globalTrkHit.numberOfValidTrackerHits();
+        offMuon_nTrackerLayer_global_[_nOffMuon] = globalTrkHit.trackerLayersWithMeasurement();
+        offMuon_nPixelHit_global_[_nOffMuon]     = globalTrkHit.numberOfValidPixelHits();
+        offMuon_nMuonHit_global_[_nOffMuon]   = globalTrkHit.numberOfValidMuonHits();
+      }
+
+      reco::TrackRef innerTrk = mu->innerTrack();
+      if( innerTrk.isNonnull() )
+      {
+        offMuon_normChi2_inner_[_nOffMuon] = innerTrk->normalizedChi2();
+
+        const reco::HitPattern & innerTrkHit = innerTrk->hitPattern();
+        offMuon_nTrackerHit_inner_[_nOffMuon]   = innerTrkHit.numberOfValidTrackerHits();
+        offMuon_nTrackerLayer_inner_[_nOffMuon] = innerTrkHit.trackerLayersWithMeasurement();
+        offMuon_nPixelHit_inner_[_nOffMuon]     = innerTrkHit.numberOfValidPixelHits();
+      }
+
+      reco::TrackRef tunePTrk = mu->tunePMuonBestTrack();
+      if( tunePTrk.isNonnull() )
+      {
+        offMuon_pt_tuneP_[_nOffMuon]      = tunePTrk->pt();
+        offMuon_ptError_tuneP_[_nOffMuon] = tunePTrk->ptError();
+      }
+
+      offMuon_dxyVTX_best_[_nOffMuon] = mu->muonBestTrack()->dxy( pv.position() );
+      offMuon_dzVTX_best_[_nOffMuon]  = mu->muonBestTrack()->dz( pv.position() );
+
+      offMuon_nMatchedStation_[_nOffMuon] = mu->numberOfMatchedStations();
+      offMuon_nMatchedRPCLayer_[_nOffMuon] = mu->numberOfMatchedRPCLayers();
+      offMuon_stationMask_[_nOffMuon] = mu->stationMask();
+
+      _nOffMuon++;
+    }
+
+    nOffMuon_ = _nOffMuon;
+  }
 }
 
 void DYTreeProducer::endJob() {}
