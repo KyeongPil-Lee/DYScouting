@@ -10,15 +10,6 @@
   },
 
   {
-    "tag": "Offline_DYMuMu_M50toInf_UL18",
-    "isMC": 1,
-    "xSec": 2009.41,
-    "sumWeight": -1.0,
-    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
-    "list_dir": ["v1.4/offline/DYLL_M50_aMCNLO_UL18"]
-  },
-
-  {
     "tag": "Offline_DYTauTau_M50toInf_UL18",
     "isMC": 1,
     "xSec": 2009.41,
