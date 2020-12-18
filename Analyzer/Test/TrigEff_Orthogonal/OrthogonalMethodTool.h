@@ -22,6 +22,8 @@ DYTool::OffMuPair OffEventSelection_EGamma(DYTool::DYTree *ntuple, Bool_t& doPas
     }
   }
 
+  // cout << "doPassTrig" << doPassTrig << endl;
+
   if( !doPassTrig ) return muPair_dummy;
 
   vector< DYTool::OffMuPair > vec_muPair = DYTool::GetAllOffMuPairs(ntuple);
@@ -30,9 +32,13 @@ DYTool::OffMuPair OffEventSelection_EGamma(DYTool::DYTree *ntuple, Bool_t& doPas
   vector< DYTool::OffMuPair > vec_goodMuPair;
   for( auto& muPair : vec_muPair )
   {
-    if( muPair.first_.isMedium         && muPair.second_.isMedium &&
+    if( muPair.first_.isMedium              && muPair.second_.isMedium &&
         muPair.first_.relPFIso_dBeta < 0.25 && muPair.second_.relPFIso_dBeta < 0.25 ) // -- loose PF isolation
+    {
       vec_goodMuPair.push_back( muPair );
+      // cout << "Find 1 pair passing condition" << endl;
+    }
+
   }
 
   if( vec_goodMuPair.size() == 1 ) // -- only takes the case when there's exact 1 muon pair

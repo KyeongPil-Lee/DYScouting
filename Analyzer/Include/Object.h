@@ -642,6 +642,7 @@ public:
   Double_t px;
   Double_t py;
   Double_t pz;
+  Double_t mass;
   Double_t energy;
   Double_t dB;
   Double_t charge;
@@ -709,7 +710,7 @@ public:
     px  = ntuple->offMuon_px[index];
     py  = ntuple->offMuon_py[index];
     pz  = ntuple->offMuon_pz[index];
-    mass = MuonHLT::M_mu;
+    mass = DYTool::M_mu;
     energy = sqrt(px*px + py*py + pz*pz + mass*mass);
     vecP.SetPxPyPzE(px, py, pz, energy);
 
@@ -846,9 +847,9 @@ public:
   Double_t dR;
   Double_t angle3D;
 
-  MuPair() { Init(); }
+  OffMuPair() { Init(); }
 
-  MuPair(OffMuon muon1, OffMuon muon2): MuPair()
+  OffMuPair(OffMuon muon1, OffMuon muon2): OffMuPair()
   {
     if( muon1.pt > muon2.pt )
     {
