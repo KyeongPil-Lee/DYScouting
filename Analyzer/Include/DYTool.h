@@ -275,6 +275,43 @@ vector<DYTool::GenParticle> GetAllGenLeptons(DYTool::DYTree *ntuple, Int_t pdgID
   return vec_genLepton;
 }
 
+vector<DYTool::OffMuon> GetAllOfflineMuons(DYTool::DYTree *ntuple)
+{
+  vector<DYTool::OffMuon> vec_muon;
+  for(Int_t i_mu=0; i_mu<ntuple->nOffMuon; i_mu++)
+  {
+    DYTool::OffMuon mu(ntuple, i_mu);
+    vec_muon.push_back( mu );
+  }
+
+  return vec_muon;
+}
+
+
+vector<DYTool::OffMuPair> GetAllOffMuPairs(DYTool::DYTree *ntuple)
+{
+  vector<DYTool::OffMuPair> vec_muonPair;
+
+  vector<DYTool::OffMuon> vec_muon = DYTool::GetAllOfflineMuons(ntuple);
+
+  for(Int_t i_mu=0; i_mu<ntuple->nOffMuon; i_mu++)
+  {
+    DYTool::OffMuon mu1 = vec_muon[i_mu];
+    for(Int_t j_mu=i_mu+1; j_mu<ntuple->nOffMuon; j_mu++) // -- iterate from i_mu+1 to avoid duplications
+    {
+      DYTool::OffMuon mu2 = vec_muon[j_mu];
+
+      DYTool::OffMuPair muonPair(mu1, mu2);
+      vec_muonPair.push_back( muonPair );
+    }
+  }
+
+  return vec_muonPair;
+}
+
+
+
+
 Bool_t CompareMuPair_LargerDimuonMass( DYTool::MuPair pair1, DYTool::MuPair pair2 )
 {
   // -- the pair with the highest mass
