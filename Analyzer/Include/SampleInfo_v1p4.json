@@ -4,7 +4,7 @@
     "tag": "Offline_DYMuMu_M50toInf_UL18",
     "isMC": 1,
     "xSec": 2009.41,
-    "sumWeight": -1.0,
+    "sumWeight": 45346649.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
     "list_dir": ["v1.4/offline/DYLL_M50_aMCNLO_UL18"]
   },
@@ -13,8 +13,26 @@
     "tag": "Offline_DYTauTau_M50toInf_UL18",
     "isMC": 1,
     "xSec": 2009.41,
-    "sumWeight": -1.0,
+    "sumWeight": 45134121.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
+    "list_dir": ["v1.4/offline/DYLL_M50_aMCNLO_UL18"]
+  },
+
+  {
+    "tag": "Offline_DYEE_M50toInf_UL18",
+    "isMC": 1,
+    "xSec": 2009.41,
+    "sumWeight": 45344519.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
+    "list_dir": ["v1.4/offline/DYLL_M50_aMCNLO_UL18"]
+  },
+
+  {
+    "tag": "Offline_DYLL_M50toInf_UL18",
+    "isMC": 1,
+    "xSec": 6028.23,
+    "sumWeight": 135825289.0,
+    "comment": "2009.41*3, QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
     "list_dir": ["v1.4/offline/DYLL_M50_aMCNLO_UL18"]
   },
 
@@ -22,7 +40,7 @@
     "tag": "Offline_WJets_UL18",
     "isMC": 1,
     "xSec": 61526.7,
-    "sumWeight": -1.0,
+    "sumWeight": 66930896.0,
     "comment": "NNLO cross section",
     "list_dir": ["v1.4/offline/WJetsToLNu_MadgraphMLM_UL18"]
   },
@@ -31,16 +49,16 @@
     "tag": "Offline_ttbar_UL18",
     "isMC": 1,
     "xSec": 831.76,
-    "sumWeight": -1.0,
+    "sumWeight": 69690040.0,
     "comment": "NNLO cross section",
-    "list_dir": ["v1.4/offline/TTTo2L2Nu_Powheg"]
+    "list_dir": ["v1.4/offline/TTTo2L2Nu_Powheg_UL18"]
   },
 
   {
     "tag": "Offline_tW_UL18",
     "isMC": 1,
     "xSec": 35.85,
-    "sumWeight": -1.0,
+    "sumWeight": 10063906.0,
     "comment": "NNLO cross section",
     "list_dir": ["v1.4/offline/ST_tW_top_Powheg_UL18"]
   },
@@ -49,7 +67,7 @@
     "tag": "Offline_tbarW_UL18",
     "isMC": 1,
     "xSec": 35.85,
-    "sumWeight": -1.0,
+    "sumWeight": 9125278.0,
     "comment": "NNLO cross section",
     "list_dir": ["v1.4/offline/ST_tW_antitop_Powheg_UL18"]
   },
@@ -58,7 +76,7 @@
     "tag": "Offline_WW_UL18",
     "isMC": 1,
     "xSec": 118.7,
-    "sumWeight": -1.0,
+    "sumWeight": 7959200.0,
     "comment": "NNLO cross section",
     "list_dir": ["v1.4/offline/WW_Pythia8_UL18"]
   },
@@ -67,7 +85,7 @@
     "tag": "Offline_WZ_UL18",
     "isMC": 1,
     "xSec": 47.13,
-    "sumWeight": -1.0,
+    "sumWeight": 4000000.0,
     "comment": "NNLO cross section",
     "list_dir": ["v1.4/offline/WZ_Pythia8_UL18"]
   },
@@ -76,7 +94,7 @@
     "tag": "Offline_ZZ_UL18",
     "isMC": 1,
     "xSec": 16.523,
-    "sumWeight": -1.0,
+    "sumWeight": 2000000.0,
     "comment": "NNLO cross section",
     "list_dir": ["v1.4/offline/ZZ_Pythia8_UL18"]
   },

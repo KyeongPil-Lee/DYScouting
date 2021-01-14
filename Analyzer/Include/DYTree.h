@@ -422,7 +422,7 @@ public:
   void TurnOnBranches_OffMuon()
   {
     chain_->SetBranchStatus("nOffMuon", 1);
-    chain_->SetBranchAddress("nOffMuon", &nMuon);
+    chain_->SetBranchAddress("nOffMuon", &nOffMuon);
 
     chain_->SetBranchStatus("offMuon_pt", 1);
     chain_->SetBranchAddress("offMuon_pt", &offMuon_pt);
