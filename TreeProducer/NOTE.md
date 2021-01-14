@@ -1,3 +1,18 @@
+## v1.3 -> v1.4
+
+* Add offline muon informations
+* Make it run on miniAOD samples
+
+
+
+Workspace:
+
+```
+/afs/cern.ch/user/k/kplee/work/private/Physics/DYScouting/CMSSW_10_6_12
+```
+
+
+
 ## v1.2 -> v1.3
 
 * Add calo jet information
