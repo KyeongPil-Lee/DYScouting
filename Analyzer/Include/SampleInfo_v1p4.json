@@ -49,8 +49,17 @@
     "tag": "Offline_ttbar_UL18",
     "isMC": 1,
     "xSec": 831.76,
-    "sumWeight": 69690040.0,
+    "sumWeight": -1.0,
     "comment": "NNLO cross section",
+    "list_dir": [""]
+  },
+
+    {
+    "tag": "Offline_TTTo2L2Nu_UL18",
+    "isMC": 1,
+    "xSec": 87.31,
+    "sumWeight": 69690040.0,
+    "comment": "cross section is from Z'->ll group AN",
     "list_dir": ["v1.4/offline/TTTo2L2Nu_Powheg_UL18"]
   },
 
