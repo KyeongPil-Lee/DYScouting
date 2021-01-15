@@ -55,10 +55,10 @@ public:
         // if( debug_ ) printf("  Pass SelectGenEventBySampleType\n");
 
         Bool_t isDYEvent = kFALSE;
-        DYTool::OffMuPair DYMuPair = OffEventSelection_EGamma(ntuple, isDYEvent);
+        DYTool::OffMuPair DYMuPair = OffEventSelection_EGamma_TightIDISO(ntuple, isDYEvent);
         if( isDYEvent )
         {
-          if( debug_ ) printf("  Pass OffEventSelection_EGamma\n");
+          if( debug_ ) printf("  Pass OffEventSelection_EGamma_TightIDISO\n");
           Double_t diMuM = DYMuPair.mass;
 
           Double_t eff_ID_lead  = tnpEff_ID->GetEff(sampleInfo_.isMC, DYMuPair.first_.pt, fabs(DYMuPair.first_.eta));
