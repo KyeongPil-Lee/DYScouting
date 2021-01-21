@@ -1162,6 +1162,9 @@ void DYTreeProducer::Fill_L1( const edm::Event& iEvent, const edm::EventSetup& i
     int L1Prescale = -999;
     L1GtUtils_->getPrescaleByName(string(vec_L1Seed_[i_seed]), L1Prescale );
 
+    // cout << "L1 seed: " << vec_L1Seed_[i_seed] << endl;
+    // cout << "--> decision = " << isFired << ", prescale = " << L1Prescale << endl;
+
     vec_L1Bit_.push_back( isFired );
     vec_L1Prescale_.push_back( L1Prescale );
   }
