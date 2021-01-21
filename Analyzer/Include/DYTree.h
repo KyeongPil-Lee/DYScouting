@@ -121,6 +121,58 @@ public:
   Double_t caloMET_pt;
   Double_t rho;
 
+  // -- offline objects
+  // -- offline muons
+  Int_t           nOffMuon;
+  Double_t        offMuon_pt[ArrSize];
+  Double_t        offMuon_eta[ArrSize];
+  Double_t        offMuon_phi[ArrSize];
+  Double_t        offMuon_px[ArrSize];
+  Double_t        offMuon_py[ArrSize];
+  Double_t        offMuon_pz[ArrSize];
+  Double_t        offMuon_dB[ArrSize];
+  Double_t        offMuon_charge[ArrSize];
+  Int_t           offMuon_isGLB[ArrSize];
+  Int_t           offMuon_isSTA[ArrSize];
+  Int_t           offMuon_isTRK[ArrSize];
+  Int_t           offMuon_isPF[ArrSize];
+  Int_t           offMuon_isTight[ArrSize];
+  Int_t           offMuon_isMedium[ArrSize];
+  Int_t           offMuon_isLoose[ArrSize];
+  Int_t           offMuon_isHighPt[ArrSize];
+  Int_t           offMuon_isSoft[ArrSize];
+  Double_t        offMuon_iso03_sumPt[ArrSize];
+  Double_t        offMuon_iso03_hadEt[ArrSize];
+  Double_t        offMuon_iso03_emEt[ArrSize];
+  Double_t        offMuon_PFIso03_charged[ArrSize];
+  Double_t        offMuon_PFIso03_neutral[ArrSize];
+  Double_t        offMuon_PFIso03_photon[ArrSize];
+  Double_t        offMuon_PFIso03_sumPU[ArrSize];
+  Double_t        offMuon_PFIso04_charged[ArrSize];
+  Double_t        offMuon_PFIso04_neutral[ArrSize];
+  Double_t        offMuon_PFIso04_photon[ArrSize];
+  Double_t        offMuon_PFIso04_sumPU[ArrSize];
+  Double_t        offMuon_PFCluster03_ECAL[ArrSize];
+  Double_t        offMuon_PFCluster03_HCAL[ArrSize];
+  Double_t        offMuon_PFCluster04_ECAL[ArrSize];
+  Double_t        offMuon_PFCluster04_HCAL[ArrSize];
+  Double_t        offMuon_normChi2_global[ArrSize];
+  Int_t           offMuon_nTrackerHit_global[ArrSize];
+  Int_t           offMuon_nTrackerLayer_global[ArrSize];
+  Int_t           offMuon_nPixelHit_global[ArrSize];
+  Int_t           offMuon_nMuonHit_global[ArrSize];
+  Double_t        offMuon_normChi2_inner[ArrSize];
+  Int_t           offMuon_nTrackerHit_inner[ArrSize];
+  Int_t           offMuon_nTrackerLayer_inner[ArrSize];
+  Int_t           offMuon_nPixelHit_inner[ArrSize];
+  Double_t        offMuon_pt_tuneP[ArrSize];
+  Double_t        offMuon_ptError_tuneP[ArrSize];
+  Double_t        offMuon_dxyVTX_best[ArrSize];
+  Double_t        offMuon_dzVTX_best[ArrSize];
+  Int_t           offMuon_nMatchedStation[ArrSize];
+  Int_t           offMuon_nMatchedRPCLayer[ArrSize];
+  Int_t           offMuon_stationMask[ArrSize];
+
   DYTree()
   {
     cout << "Default constructor ... nothing happens" << endl;
@@ -365,6 +417,156 @@ public:
 
     chain_->SetBranchStatus("genParticle_isMostlyLikePythia6Status3", 1);
     chain_->SetBranchAddress("genParticle_isMostlyLikePythia6Status3", &genParticle_isMostlyLikePythia6Status3);
+  }
+
+  void TurnOnBranches_OffMuon()
+  {
+    chain_->SetBranchStatus("nOffMuon", 1);
+    chain_->SetBranchAddress("nOffMuon", &nOffMuon);
+
+    chain_->SetBranchStatus("offMuon_pt", 1);
+    chain_->SetBranchAddress("offMuon_pt", &offMuon_pt);
+
+    chain_->SetBranchStatus("offMuon_eta", 1);
+    chain_->SetBranchAddress("offMuon_eta", &offMuon_eta);
+
+    chain_->SetBranchStatus("offMuon_phi", 1);
+    chain_->SetBranchAddress("offMuon_phi", &offMuon_phi);
+
+    chain_->SetBranchStatus("offMuon_px", 1);
+    chain_->SetBranchAddress("offMuon_px", &offMuon_px);
+
+    chain_->SetBranchStatus("offMuon_py", 1);
+    chain_->SetBranchAddress("offMuon_py", &offMuon_py);
+
+    chain_->SetBranchStatus("offMuon_pz", 1);
+    chain_->SetBranchAddress("offMuon_pz", &offMuon_pz);
+
+    chain_->SetBranchStatus("offMuon_dB", 1);
+    chain_->SetBranchAddress("offMuon_dB", &offMuon_dB);
+
+    chain_->SetBranchStatus("offMuon_charge", 1);
+    chain_->SetBranchAddress("offMuon_charge", &offMuon_charge);
+
+    chain_->SetBranchStatus("offMuon_isGLB", 1);
+    chain_->SetBranchAddress("offMuon_isGLB", &offMuon_isGLB);
+
+    chain_->SetBranchStatus("offMuon_isSTA", 1);
+    chain_->SetBranchAddress("offMuon_isSTA", &offMuon_isSTA);
+
+    chain_->SetBranchStatus("offMuon_isTRK", 1);
+    chain_->SetBranchAddress("offMuon_isTRK", &offMuon_isTRK);
+
+    chain_->SetBranchStatus("offMuon_isPF", 1);
+    chain_->SetBranchAddress("offMuon_isPF", &offMuon_isPF);
+
+    chain_->SetBranchStatus("offMuon_isTight", 1);
+    chain_->SetBranchAddress("offMuon_isTight", &offMuon_isTight);
+
+    chain_->SetBranchStatus("offMuon_isMedium", 1);
+    chain_->SetBranchAddress("offMuon_isMedium", &offMuon_isMedium);
+
+    chain_->SetBranchStatus("offMuon_isLoose", 1);
+    chain_->SetBranchAddress("offMuon_isLoose", &offMuon_isLoose);
+
+    chain_->SetBranchStatus("offMuon_isHighPt", 1);
+    chain_->SetBranchAddress("offMuon_isHighPt", &offMuon_isHighPt);
+
+    chain_->SetBranchStatus("offMuon_isSoft", 1);
+    chain_->SetBranchAddress("offMuon_isSoft", &offMuon_isSoft);
+
+    chain_->SetBranchStatus("offMuon_iso03_sumPt", 1);
+    chain_->SetBranchAddress("offMuon_iso03_sumPt", &offMuon_iso03_sumPt);
+
+    chain_->SetBranchStatus("offMuon_iso03_hadEt", 1);
+    chain_->SetBranchAddress("offMuon_iso03_hadEt", &offMuon_iso03_hadEt);
+
+    chain_->SetBranchStatus("offMuon_iso03_emEt", 1);
+    chain_->SetBranchAddress("offMuon_iso03_emEt", &offMuon_iso03_emEt);
+
+    chain_->SetBranchStatus("offMuon_PFIso03_charged", 1);
+    chain_->SetBranchAddress("offMuon_PFIso03_charged", &offMuon_PFIso03_charged);
+
+    chain_->SetBranchStatus("offMuon_PFIso03_neutral", 1);
+    chain_->SetBranchAddress("offMuon_PFIso03_neutral", &offMuon_PFIso03_neutral);
+
+    chain_->SetBranchStatus("offMuon_PFIso03_photon", 1);
+    chain_->SetBranchAddress("offMuon_PFIso03_photon", &offMuon_PFIso03_photon);
+
+    chain_->SetBranchStatus("offMuon_PFIso03_sumPU", 1);
+    chain_->SetBranchAddress("offMuon_PFIso03_sumPU", &offMuon_PFIso03_sumPU);
+
+    chain_->SetBranchStatus("offMuon_PFIso04_charged", 1);
+    chain_->SetBranchAddress("offMuon_PFIso04_charged", &offMuon_PFIso04_charged);
+
+    chain_->SetBranchStatus("offMuon_PFIso04_neutral", 1);
+    chain_->SetBranchAddress("offMuon_PFIso04_neutral", &offMuon_PFIso04_neutral);
+
+    chain_->SetBranchStatus("offMuon_PFIso04_photon", 1);
+    chain_->SetBranchAddress("offMuon_PFIso04_photon", &offMuon_PFIso04_photon);
+
+    chain_->SetBranchStatus("offMuon_PFIso04_sumPU", 1);
+    chain_->SetBranchAddress("offMuon_PFIso04_sumPU", &offMuon_PFIso04_sumPU);
+
+    chain_->SetBranchStatus("offMuon_PFCluster03_ECAL", 1);
+    chain_->SetBranchAddress("offMuon_PFCluster03_ECAL", &offMuon_PFCluster03_ECAL);
+
+    chain_->SetBranchStatus("offMuon_PFCluster03_HCAL", 1);
+    chain_->SetBranchAddress("offMuon_PFCluster03_HCAL", &offMuon_PFCluster03_HCAL);
+
+    chain_->SetBranchStatus("offMuon_PFCluster04_ECAL", 1);
+    chain_->SetBranchAddress("offMuon_PFCluster04_ECAL", &offMuon_PFCluster04_ECAL);
+
+    chain_->SetBranchStatus("offMuon_PFCluster04_HCAL", 1);
+    chain_->SetBranchAddress("offMuon_PFCluster04_HCAL", &offMuon_PFCluster04_HCAL);
+
+    chain_->SetBranchStatus("offMuon_normChi2_global", 1);
+    chain_->SetBranchAddress("offMuon_normChi2_global", &offMuon_normChi2_global);
+
+    chain_->SetBranchStatus("offMuon_nTrackerHit_global", 1);
+    chain_->SetBranchAddress("offMuon_nTrackerHit_global", &offMuon_nTrackerHit_global);
+
+    chain_->SetBranchStatus("offMuon_nTrackerLayer_global", 1);
+    chain_->SetBranchAddress("offMuon_nTrackerLayer_global", &offMuon_nTrackerLayer_global);
+
+    chain_->SetBranchStatus("offMuon_nPixelHit_global", 1);
+    chain_->SetBranchAddress("offMuon_nPixelHit_global", &offMuon_nPixelHit_global);
+
+    chain_->SetBranchStatus("offMuon_nMuonHit_global", 1);
+    chain_->SetBranchAddress("offMuon_nMuonHit_global", &offMuon_nMuonHit_global);
+
+    chain_->SetBranchStatus("offMuon_normChi2_inner", 1);
+    chain_->SetBranchAddress("offMuon_normChi2_inner", &offMuon_normChi2_inner);
+
+    chain_->SetBranchStatus("offMuon_nTrackerHit_inner", 1);
+    chain_->SetBranchAddress("offMuon_nTrackerHit_inner", &offMuon_nTrackerHit_inner);
+
+    chain_->SetBranchStatus("offMuon_nTrackerLayer_inner", 1);
+    chain_->SetBranchAddress("offMuon_nTrackerLayer_inner", &offMuon_nTrackerLayer_inner);
+
+    chain_->SetBranchStatus("offMuon_nPixelHit_inner", 1);
+    chain_->SetBranchAddress("offMuon_nPixelHit_inner", &offMuon_nPixelHit_inner);
+
+    chain_->SetBranchStatus("offMuon_pt_tuneP", 1);
+    chain_->SetBranchAddress("offMuon_pt_tuneP", &offMuon_pt_tuneP);
+
+    chain_->SetBranchStatus("offMuon_ptError_tuneP", 1);
+    chain_->SetBranchAddress("offMuon_ptError_tuneP", &offMuon_ptError_tuneP);
+
+    chain_->SetBranchStatus("offMuon_dxyVTX_best", 1);
+    chain_->SetBranchAddress("offMuon_dxyVTX_best", &offMuon_dxyVTX_best);
+
+    chain_->SetBranchStatus("offMuon_dzVTX_best", 1);
+    chain_->SetBranchAddress("offMuon_dzVTX_best", &offMuon_dzVTX_best);
+
+    chain_->SetBranchStatus("offMuon_nMatchedStation", 1);
+    chain_->SetBranchAddress("offMuon_nMatchedStation", &offMuon_nMatchedStation);
+
+    chain_->SetBranchStatus("offMuon_nMatchedRPCLayer", 1);
+    chain_->SetBranchAddress("offMuon_nMatchedRPCLayer", &offMuon_nMatchedRPCLayer);
+
+    chain_->SetBranchStatus("offMuon_stationMask", 1);
+    chain_->SetBranchAddress("offMuon_stationMask", &offMuon_stationMask);
   }
 
 

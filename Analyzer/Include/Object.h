@@ -635,4 +635,267 @@ private:
   }
 };
 
+// -- offline muon
+class OffMuon : public Object
+{
+public:
+  Double_t px;
+  Double_t py;
+  Double_t pz;
+  Double_t mass;
+  Double_t energy;
+  Double_t dB;
+  Double_t charge;
+  Int_t    isGLB;
+  Int_t    isSTA;
+  Int_t    isTRK;
+  Int_t    isPF;
+  Int_t    isTight;
+  Int_t    isMedium;
+  Int_t    isLoose;
+  Int_t    isHighPt;
+  Int_t    isSoft;
+  Double_t iso03_sumPt;
+  Double_t iso03_hadEt;
+  Double_t iso03_emEt;
+  Double_t PFIso03_charged;
+  Double_t PFIso03_neutral;
+  Double_t PFIso03_photon;
+  Double_t PFIso03_sumPU;
+  Double_t PFIso04_charged;
+  Double_t PFIso04_neutral;
+  Double_t PFIso04_photon;
+  Double_t PFIso04_sumPU;
+  Double_t PFCluster03_ECAL;
+  Double_t PFCluster03_HCAL;
+  Double_t PFCluster04_ECAL;
+  Double_t PFCluster04_HCAL;
+  Double_t normChi2_global;
+  Int_t    nTrackerHit_global;
+  Int_t    nTrackerLayer_global;
+  Int_t    nPixelHit_global;
+  Int_t    nMuonHit_global;
+  Double_t normChi2_inner;
+  Int_t    nTrackerHit_inner;
+  Int_t    nTrackerLayer_inner;
+  Int_t    nPixelHit_inner;
+  Double_t pt_tuneP;
+  Double_t ptError_tuneP;
+  Double_t dxyVTX_best;
+  Double_t dzVTX_best;
+  Int_t    nMatchedStation;
+  Int_t    nMatchedRPCLayer;
+  Int_t    stationMask;
+
+  Double_t relPFIso_dBeta;
+  Double_t relTrkIso;
+
+  OffMuon()
+  {
+    Init();
+  }
+
+  OffMuon(DYTree* ntuple, Int_t index): OffMuon()
+  {
+    FillFromNtuple(ntuple, index);
+  }
+
+  void FillFromNtuple(DYTree* ntuple, Int_t index)
+  {
+    pt     = ntuple->offMuon_pt[index];
+    eta    = ntuple->offMuon_eta[index];
+    phi    = ntuple->offMuon_phi[index];
+    charge = ntuple->offMuon_charge[index];
+
+    px  = ntuple->offMuon_px[index];
+    py  = ntuple->offMuon_py[index];
+    pz  = ntuple->offMuon_pz[index];
+    mass = DYTool::M_mu;
+    energy = sqrt(px*px + py*py + pz*pz + mass*mass);
+    vecP.SetPxPyPzE(px, py, pz, energy);
+
+    isGLB = ntuple->offMuon_isGLB[index];
+    isSTA = ntuple->offMuon_isSTA[index];
+    isTRK = ntuple->offMuon_isTRK[index];
+    isPF  = ntuple->offMuon_isPF[index];
+
+    isTight  = ntuple->offMuon_isTight[index];
+    isMedium = ntuple->offMuon_isMedium[index];
+    isLoose  = ntuple->offMuon_isLoose[index];
+    isHighPt = ntuple->offMuon_isHighPt[index];
+    isSoft   = ntuple->offMuon_isSoft[index];
+
+    iso03_sumPt = ntuple->offMuon_iso03_sumPt[index];
+    iso03_hadEt = ntuple->offMuon_iso03_hadEt[index];
+    iso03_emEt  = ntuple->offMuon_iso03_emEt[index];
+
+    PFIso03_charged = ntuple->offMuon_PFIso03_charged[index];
+    PFIso03_neutral = ntuple->offMuon_PFIso03_neutral[index];
+    PFIso03_photon  = ntuple->offMuon_PFIso03_photon[index];
+    PFIso03_sumPU   = ntuple->offMuon_PFIso03_sumPU[index];
+    PFIso04_charged = ntuple->offMuon_PFIso04_charged[index];
+    PFIso04_neutral = ntuple->offMuon_PFIso04_neutral[index];
+    PFIso04_photon  = ntuple->offMuon_PFIso04_photon[index];
+    PFIso04_sumPU   = ntuple->offMuon_PFIso04_sumPU[index];
+
+    PFCluster03_ECAL = ntuple->offMuon_PFCluster03_ECAL[index];
+    PFCluster03_HCAL = ntuple->offMuon_PFCluster03_HCAL[index];
+    PFCluster04_ECAL = ntuple->offMuon_PFCluster04_ECAL[index];
+    PFCluster04_HCAL = ntuple->offMuon_PFCluster04_HCAL[index];
+
+    normChi2_global      = ntuple->offMuon_normChi2_global[index];
+    nTrackerHit_global   = ntuple->offMuon_nTrackerHit_global[index];
+    nTrackerLayer_global = ntuple->offMuon_nTrackerLayer_global[index];
+    nPixelHit_global     = ntuple->offMuon_nPixelHit_global[index];
+    nMuonHit_global      = ntuple->offMuon_nMuonHit_global[index];
+
+    normChi2_inner      = ntuple->offMuon_normChi2_inner[index];
+    nTrackerHit_inner   = ntuple->offMuon_nTrackerHit_inner[index];
+    nTrackerLayer_inner = ntuple->offMuon_nTrackerLayer_inner[index];
+    nPixelHit_inner     = ntuple->offMuon_nPixelHit_inner[index];
+
+    pt_tuneP      = ntuple->offMuon_pt_tuneP[index];
+    ptError_tuneP = ntuple->offMuon_ptError_tuneP[index];
+
+    dxyVTX_best = ntuple->offMuon_dxyVTX_best[index];
+    dzVTX_best  = ntuple->offMuon_dzVTX_best[index];
+    dB          = ntuple->offMuon_dB[index];
+
+    nMatchedStation  = ntuple->offMuon_nMatchedStation[index];
+    nMatchedRPCLayer = ntuple->offMuon_nMatchedRPCLayer[index];
+    stationMask      = ntuple->offMuon_stationMask[index];
+
+    relPFIso_dBeta = (PFIso04_charged + max(0., PFIso04_neutral + PFIso04_photon - 0.5*PFIso04_sumPU))/pt;
+    relTrkIso = iso03_sumPt / pt;
+  }
+
+private:
+  void Init()
+  {
+    pt = -999;
+    eta = -999;
+    phi = -999;
+    mass = -999;
+    px = -999;
+    py = -999;
+    pz = -999;
+    energy = -999;
+    dB = -999;
+    charge = -999;
+    isGLB = -999;
+    isSTA = -999;
+    isTRK = -999;
+    isPF = -999;
+    isTight = -999;
+    isMedium = -999;
+    isLoose = -999;
+    isHighPt = -999;
+    isSoft = -999;
+    iso03_sumPt = -999;
+    iso03_hadEt = -999;
+    iso03_emEt = -999;
+    PFIso03_charged = -999;
+    PFIso03_neutral = -999;
+    PFIso03_photon = -999;
+    PFIso03_sumPU = -999;
+    PFIso04_charged = -999;
+    PFIso04_neutral = -999;
+    PFIso04_photon = -999;
+    PFIso04_sumPU = -999;
+    PFCluster03_ECAL = -999;
+    PFCluster03_HCAL = -999;
+    PFCluster04_ECAL = -999;
+    PFCluster04_HCAL = -999;
+    normChi2_global = -999;
+    nTrackerHit_global = -999;
+    nTrackerLayer_global = -999;
+    nPixelHit_global = -999;
+    nMuonHit_global = -999;
+    normChi2_inner = -999;
+    nTrackerHit_inner = -999;
+    nTrackerLayer_inner = -999;
+    nPixelHit_inner = -999;
+    pt_tuneP = -999;
+    ptError_tuneP = -999;
+    dxyVTX_best = -999;
+    dzVTX_best = -999;
+    nMatchedStation = -999;
+    nMatchedRPCLayer = -999;
+    stationMask = -999;
+
+    relPFIso_dBeta = -999;
+    relTrkIso = -999;
+  }
+};
+
+// -- offline muon pair
+class OffMuPair: public Object
+{
+public:
+  OffMuon first_;
+  OffMuon second_;
+
+  Double_t mass;
+  Double_t rap;
+  Double_t absRap;
+
+  Bool_t isOS;
+  Double_t signSum;
+
+  Double_t dEta;
+  Double_t dPhi;
+  Double_t dR;
+  Double_t angle3D;
+
+  OffMuPair() { Init(); }
+
+  OffMuPair(OffMuon muon1, OffMuon muon2): OffMuPair()
+  {
+    if( muon1.pt > muon2.pt )
+    {
+      first_ = muon1;
+      second_ = muon2;
+    }
+    else
+    {
+      first_ = muon2;
+      second_ = muon1;
+    }
+
+    Assign();
+  }
+
+private:
+  void Assign()
+  {
+    vecP = first_.vecP + second_.vecP;
+
+    pt = vecP.Pt();
+    eta = vecP.Eta();
+    phi = vecP.Phi();
+
+    mass = vecP.M();
+    rap = vecP.Rapidity();
+    absRap = fabs(rap);
+
+    isOS = first_.charge != second_.charge ? kTRUE : kFALSE;
+    signSum = first_.charge + second_.charge; // -- for TMVA (which can't recognize boolean as an input variable)
+
+    dEta = fabs(first_.eta - second_.eta);
+    dPhi = first_.vecP.DeltaPhi( second_.vecP );
+    dR   = sqrt(dEta*dEta + dPhi*dPhi);
+    angle3D = first_.vecP.Angle( second_.vecP.Vect() );
+  }
+
+  void Init()
+  {
+    mass = -999;
+    rap = -999;
+    absRap = -999;
+    signSum = -999;
+
+    isOS = kFALSE;
+  }
+};
+
 }; // -- end of namespace DYTool

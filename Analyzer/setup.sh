@@ -18,6 +18,9 @@ if [ $HOSTNAME == "tamsa2" ]; then
 elif [ $HOSTNAME == "muon" ]; then
   DY_NTUPLE_PATH="/scratch/kplee/DYScoutingTree"
 
+elif [ $HOSTNAME == "cms.knu.ac.kr" ]; then
+  DY_NTUPLE_PATH="/u/user/kplee/SE_UserHome"
+
 # elif [ $USER == "KyeongPil_Lee" ]; then
 #   DY_NTUPLE_PATH="/Users/KyeongPil_Lee/temp/DYntuple"
 
@@ -29,6 +32,14 @@ if [ $HOSTNAME == "tamsa2" ]; then
   eval `scramv1 runtime -sh`
   cd $DY_ANALYZER_PATH
   echo "CMSSW enviornment under " $CMSSW_VERSION
+
+elif [ $HOSTNAME == "cms.knu.ac.kr" ]; then
+  source /cvmfs/cms.cern.ch/cmsset_default.sh
+  cd /cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_2_6
+  eval `scramv1 runtime -sh`
+  cd $DY_ANALYZER_PATH
+  echo "CMSSW enviornment under " $CMSSW_VERSION
+
 fi
 
 echo "========================================"
