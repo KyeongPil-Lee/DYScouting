@@ -91,8 +91,7 @@ if isMiniAOD:
   process.DYTree.offlineMuon           = cms.untracked.InputTag("slimmedMuons")
   process.DYTree.offlineVertex         = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
 
-
-if isMC : 
-    process.p = cms.Path(process.DYTree)
-else : 
-    process.p = cms.Path(process.gtStage2Digis + process.DYTree)
+if not isMC and not isMiniAOD: # -- if it is DATA and RAW tier, RAWtoDigi step is needed to retrieve L1 information
+  process.p = cms.Path(process.gtStage2Digis + process.DYTree)
+else: # -- else (MC or DATA with miniAOD format)
+  process.p = cms.Path(process.DYTree)

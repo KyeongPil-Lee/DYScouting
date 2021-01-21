@@ -26,7 +26,8 @@ def GetArgument(sampleType):
          isMiniAOD = True
 
     elif sampleType == "Data2018UL_MINIAOD":
-         exampleEDMFile = '' # -- lxplus
+         exampleEDMFile = 'file:/afs/cern.ch/work/k/kplee/private/ROOTFile_Test/106X/UL18/MINIAOD_EGamma_12Nov2019_UL2018.root' # -- lxplus
+         # exampleEDMFile = 'file:/afs/cern.ch/work/k/kplee/private/ROOTFile_Test/106X/UL18/MINIAOD_DoubleMuon_12Nov2019_UL2018.root' # -- lxplus, for test
          globalTag = '106X_dataRun2_v28'
          isMC = False
          isMiniAOD = True

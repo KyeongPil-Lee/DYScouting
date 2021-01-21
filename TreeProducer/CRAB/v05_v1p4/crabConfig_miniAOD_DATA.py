@@ -19,7 +19,7 @@ config.Site.storageSite = 'T3_KR_KNU'
 
 config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/Legacy_2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt'
 
-version = 'v1p4'
+version = 'v1p4v2'
 config.Data.outLFNDirBase = '/store/user/kplee/DYScoutingTree_%s' % version
 
 # 'MultiCRAB' part
