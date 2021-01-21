@@ -31,8 +31,8 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
 
     // -- TnP efficiencies
-    TnPEffTool* tnpEff_ID  = new TnPEffTool("mediumID");
-    TnPEffTool* tnpEff_ISO = new TnPEffTool("loosePFIso_over_mediumID");
+    TnPEffTool* tnpEff_ID  = new TnPEffTool("tightID");
+    TnPEffTool* tnpEff_ISO = new TnPEffTool("tightPFIso_over_tightID");
 
     for(Int_t i=0; i<nEvent; i++)
     {
@@ -95,6 +95,14 @@ private:
 
   Bool_t IsFired_ScoutingPath(DYTool::DYTree* ntuple)
   {
+    // -- pass unprescaled L1 (only for 2018)
+    // -- 4 = L1_DoubleMu_15_7
+    // -- 11 = L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18
+    // -- 16 = L1_DoubleMu4p5_SQ_OS_dR_Max1p2
+    Bool_t doPassL1 = kFALSE;
+    // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(11) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE;
+    if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE; // -- no L1 w/ mass cut
+
     Bool_t doPassTrig = kFALSE;
     for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
     {
@@ -106,6 +114,6 @@ private:
       }
     }
 
-    return doPassTrig;
+    return doPassL1 && doPassTrig;
   }
 };
