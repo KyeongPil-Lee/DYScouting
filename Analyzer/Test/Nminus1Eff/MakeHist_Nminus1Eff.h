@@ -35,8 +35,12 @@ public:
     StartTimer();
 
     // -- setup for counting the number of events
-    nEvent_N_ = 0;
-    arr_nEvent_Nminus1_ = new double[nCut_];
+    TH1::SetDefaultSumw2(kTRUE);
+    TH1::AddDirectory(kFALSE);
+    Int_t nCut = 5;
+    TH1D* h_nEvent_N       = new TH1D("h_nEvent_N", "", 1, 0, 1);
+    TH1D* h_nEvent_Nminus1 = new TH1D("h_nEvent_Nminus1", "", nCut, 0, nCut);
+
 
     TChain *chain = new TChain("DYTree/ntuple");
     DYTool::AddNtupleToChain(chain, sampleInfo_.ntuplePathFile);
@@ -68,32 +72,33 @@ public:
         // -- DY low mass sample: apply NLO/LO k-factor
         if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
           totWeight *= nloWeightTool->GetWeight(ntuple);
-        
-        Bool_t isDYEvent = EventSelection_ZMassRange_N(ntuple);
+
+        if( EventSelection_ZMassRange_N(ntuple) ) h_nEvent_N->Fill( 0.5, totWeight ); // -- 0.5 = first bin
+
+        if( EventSelection_ZMassRange_N_minus_nPixelHit(ntuple) )     h_nEvent_Nminus1->Fill( 0.5, totWeight ); // -- 0.5 = first bin
+        if( EventSelection_ZMassRange_N_minus_nTrackerLayer(ntuple) ) h_nEvent_Nminus1->Fill( 1.5, totWeight ); // -- 1.5 = second bin
+        if( EventSelection_ZMassRange_N_minus_normChi2(ntuple) )      h_nEvent_Nminus1->Fill( 2.5, totWeight ); // -- 2.5 = 3rd bin
+        if( EventSelection_ZMassRange_N_minus_relTrkIso(ntuple) )     h_nEvent_Nminus1->Fill( 3.5, totWeight ); // -- 3.5 = 4th bin
+        if( EventSelection_ZMassRange_N_minus_CommonVertex(ntuple) )  h_nEvent_Nminus1->Fill( 4.5, totWeight ); // -- 4.5 = 5th bin
       }
     }
 
-    // TString outputName = TString::Format("ROOTFile_MakeHist_Dimuon_%s.root", sampleInfo_.type.Data());
-    // TFile *f_output = TFile::Open(outputName, "RECREATE");
+    TString outputName = TString::Format("ROOTFile_MakeHist_Dimuon_%s.root", sampleInfo_.type.Data());
+    TFile *f_output = TFile::Open(outputName, "RECREATE");
+    h_nEvent_N->Write();
+    h_nEvent_Nminus1->Write();
 
-    // f_output->Close();
+    f_output->Close();
 
     PrintRunTime();
   }
 private:
 
-  Int_t nCut_ = 5;
-  Double_t nEvent_N_;
-  Double_t* arr_nEvent_Nminus1_;
-
-  TH1D* h_nEvent_N_;
-  TH1D* h_nEvent_Nminus1_;
-
   // -- same with EventSelection_BDTInput_noOS in DYTool.h
   // -- except for the requirement on the mass range (within 81 < m < 101 GeV) to ensure that it is true dimuon events
   Bool_t EventSelection_ZMassRange_N(DYTool::DYTree *ntuple)
   {
-    doPass = kFALSE;
+    Bool_t doPass = kFALSE;
 
     if( !IsTriggerFired(ntuple) ) return 0;
 
@@ -165,7 +170,7 @@ private:
 
     Bool_t hasVertex = CheckVertex(muPair, ntuple);
 
-    if( isWithinAcc && isGoodMuon && hasVertex && mass > 10.0 ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && muPair.mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
@@ -178,7 +183,7 @@ private:
     if( nVtx == 0 )
     {
       hasVertex = kFALSE;
-      return;
+      return kFALSE;
     }
 
     for(Int_t i_vtx=0; i_vtx<nVtx; i_vtx++)
@@ -209,11 +214,13 @@ private:
         break;
       }
     }
+
+    return hasVertex;
   }
 
   Bool_t EventSelection_ZMassRange_N_minus_nPixelHit(DYTool::DYTree *ntuple)
   {
-    doPass = kFALSE;
+    Bool_t doPass = kFALSE;
 
     if( !IsTriggerFired(ntuple) ) return 0;
 
@@ -223,6 +230,130 @@ private:
     vector< DYTool::MuPair > vec_goodMuPair;
     for( auto& muPair : vec_muPair )
       if( IsDYCandidate_BDTInput_noOS_minus_nPixelHit(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
+
+    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
+    if( nGoodPair == 0 ) doPass = kFALSE;
+    else // -- at least one muon pair
+    {
+      for(const auto& goodMuPair : vec_goodMuPair)
+      {
+        Double_t diMuM = goodMuPair.mass;
+        if( 81.0 < diMuM && diMuM < 101.0 ) // -- at least one pair is within Z mass range: pass
+        {
+          doPass = kTRUE;
+          break;
+        }
+      }
+    }
+
+    return doPass;
+  }
+
+  Bool_t EventSelection_ZMassRange_N_minus_nTrackerLayer(DYTool::DYTree *ntuple)
+  {
+    Bool_t doPass = kFALSE;
+
+    if( !IsTriggerFired(ntuple) ) return 0;
+
+    // -- dimuon selection
+    vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+    vector< DYTool::MuPair > vec_goodMuPair;
+    for( auto& muPair : vec_muPair )
+      if( IsDYCandidate_BDTInput_noOS_minus_nTrackerLayer(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
+
+    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
+    if( nGoodPair == 0 ) doPass = kFALSE;
+    else // -- at least one muon pair
+    {
+      for(const auto& goodMuPair : vec_goodMuPair)
+      {
+        Double_t diMuM = goodMuPair.mass;
+        if( 81.0 < diMuM && diMuM < 101.0 ) // -- at least one pair is within Z mass range: pass
+        {
+          doPass = kTRUE;
+          break;
+        }
+      }
+    }
+
+    return doPass;
+  }
+
+  Bool_t EventSelection_ZMassRange_N_minus_normChi2(DYTool::DYTree *ntuple)
+  {
+    Bool_t doPass = kFALSE;
+
+    if( !IsTriggerFired(ntuple) ) return 0;
+
+    // -- dimuon selection
+    vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+    vector< DYTool::MuPair > vec_goodMuPair;
+    for( auto& muPair : vec_muPair )
+      if( IsDYCandidate_BDTInput_noOS_minus_normChi2(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
+
+    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
+    if( nGoodPair == 0 ) doPass = kFALSE;
+    else // -- at least one muon pair
+    {
+      for(const auto& goodMuPair : vec_goodMuPair)
+      {
+        Double_t diMuM = goodMuPair.mass;
+        if( 81.0 < diMuM && diMuM < 101.0 ) // -- at least one pair is within Z mass range: pass
+        {
+          doPass = kTRUE;
+          break;
+        }
+      }
+    }
+
+    return doPass;
+  }
+
+  Bool_t EventSelection_ZMassRange_N_minus_relTrkIso(DYTool::DYTree *ntuple)
+  {
+    Bool_t doPass = kFALSE;
+
+    if( !IsTriggerFired(ntuple) ) return 0;
+
+    // -- dimuon selection
+    vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+    vector< DYTool::MuPair > vec_goodMuPair;
+    for( auto& muPair : vec_muPair )
+      if( IsDYCandidate_BDTInput_noOS_minus_relTrkIso(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
+
+    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
+    if( nGoodPair == 0 ) doPass = kFALSE;
+    else // -- at least one muon pair
+    {
+      for(const auto& goodMuPair : vec_goodMuPair)
+      {
+        Double_t diMuM = goodMuPair.mass;
+        if( 81.0 < diMuM && diMuM < 101.0 ) // -- at least one pair is within Z mass range: pass
+        {
+          doPass = kTRUE;
+          break;
+        }
+      }
+    }
+
+    return doPass;
+  }
+
+  Bool_t EventSelection_ZMassRange_N_minus_CommonVertex(DYTool::DYTree *ntuple)
+  {
+    Bool_t doPass = kFALSE;
+
+    if( !IsTriggerFired(ntuple) ) return 0;
+
+    // -- dimuon selection
+    vector< DYTool::MuPair > vec_muPair = DYTool::GetAllMuPairs(ntuple);
+
+    vector< DYTool::MuPair > vec_goodMuPair;
+    for( auto& muPair : vec_muPair )
+      if( IsDYCandidate_BDTInput_noOS_minus_CommonVertex(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
 
     Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
     if( nGoodPair == 0 ) doPass = kFALSE;
@@ -258,7 +389,7 @@ private:
 
     Bool_t hasVertex = CheckVertex(muPair, ntuple);
 
-    if( isWithinAcc && isGoodMuon && hasVertex && mass > 10.0 ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && muPair.mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
@@ -279,7 +410,7 @@ private:
 
     Bool_t hasVertex = CheckVertex(muPair, ntuple);
 
-    if( isWithinAcc && isGoodMuon && hasVertex && mass > 10.0 ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && muPair.mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
@@ -300,7 +431,7 @@ private:
 
     Bool_t hasVertex = CheckVertex(muPair, ntuple);
 
-    if( isWithinAcc && isGoodMuon && hasVertex && mass > 10.0 ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && muPair.mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
@@ -321,7 +452,7 @@ private:
 
     Bool_t hasVertex = CheckVertex(muPair, ntuple);
 
-    if( isWithinAcc && isGoodMuon && hasVertex && mass > 10.0 ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && hasVertex && muPair.mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
@@ -340,7 +471,7 @@ private:
         muPair.second_.nPixelHit > 0 && muPair.second_.nTrackerLayer > 5 && muPair.second_.normChi2 < 10 && muPair.second_.relTrkIso < 0.15 )
       isGoodMuon = kTRUE;
 
-    if( isWithinAcc && isGoodMuon && mass > 10.0 ) flag = kTRUE;
+    if( isWithinAcc && isGoodMuon && muPair.mass > 10.0 ) flag = kTRUE;
 
     return flag;
   }
