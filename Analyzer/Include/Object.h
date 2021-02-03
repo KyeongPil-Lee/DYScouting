@@ -586,6 +586,9 @@ public:
     return flag;
   }
 
+  // -- IsDYCandidate_BDTInput_noOS + remove vertex information
+  Bool_t IsDYCandidate_BDTInput_noOS_noVTX(DYTool::DYTree *ntuple);
+
 private:
   void Assign()
   {

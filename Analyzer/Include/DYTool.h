@@ -1211,12 +1211,12 @@ public:
     Init();
   }
 
-  Double_t NormFactorToLumi(int year)
+  Double_t NormFactorToLumi(TString year)
   {
     Double_t theLumi = 0;
-    if(year == 2016)      theLumi = DYTool::LUMI_2016;
-    else if(year == 2017) theLumi = DYTool::LUMI_2017; 
-    else if(year == 2018) theLumi = DYTool::LUMI_2018;
+    if(year == "2016")      theLumi = DYTool::LUMI_2016;
+    else if(year == "2017") theLumi = DYTool::LUMI_2017; 
+    else if(year == "2018") theLumi = DYTool::LUMI_2018;
     else                  cout << "year = " << year << "is not recognizable" << endl;
 
     return (xSec_ * theLumi) / sumWeight_;
