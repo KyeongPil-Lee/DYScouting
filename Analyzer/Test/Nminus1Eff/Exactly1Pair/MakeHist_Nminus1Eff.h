@@ -134,8 +134,12 @@ private:
 
     if( vec_goodMuPair.size() == 1 ) // -- select the event with exact 1 good pair
     {
-      doPass = kTRUE;
-      DYPair = vec_goodMuPair[0];
+      Double_t diMuM = vec_goodMuPair[0].mass;
+      if( 81 < diMuM && diMuM < 101 )
+      {
+        doPass = kTRUE;
+        DYPair = vec_goodMuPair[0];
+      }
     }
     else
       doPass = kFALSE;
@@ -247,11 +251,14 @@ private:
     for( auto& muPair : vec_muPair )
       if( IsDYCandidate_BDTInput_noOS_minus_nPixelHit(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
 
-    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
     if( vec_goodMuPair.size() == 1 ) // -- select the event with exact 1 good pair
     {
-      doPass = kTRUE;
-      DYPair = vec_goodMuPair[0];
+      Double_t diMuM = vec_goodMuPair[0].mass;
+      if( 81 < diMuM && diMuM < 101 )
+      {
+        doPass = kTRUE;
+        DYPair = vec_goodMuPair[0];
+      }
     }
     else
       doPass = kFALSE;
@@ -272,11 +279,14 @@ private:
     for( auto& muPair : vec_muPair )
       if( IsDYCandidate_BDTInput_noOS_minus_nTrackerLayer(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
 
-    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
     if( vec_goodMuPair.size() == 1 ) // -- select the event with exact 1 good pair
     {
-      doPass = kTRUE;
-      DYPair = vec_goodMuPair[0];
+      Double_t diMuM = vec_goodMuPair[0].mass;
+      if( 81 < diMuM && diMuM < 101 )
+      {
+        doPass = kTRUE;
+        DYPair = vec_goodMuPair[0];
+      }
     }
     else
       doPass = kFALSE;
@@ -297,11 +307,14 @@ private:
     for( auto& muPair : vec_muPair )
       if( IsDYCandidate_BDTInput_noOS_minus_normChi2(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
 
-    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
     if( vec_goodMuPair.size() == 1 ) // -- select the event with exact 1 good pair
     {
-      doPass = kTRUE;
-      DYPair = vec_goodMuPair[0];
+      Double_t diMuM = vec_goodMuPair[0].mass;
+      if( 81 < diMuM && diMuM < 101 )
+      {
+        doPass = kTRUE;
+        DYPair = vec_goodMuPair[0];
+      }
     }
     else
       doPass = kFALSE;
@@ -322,11 +335,14 @@ private:
     for( auto& muPair : vec_muPair )
       if( IsDYCandidate_BDTInput_noOS_minus_relTrkIso(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
 
-    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
     if( vec_goodMuPair.size() == 1 ) // -- select the event with exact 1 good pair
     {
-      doPass = kTRUE;
-      DYPair = vec_goodMuPair[0];
+      Double_t diMuM = vec_goodMuPair[0].mass;
+      if( 81 < diMuM && diMuM < 101 )
+      {
+        doPass = kTRUE;
+        DYPair = vec_goodMuPair[0];
+      }
     }
     else
       doPass = kFALSE;
@@ -347,11 +363,14 @@ private:
     for( auto& muPair : vec_muPair )
       if( IsDYCandidate_BDTInput_noOS_minus_CommonVertex(muPair, ntuple) ) vec_goodMuPair.push_back( muPair );
 
-    Int_t nGoodPair = (Int_t)vec_goodMuPair.size();
     if( vec_goodMuPair.size() == 1 ) // -- select the event with exact 1 good pair
     {
-      doPass = kTRUE;
-      DYPair = vec_goodMuPair[0];
+      Double_t diMuM = vec_goodMuPair[0].mass;
+      if( 81 < diMuM && diMuM < 101 )
+      {
+        doPass = kTRUE;
+        DYPair = vec_goodMuPair[0];
+      }
     }
     else
       doPass = kFALSE;
