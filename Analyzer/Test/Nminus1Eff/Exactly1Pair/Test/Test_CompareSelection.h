@@ -31,7 +31,7 @@ public:
 
   void Run()
   {
-    Bool_t debug = kTRUE;
+    Bool_t debug = kFALSE;
 
     CheckSampleInfo();
     StartTimer();
@@ -64,7 +64,7 @@ public:
       Bool_t pass_v2 = kFALSE;
       Bool_t pass_v3 = kFALSE;
 
-      // DYTool::loadBar(i+1, nEvent, 100, 100);
+      if( !debug ) DYTool::loadBar(i+1, nEvent, 100, 100);
       
       ntuple->GetEvent(i);
 
@@ -107,8 +107,12 @@ public:
         DYTool::MuPair DYPair_v3;
         if( EventSelection_ZMassRange_N_BestChi2(ntuple, DYPair_v3) )
         {
-          pass_v3 = kTRUE;
-          h_diMuM_v3->Fill( DYPair_v3.mass, totWeight );
+          Double_t mass = DYPair_v3.mass;
+          if( 81 < mass && mass < 101 )
+          {
+            pass_v3 = kTRUE;
+            h_diMuM_v3->Fill( DYPair_v3.mass, totWeight );
+          }
         }
       }
 
