@@ -589,6 +589,10 @@ public:
   // -- IsDYCandidate_BDTInput_noOS + remove vertex information
   Bool_t IsDYCandidate_BDTInput_noOS_noVTX(DYTool::DYTree *ntuple);
 
+  // -- IsDYCandidate_BDTInput_noOS + tighter condition
+  // -- tracker isolation: 0.15 -> 0.03
+  Bool_t IsDYCandidate_BDTInput_VeryTight(DYTool::DYTree *ntuple);
+
 private:
   void Assign()
   {

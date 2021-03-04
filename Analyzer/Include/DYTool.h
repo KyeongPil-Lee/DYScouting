@@ -1217,7 +1217,7 @@ public:
     if(year == "2016")      theLumi = DYTool::LUMI_2016;
     else if(year == "2017") theLumi = DYTool::LUMI_2017; 
     else if(year == "2018") theLumi = DYTool::LUMI_2018;
-    else                  cout << "year = " << year << "is not recognizable" << endl;
+    else                    cout << "year = " << year << "is not recognizable" << endl;
 
     return (xSec_ * theLumi) / sumWeight_;
   }
@@ -1261,7 +1261,7 @@ private:
     else if( type_ == "QCDMuEnriched_Pt1000toInf" ) sumWeight_ = 11039499.0;
     else
     {
-      cout << "no information for type = " << type_ << endl;
+      cout << "[SimpleSampleInfo::Set_SumWeight] no information for type = " << type_ << endl;
       sumWeight_ = 0;
     }
   }
@@ -1294,9 +1294,150 @@ private:
     else if( type_ == "QCDMuEnriched_Pt1000toInf" ) xSec_ = 1.613; // -- TuneCUETP8M1
     else
     {
-      cout << "no information for type = " << type_ << endl;
+      cout << "[SimpleSampleInfo::Set_xSec] no information for type = " << type_ << endl;
       xSec_ = 0;
     }
+  }
+
+};
+
+// -- Get histograms from a ROOT file
+// ---- normalization to the luminosity
+// ---- automatic merging all histograms from binned samples
+class HistGetter
+{
+public:
+
+  // -- location with the ROOT file containing histograms
+  TString basePath_ = "";
+
+  // -- base ROOT file name (Name format: baseFileName + "processType" + .root)
+  TString baseFileName_ = "";
+
+  Bool_t doNorm_ = kFALSE;
+  Double_t lumi_ = -1.0;
+
+  Bool_t doRemoveNegBin_ = kFALSE;
+
+  HistGetter()
+  {
+    cout << "Default constructor" << endl;
+    cout << "--> Use HistGetter(TString basePath) instead of it" << endl;
+  }
+
+  HistGetter(TString basePath, TString baseFileName)
+  {
+    Set_BasePath(basePath);
+    Set_BaseFileName(baseFileName);
+  }
+
+  void Set_BasePath(TString basePath)         { basePath_     = basePath; }
+  void Set_BaseFileName(TString baseFileName) { baseFileName_ = baseFileName; }
+
+
+  // -- when an exact lumi value is given (in /pb)
+  void DoNormalization(Double_t lumi)
+  {
+    doNorm_ = kTRUE;
+    lumi_ = lumi;
+  }
+
+  // -- when an year is given: use the luminosity of the full data taken in the year
+  void DoNormalization(TString year)
+  {
+    doNorm_ = kTRUE;
+    if(year == "2016")      lumi_ = DYTool::LUMI_2016;
+    else if(year == "2017") lumi_ = DYTool::LUMI_2017; 
+    else if(year == "2018") lumi_ = DYTool::LUMI_2018;
+    else
+    {
+      cout << "year = " << year << "is not recognizable" << endl;
+      lumi_ = -1.0;
+    }
+  }
+
+  void DoRemoveNegativeBin(Bool_t flag = TRUE)
+  {
+    doRemoveNegBin_ = flag;
+  }
+
+
+  // -- when a single histogram is enough
+  // -- requirement on the processType
+  // ---- 1) ROOT file name should contain processType
+  // ---- 2) processType should be recognizable by SimpleSampleInfo
+  // -- isMC: normalization is not performed if it is false
+  TH1D* Get_Histogram(TString histName, TString processType, Bool_t isMC = kTRUE)
+  {
+    SanityCheck();
+
+    return Init_Histogram(histName, processType, isMC);
+  }
+
+  // -- when multiple histograms should be merged
+  TH1D* Get_Histogram(TString histName, vector<TString> vec_processType, Bool_t isMC = kTRUE)
+  {
+    SanityCheck();
+
+    return Init_MergedHistogram(histName, vec_processType, isMC);
+  }
+
+
+private:
+  void SanityCheck()
+  {
+    if( doNorm_ && lumi_ < 0 )
+    {
+      cout << "[HistGetter::GetHistogram] Normalization is activated but the luminosity is not correctly set: need to check" << endl;
+      return nullptr;
+    }
+  }
+
+  TH1D* Init_Histogram(TString histName, TString processType, Bool_t isMC)
+  {
+    TString fileName = TString::Format("%s/%s_%s.root", basePath_.Data(), baseFileName_.Data(), processType.Data());
+    TH1D* h = PlotTool::Get_Hist(fileName, histName);
+    h->Sumw2();
+    RemoveNegativeBin(h, processType);
+
+    if( isMC && doNorm_ )
+    {
+      DYTool::SimpleSampleInfo sampleInfo(processType);
+      Double_t normFactor = sampleInfo.NormFactorToLumi(lumi_);
+      h->Scale( normFactor );
+    }
+
+    return h;
+  }
+
+  void RemoveNegativeBin(TH1D* h, TString processType)
+  {
+    Int_t nBin = h->GetNbinsX();
+    for(Int_t i=0; i<nBin; i++)
+    {
+      Int_t i_bin = i+1;
+      Double_t binContent = h->GetBinContent(i_bin);
+      if( binContent < 0 )
+      {
+        cout << "[" << h->GetName() << ", " << processType << "] binContent (" << i_bin << " bin) = " << binContent << " < 0 ... -> set it as 0" << endl;
+        h->SetBinContent(i_bin, 0);
+      }
+    }
+  }
+
+  TH1D* Init_MergedHistogram(TString histName, vector<TString> vec_processType, Bool_t isMC)
+  {
+    TH1D* h = nullptr;
+    for(auto processType : vec_processType)
+    {
+      TH1D* h_temp = Init_Histogram( histName, processType, isMC );
+      
+
+      if( h == nullptr ) { h = (TH1D*)h_temp->Clone(); h->Sumw2(); }
+      else               h->Add( h_temp );
+    }
+
+    return h;
   }
 
 };

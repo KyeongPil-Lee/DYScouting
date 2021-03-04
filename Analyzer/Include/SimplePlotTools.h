@@ -396,6 +396,7 @@ public:
   Double_t lumi_;
   Int_t energy_;
   Bool_t setLatexCMSSim_;
+  Bool_t setLatexCMSInternal_ = kFALSE;
 
   // -- additional latex info.
   vector<LatexInfo> latexInfos_;
@@ -498,6 +499,11 @@ public:
     setLatexCMSPre_ = kTRUE;
   }
 
+  void Latex_CMSInternal()
+  {
+    setLatexCMSInternal_ = kTRUE;
+  }
+
   void Latex_CMSPre(Double_t lumi, Int_t energy)
   {
     Latex_CMSPre();
@@ -585,6 +591,11 @@ public:
     latex_.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}#font[42]{#it{#scale[0.8]{ Preliminary}}}");
   }
 
+  void DrawLatex_CMSInternal()
+  {
+    latex_.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}#font[42]{#it{#scale[0.8]{ Internal}}}");
+  }
+
   void DrawLatex_CMSPreLumiEnergy()
   {
     DrawLatex_CMSPre();
@@ -653,6 +664,8 @@ public:
     }
 
     if( setLatexCMSSim_ ) DrawLatex_CMSSim();
+
+    if( setLatexCMSInternal_ ) DrawLatex_CMSInternal();
 
     if( setLatexInfo_ )
     {
