@@ -1356,7 +1356,7 @@ public:
     }
   }
 
-  void DoRemoveNegativeBin(Bool_t flag = TRUE)
+  void DoRemoveNegativeBin(Bool_t flag = kTRUE)
   {
     doRemoveNegBin_ = flag;
   }
@@ -1389,7 +1389,7 @@ private:
     if( doNorm_ && lumi_ < 0 )
     {
       cout << "[HistGetter::GetHistogram] Normalization is activated but the luminosity is not correctly set: need to check" << endl;
-      return nullptr;
+      return;
     }
   }
 

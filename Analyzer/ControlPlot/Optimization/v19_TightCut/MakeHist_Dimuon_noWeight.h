@@ -23,7 +23,7 @@
 #include <ControlPlot/HistContainer.h>
 
 // -- very tight condition to ensure high purity
-// -- tracker isolation: 0.15 -> 0.03
+// -- tracker isolation: 0.15 -> 0.01
 Bool_t DYTool::MuPair::IsDYCandidate_BDTInput_VeryTight(DYTool::DYTree *ntuple)
 {
   Bool_t flag = kFALSE;
@@ -34,8 +34,8 @@ Bool_t DYTool::MuPair::IsDYCandidate_BDTInput_VeryTight(DYTool::DYTree *ntuple)
     isWithinAcc = kTRUE;
 
   Bool_t isGoodMuon = kFALSE;
-  if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.03 &&
-      second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.03 )
+  if( first_.nPixelHit > 0  && first_.nTrackerLayer > 5  && first_.normChi2 < 10  && first_.relTrkIso < 0.01 &&
+      second_.nPixelHit > 0 && second_.nTrackerLayer > 5 && second_.normChi2 < 10 && second_.relTrkIso < 0.01 )
     isGoodMuon = kTRUE;
 
   CheckVertex(ntuple);
