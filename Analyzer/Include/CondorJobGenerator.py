@@ -8,7 +8,7 @@ class MultiCondorJobGenerator:
         self.ROOTCodePath = "" # -- relative to DY_ANALYZER_PATH
         self.className = ""
         self.jsonName = ""
-        self.luminosity = -1
+        self.luminosity = -1.0
         self.baseWSPath = ""
         self.dic_nJob = {} # -- nJob for each sample type
 
@@ -24,7 +24,6 @@ class MultiCondorJobGenerator:
         isDone_TestRunCMD = False
         for sampleType in self.dic_nJob.keys():
             jobGenerator = SingleJobGenerator()
-            jobGenerator.jobType      = self.jobType
             jobGenerator.ROOTCodePath = self.ROOTCodePath
             jobGenerator.className    = self.className
             jobGenerator.jsonName     = self.jsonName
@@ -59,7 +58,7 @@ class MultiCondorJobGenerator:
         self.WSPath = "%s/%s" % (self.baseWSPath, WSName)
         os.mkdir(self.WSPath)
 
-    def GenerateFullCondorSubmitScript(self):
+    def GenerateFullCondorSubmitScript(self, name_condorScript):
         scriptPath = "%s/submit_allSamples.sh" % self.WSPath
         f_script = open(scriptPath, "w")
         f_script.write("#!/bin/bash\n")
@@ -70,7 +69,7 @@ class MultiCondorJobGenerator:
 
         f_script.close()
 
-        print "[MultiJobGenerator] Submit all jobs in %s" % (self.jobType)
+        print "[MultiJobGenerator] Submit all jobs:"
         print "source %s\n" % scriptPath
 
     def GenerateFullHaddScript(self, name_haddScript):
@@ -84,7 +83,7 @@ class MultiCondorJobGenerator:
 
         f_script.close()
 
-        print "[CondorJobGenerator] Do hadd for all samples"
+        print "[CondorJobGenerator] Do hadd for all samples:"
         print "source %s\n" % scriptPath
 
 
@@ -154,7 +153,8 @@ class SingleJobGenerator:
         for sample in fullSampleInfo["Sample"]:
             if sample["tag"] == self.sampleType:
                 isFound = True
-                print "Comment on sample: ", sample["comment"]
+                # print "Comment on sample: ", sample["comment"]
+                print "Comment on sample(%s): %s" % (sample["tag"], sample["comment"])
 
                 self.isMC = sample["isMC"]
                 self.xSec = sample["xSec"]
@@ -170,13 +170,13 @@ class SingleJobGenerator:
 
                 break
 
-        self.list_file.sort()
+        self.list_ntuplePath.sort()
 
         if not isFound:
             print "No corresponding information to %s in %s" % (self.sampleType, self.jsonName)
             sys.exit()
 
-        if len(self.list_file) == 0:
+        if len(self.list_ntuplePath) == 0:
             print "No available root file in the directory"
             sys.exit()
 
@@ -241,7 +241,7 @@ class SingleJobGenerator:
             normFactorStr = "1.0"
 
         str_codes = \
-"""#include <{classCodePath_}>
+"""#include <{ROOTCodePath_}>
 
 void {commonMarcoName_}(TString textFileName_ntupleList)
 {{
@@ -259,8 +259,8 @@ void {commonMarcoName_}(TString textFileName_ntupleList)
 }}
 
 """.format(commonMarcoName_=self.commonROOTMarcoName.split(".cxx")[0], 
-           classCodePath_=self.classCodePath, className_=self.className,
-           sampleType_=self.sampleType, ntupleListName_=ntupleListName, isMCStr_=isMCStr,
+           ROOTCodePath_=self.ROOTCodePath, className_=self.className,
+           sampleType_=self.sampleType, isMCStr_=isMCStr,
            xSec_=self.xSec, sumWeight_=self.sumWeight, luminosity_=self.luminosity, normFactorStr_=normFactorStr)
 
         rootCodePath = "%s/%s" % (self.WSPath, self.commonROOTMarcoName)
@@ -322,7 +322,7 @@ Arguments            = "{baseName_ntupleList_}_$(Process).txt"
 
 queue {nJob_}
 
-""".format(scriptNameToRun_ = self.scriptNameToRun, textFileDirPath_=self.textFileDirPath, 
+""".format(WSPath_=self.WSPath, scriptNameToRun_ = self.scriptNameToRun, textFileDirPath_=self.textFileDirPath, 
            baseName_ntupleList_=self.baseName_ntupleList, commonROOTMarcoPath_=commonROOTMarcoPath, 
            condorDirPath_=condorDirPath, nJob_=self.nJob)
         )
@@ -330,7 +330,7 @@ queue {nJob_}
         f_script.close()
 
     def GenerateHaddScript(self):
-        scriptPath = "%s/%s.sh" % (self.WSPath, self.haddScriptName)
+        scriptPath = "%s/%s" % (self.WSPath, self.haddScriptName)
         f_script = open(scriptPath, "w")
 
         submitDir = os.getcwd()
@@ -349,17 +349,14 @@ queue {nJob_}
 
     def CMDForTestRun(self):
         testTextFilePath = "%s/%s_0.txt" % (self.textFileDirName, self.baseName_ntupleList)
-
-        sample = ""
-        randomSample = self.dic_nJob.keys()[0]
-        randomPath = "%s/%s/Job_v000" % (self.WSPath, randomSample)
+        
         instruction = """
 If you want to run a test job:
 cd {WSPath_}
-root -l -b -q '{commonROOTMarcoName_}++(\\\"{testTextFilePath_}\\\")' >&TestRun.log&
+source {scriptNameToRun_} {testTextFilePath_} >&TestRun.log&
 cd {cwd_}
 tail -f {WSPath_}/TestRun.log
-""".format(WSPath_=self.WSPath, commonROOTMarcoName_=self.commonROOTMarcoName, 
+""".format(WSPath_=self.WSPath, scriptNameToRun_=self.scriptNameToRun, 
            testTextFilePath_=testTextFilePath, cwd_=os.getcwd())
         
         return instruction

@@ -9,11 +9,10 @@ Bool_t CompareMuon_Pt( DYTool::Muon mu1, DYTool::Muon mu2 )
 
 // -- reference: https://root.cern/doc/master/copytree3_8C.html
 // -- reference2: https://root-forum.cern.ch/t/skim-events-from-a-tchain-into-a-new-file/9353
-// -- It DOES NOT WORK! it makes error when it tries to skim multiple trees
-class SkimTreeProducer: public DYTool::ClassTemplate
+class SingleTreeSkimmer: public DYTool::ClassTemplate
 {
 public:
-  SkimTreeProducer(): ClassTemplate()
+  SingleTreeSkimmer(): ClassTemplate()
   {
 
   }
@@ -25,78 +24,42 @@ public:
 
     vector<TString> vec_ntuplePath = GetVector_NtuplePath(sampleInfo_.ntuplePathFile);
 
-    for(auto ntuplePath : vec_ntuplePath )
+    if( vec_ntuplePath.size() != 1 )
     {
-      TString outputPath = Get_OutputROOTFilePath(ntuplePath);
-
-      cout << "input ntuple path:  " << ntuplePath << endl;
-      cout << "output ntuple path: " << outputPath << endl;
-
-      // TFile* f_ntuple = TFile::Open(ntuplePath);
-      // TTree* originalTree = (TTree*)f_ntuple->Get("DYTree/ntuple");
-
-      // TFile *f_output = TFile::Open(outputPath, "RECREATE");
-      // f_output->cd();
-      // f_output->mkdir("DYTree");
-      // f_output->cd("DYTree");
-      // TTree* skimmedTree = originalTree->CloneTree(0);
-
-      // // -- declare TChain to use DYTree
-
-      // TChain *chain = new TChain("DYTree/ntuple");
-      // chain->Add(ntuplePath);
-      // DYTool::DYTree *ntuple = new DYTool::DYTree( chain );
-
-      // Int_t nEvent       = originalTree->GetEntries();
-      // Int_t nEvent_chain = chain->GetEntries();
-      // printf("[#  total events] (tree, chain) = (%d, %d)\n", nEvent, nEvent_chain);
-
-
-      TChain *chain = new TChain("DYTree/ntuple");
-      chain->Add(ntuplePath);
-      DYTool::DYTree *ntuple = new DYTool::DYTree( chain );
-
-      TFile *f_output = TFile::Open(outputPath, "RECREATE");
-      f_output->cd();
-      f_output->mkdir("DYTree");
-      f_output->cd("DYTree");
-      chain->LoadTree(0); // -- force 1st tree to be loaded
-      TTree *skimmedTree = chain->GetTree()->CloneTree(0);
-
-      Int_t nEvent       = chain->GetEntries();
-
-
-      for(Int_t i_ev=0; i_ev<nEvent; i_ev++)
-      {
-        // originalTree->GetEntry(i_ev);
-
-        if( PassSkimCondition(ntuple, i_ev) )
-        {
-          skimmedTree->Fill();
-          // break;
-        }
-      }
-
-      printf("[# events] (input, output) = (%d, %lld)\n", nEvent, skimmedTree->GetEntries());
-
-      skimmedTree->Write();
-      // skimmedTree->AutoSave();
-      // f_output->Write();
-      f_output->Close();
-      // f_ntuple->Close();
-
-      chain->Delete();
-      skimmedTree->Delete();
-
-      // delete chain;
-      // delete ntuple;
-      // delete originalTree;
-      // delete skimmedTree;
-      // delete f_output;
-      // delete f_ntuple;
-
-      // break;
+      cout << "More than 1 root file is provided: This code only works for single input root file" << endl;
+      return;
     }
+
+    TString ntuplePath = vec_ntuplePath[0];
+    TString outputPath = Get_OutputROOTFilePath(ntuplePath);
+
+    cout << "input ntuple path:  " << ntuplePath << endl;
+    cout << "output ntuple path: " << outputPath << endl;
+
+    TChain *chain = new TChain("DYTree/ntuple");
+    chain->Add(ntuplePath);
+    DYTool::DYTree *ntuple = new DYTool::DYTree( chain );
+
+    // -- output TFile should be decleared before skimmedTree
+    TFile *f_output = TFile::Open(outputPath, "RECREATE");
+    f_output->cd();
+    f_output->mkdir("DYTree");
+    f_output->cd("DYTree");
+    chain->LoadTree(0); // -- force 1st tree to be loaded
+    TTree *skimmedTree = chain->GetTree()->CloneTree(0);
+
+    Int_t nEvent = chain->GetEntries();
+    for(Int_t i_ev=0; i_ev<nEvent; i_ev++)
+    {
+      ntuple->GetEvent(i_ev);
+
+      if( PassSkimCondition(ntuple) ) skimmedTree->Fill();
+    }
+
+    printf("[# events] (input, output) = (%d, %lld)\n", nEvent, skimmedTree->GetEntries());
+
+    skimmedTree->Write();
+    f_output->Close();
 
     PrintRunTime();
   }
@@ -148,9 +111,8 @@ private:
     return outputPath;
   }
 
-  Bool_t PassSkimCondition(DYTool::DYTree* ntuple, Int_t i_ev)
+  Bool_t PassSkimCondition(DYTool::DYTree* ntuple)
   {
-    ntuple->GetEvent(i_ev);
 
     // -- L1 requirement is not added here to use same condition for 2017 and 2018 data
     Bool_t doPassTrig = kFALSE;
@@ -194,7 +156,7 @@ private:
 
 void Test()
 {
-  SkimTreeProducer* producer = new SkimTreeProducer();
+  SingleTreeSkimmer* producer = new SingleTreeSkimmer();
 
   producer->sampleInfo_.type = "ScoutingCaloMuon_Run2018Av1_GoldenJSON_TEST";
   producer->sampleInfo_.ntuplePathFile = "/Users/kplee/Research/Analysis/DYScouting/Analyzer/TreeSkim/ntupleList_test.txt";
