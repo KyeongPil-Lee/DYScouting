@@ -30,6 +30,7 @@ if [ $HOSTNAME == "tamsa2" ]; then
   source /cvmfs/cms.cern.ch/cmsset_default.sh
   cd /cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_2_6
   eval `scramv1 runtime -sh`
+  export PYTHONPATH=${DY_ANALYZER_PATH}:${ROOTSYS}/lib # -- to use pyROOT correctly. pyROOT makes an error if the local ROOT path is included in PYTHONPATH
   cd $DY_ANALYZER_PATH
   echo "CMSSW enviornment under " $CMSSW_VERSION
 

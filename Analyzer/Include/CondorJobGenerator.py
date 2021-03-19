@@ -64,7 +64,10 @@ class MultiCondorJobGenerator:
         f_script.write("#!/bin/bash\n")
 
         for sampleType in self.dic_nJob.keys():
-            cmd = "condor_submit %s/%s/%s" % (self.WSPath, sampleType, name_condorScript)
+            sampleDirName = sampleType
+            if "_skim" in sampleType:
+                sampleDirName = sampleType.split("_skim")[0]
+            cmd = "condor_submit %s/%s/%s" % (self.WSPath, sampleDirName, name_condorScript)
             f_script.write(cmd+"\n")
 
         f_script.close()
@@ -78,7 +81,10 @@ class MultiCondorJobGenerator:
         f_script.write("#!/bin/bash\n")
 
         for sampleType in self.dic_nJob.keys():
-            cmd = "source %s/%s/%s" % (self.WSPath, sampleType, name_haddScript)
+            sampleDirName = sampleType
+            if "_skim" in sampleType:
+                sampleDirName = sampleType.split("_skim")[0]
+            cmd = "source %s/%s/%s" % (self.WSPath, sampleDirName, name_haddScript)
             f_script.write(cmd+"\n")
 
         f_script.close()
@@ -149,12 +155,19 @@ class SingleJobGenerator:
         with open(jsonPath) as fullSampleInfo_file:
             fullSampleInfo = json.load(fullSampleInfo_file)
 
+        isSkimTree = False
+        if "_skim" in self.sampleType:
+            isSkimTree = True
+            self.sampleType = self.sampleType.split("_skim")[0]
+
         isFound = False
         for sample in fullSampleInfo["Sample"]:
             if sample["tag"] == self.sampleType:
                 isFound = True
                 # print "Comment on sample: ", sample["comment"]
                 print "Comment on sample(%s): %s" % (sample["tag"], sample["comment"])
+                if isSkimTree:
+                    print "  --> skimmed version is used. It should be used only when the skimming condition doesn't affect results of the analyzer"
 
                 self.isMC = sample["isMC"]
                 self.xSec = sample["xSec"]
@@ -162,6 +175,9 @@ class SingleJobGenerator:
 
                 for ntupleDir in sample["list_dir"]:
                     ntupleDirPath = "%s/%s" % (self.ntuplePathBase, ntupleDir)
+                    if isSkimTree:
+                        ntupleDirPath = ntupleDirPath + "/skim"
+
                     list_file = os.listdir(ntupleDirPath)
                     for fileName in list_file:
                         if ".root" in fileName:
@@ -350,8 +366,7 @@ queue {nJob_}
     def CMDForTestRun(self):
         testTextFilePath = "%s/%s_0.txt" % (self.textFileDirName, self.baseName_ntupleList)
         
-        instruction = """
-If you want to run a test job:
+        instruction = """If you want to run a test job:
 cd {WSPath_}
 source {scriptNameToRun_} {testTextFilePath_} >&TestRun.log&
 cd {cwd_}
