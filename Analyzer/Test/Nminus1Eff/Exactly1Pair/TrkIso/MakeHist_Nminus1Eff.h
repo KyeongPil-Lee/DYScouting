@@ -41,9 +41,9 @@ public:
     // -- initialize the histograms
     TH1D* h_diMuM_N           = new TH1D("h_diMuM_N",         "", 20, 81, 101);
     TH1D* h_diMuM_Nminus1     = new TH1D("h_diMuM_Nminus1", "", 20, 81, 101);
-    TH1D* h_relTrkIso_Nminus1 = new TH1D("h_relTrkIso_Nminus1", "", 0, 1, 100);
-    TH1D* h_relTrkIso_lead_Nminus1 = new TH1D("h_relTrkIso_lead_Nminus1", "", 0, 1, 100);
-    TH1D* h_relTrkIso_sub_Nminus1  = new TH1D("h_relTrkIso_sub_Nminus1", "", 0, 1, 100);
+    TH1D* h_relTrkIso_Nminus1 = new TH1D("h_relTrkIso_Nminus1", "", 100, 0, 100);
+    TH1D* h_relTrkIso_lead_Nminus1 = new TH1D("h_relTrkIso_lead_Nminus1", "", 100, 0, 100);
+    TH1D* h_relTrkIso_sub_Nminus1  = new TH1D("h_relTrkIso_sub_Nminus1", "", 100, 0, 100);
 
     TChain *chain = new TChain("DYTree/ntuple");
     DYTool::AddNtupleToChain(chain, sampleInfo_.ntuplePathFile);
@@ -76,10 +76,6 @@ public:
         if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
           totWeight *= nloWeightTool->GetWeight(ntuple);
 
-        DYTool::MuPair DYPair_N;
-        if( EventSelection_ZMassRange_N(ntuple, DYPair_N) )
-          h_diMuM_N->Fill( DYPair_N.mass, totWeight );
-
         DYTool::MuPair DYPair_Nminus1_relTrkIso;
         if( EventSelection_ZMassRange_N_minus_relTrkIso(ntuple, DYPair_Nminus1_relTrkIso) )
         {
@@ -94,11 +90,16 @@ public:
 
           h_relTrkIso_lead_Nminus1->Fill( relTrkIso_lead, totWeight );
           h_relTrkIso_sub_Nminus1->Fill( relTrkIso_sub, totWeight );
+
+          DYTool::MuPair DYPair_N;
+          if( EventSelection_ZMassRange_N(ntuple, DYPair_N) )
+            h_diMuM_N->Fill( DYPair_N.mass, totWeight );
         }
       }
     }
 
-    TString outputName = TString::Format("ROOTFile_MakeHist_Dimuon_%s.root", sampleInfo_.type.Data());
+
+    TString outputName = GetOutputFileName("MakeHist_Nminus1Eff");
     TFile *f_output = TFile::Open(outputName, "RECREATE");
 
     h_diMuM_N->Write();

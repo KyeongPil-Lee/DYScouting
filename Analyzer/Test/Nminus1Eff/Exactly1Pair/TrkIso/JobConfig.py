@@ -8,43 +8,41 @@ def GetCWD():
   return cwd
 
 
-from Include.MultiJobGenerator import *
+from Include.CondorJobGenerator import *
 
-generator = MultiJobGenerator()
+generator = MultiCondorJobGenerator()
 
-generator.jobType = "HTCondor"
-generator.jobName = "Nminus1Eff" # -- used for workspace name
-generator.classCodePath = GetCWD()+"/MakeHist_Nminus1Eff.h"
+generator.jobName = "ControlPlot" # -- used for workspace name
+generator.ROOTCodePath = GetCWD()+"/MakeHist_Nminus1Eff.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now
 generator.jsonName = "SampleInfo_v1p2.json" # -- under DY_ANALYZER_PATH/Include
 
+# -- if "_skim" is added, it runs over skimmed ntuples
 generator.dic_nJob = { 
-  "ScoutingCaloMuon_Run2018All": 100,
-  # "DYMuMu_M10to50":    20,
-  "DYMuMu_M50toInf":   20,
-  # "DYTauTau_M10to50":  5,
-  "DYTauTau_M50toInf": 10,
-  "WJets": 5,
-  "ttbar": 5,
-  "QCDMuEnriched_Pt20toInf": 5,
-  "QCDMuEnriched_Pt15to20":  3,
-  "QCDMuEnriched_Pt20to30":  3,
-  "QCDMuEnriched_Pt30to50":  3,
-  "QCDMuEnriched_Pt50to80":  3,
-  "QCDMuEnriched_Pt80to120": 3,
-  "QCDMuEnriched_Pt120to170": 3,
-  "QCDMuEnriched_Pt170to300": 3,
-  "QCDMuEnriched_Pt300to470": 3,
-  "QCDMuEnriched_Pt470to600": 3,
-  "QCDMuEnriched_Pt600to800": 3,
-  "QCDMuEnriched_Pt800to1000": 3,
-  "QCDMuEnriched_Pt1000toInf": 3,
+  "ScoutingCaloMuon_Run2018All_skim": 200,
+  # "DYMuMu_M10to50_skim":    3, 
+  "DYMuMu_M50toInf_skim":   10,
+  # "DYTauTau_M10to50_skim":  3, 
+  "DYTauTau_M50toInf_skim": 10, 
+  "WJets_skim": 1,
+  "ttbar_skim": 10,
+  "QCDMuEnriched_Pt20toInf_skim": 1,
+  "QCDMuEnriched_Pt15to20_skim":  1,
+  "QCDMuEnriched_Pt20to30_skim":  1,
+  "QCDMuEnriched_Pt30to50_skim":  1,
+  "QCDMuEnriched_Pt50to80_skim":  1,
+  "QCDMuEnriched_Pt80to120_skim": 1,
+  "QCDMuEnriched_Pt120to170_skim": 1,
+  "QCDMuEnriched_Pt170to300_skim": 1,
+  "QCDMuEnriched_Pt300to470_skim": 1,
+  "QCDMuEnriched_Pt470to600_skim": 1,
+  "QCDMuEnriched_Pt600to800_skim": 1,
+  "QCDMuEnriched_Pt800to1000_skim": 1,
+  "QCDMuEnriched_Pt1000toInf_skim": 1,
   }
 
-# generator.outputPath = "/scratch/kplee/DYScoutingJob"
-generator.outputPath = "/data9/Users/kplee/DYScoutingJob"
-generator.bringOutput = True # -- bring output root file to the current working directory where JobConfig is executed
+generator.baseWSPath = "/data9/Users/kplee/DYScoutingJob"
 
 generator.Generate()
