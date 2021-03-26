@@ -21,7 +21,7 @@ generator.luminosity = 1.0 # -- not used for now
 generator.jsonName = "SampleInfo_v1p2.json" # -- under DY_ANALYZER_PATH/Include
 
 generator.dic_nJob = { 
-  "ScoutingCaloMuon_Run2018All": 70,
+  "ScoutingCaloMuon_Run2018All": 100,
   # "DYMuMu_M10to50":    20,
   "DYMuMu_M50toInf":   20,
   # "DYTauTau_M10to50":  5,
