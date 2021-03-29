@@ -41,9 +41,9 @@ public:
     // -- initialize the histograms
     TH1D* h_diMuM_N           = new TH1D("h_diMuM_N",         "", 20, 81, 101);
     TH1D* h_diMuM_Nminus1     = new TH1D("h_diMuM_Nminus1", "", 20, 81, 101);
-    TH1D* h_relTrkIso_Nminus1 = new TH1D("h_relTrkIso_Nminus1", "", 100, 0, 100);
-    TH1D* h_relTrkIso_lead_Nminus1 = new TH1D("h_relTrkIso_lead_Nminus1", "", 100, 0, 100);
-    TH1D* h_relTrkIso_sub_Nminus1  = new TH1D("h_relTrkIso_sub_Nminus1", "", 100, 0, 100);
+    TH1D* h_relTrkIso_Nminus1 = new TH1D("h_relTrkIso_Nminus1", "", 1000, 0, 1);
+    TH1D* h_relTrkIso_lead_Nminus1 = new TH1D("h_relTrkIso_lead_Nminus1", "", 1000, 0, 1);
+    TH1D* h_relTrkIso_sub_Nminus1  = new TH1D("h_relTrkIso_sub_Nminus1", "", 1000, 0, 1);
 
     TChain *chain = new TChain("DYTree/ntuple");
     DYTool::AddNtupleToChain(chain, sampleInfo_.ntuplePathFile);
