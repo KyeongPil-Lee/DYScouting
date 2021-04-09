@@ -7,17 +7,34 @@ def GetArgument(sampleType):
     isMiniAOD = ''
 
     if sampleType == "ScoutingMuon2018":
-        exampleEDMFile = 'file:/u/user/kplee/scratch/Physics/RAW_ScoutingCaloMuon_Run2018C_v2.root'
+        exampleEDMFile = '/store/data/Run2018A/ScoutingCaloMuon/RAW/v1/000/316/377/00000/6AAB14C9-B058-E811-B4CC-FA163EBBDB1E.root' # -- 9MB with 4114 events
         globalTag = '101X_dataRun2_HLT_v7'
         isMC = False
         isMiniAOD = False
 
+    if sampleType == "Data2018_MINIAOD":
+        exampleEDMFile = '/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/CBAACD5A-9EAF-9E46-BC1C-49C2EB361154.root'
+        globalTag = '102X_dataRun2_Sep2018Rereco_v1'
+        isMC = False
+        isMiniAOD = True
+
+    if sampleType == "Data2018Prompt_MINIAOD":
+        exampleEDMFile = '/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/CBAACD5A-9EAF-9E46-BC1C-49C2EB361154.root'
+        globalTag = '102X_dataRun2_Prompt_v11'
+        isMC = False
+        isMiniAOD = True
 
     elif sampleType == "MC2018":
          exampleEDMFile = 'file:/u/user/kplee/scratch/Physics/AODSIM_Autumn18_DY10to50_MadgraphMLM.root'
          globalTag = '102X_upgrade2018_realistic_v15'
          isMC = True
          isMiniAOD = False
+
+    elif sampleType == "MC2018_MINIAOD":
+         exampleEDMFile = '/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/00000/A128C694-51C2-8744-BC1E-B5BD88CB8B8C.root'
+         globalTag = '102X_upgrade2018_realistic_v15'
+         isMC = True
+         isMiniAOD = True
 
     elif sampleType == "MC2018UL_MINIAOD":
          exampleEDMFile = 'file:/afs/cern.ch/work/k/kplee/private/ROOTFile_Test/106X/UL18/MINIAODSIM_DYLL_M50_aMCNLO_Summer19UL18.root' # -- lxplus

@@ -62,6 +62,13 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Scalers/interface/LumiScalers.h"
 
+// -- tracking
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+
 // -- others
 #include "CommonTools/UtilAlgos/interface/TFileService.h" 
 
@@ -97,7 +104,7 @@ private:
   void Fill_ScoutingMuon( const edm::Event& );
   void Fill_ScoutingCaloJet( const edm::Event& );
   void Fill_GenParticle( const edm::Event& );
-  void Fill_OfflineMuon( const edm::Event& );
+  void Fill_OfflineMuon( const edm::Event&, const edm::EventSetup& );
 
   bool SavedTriggerCondition( std::string& );
   bool SavedFilterCondition( std::string& );
@@ -341,6 +348,13 @@ private:
   int offMuon_nMatchedStation_[arrSize_];
   int offMuon_nMatchedRPCLayer_[arrSize_];
   int offMuon_stationMask_[arrSize_];
+
+  double offMuon_pt_inner_[arrSize_];
+  std::vector<double> offMuon_vtxTrkChi2_;
+  std::vector<double> offMuon_vtxTrkProb_;
+  std::vector<double> offMuon_vtxTrkNdof_;
+  std::vector<double> offMuon_vtxTrkPt1_;
+  std::vector<double> offMuon_vtxTrkPt2_;
 };
 
 DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
@@ -424,7 +438,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   Fill_PixelVertexNearMuon(iEvent);
   Fill_ScoutingMuon(iEvent);
   Fill_ScoutingCaloJet(iEvent);
-  Fill_OfflineMuon(iEvent);
+  Fill_OfflineMuon(iEvent, iSetup);
   if( !isRealData ) Fill_GenParticle(iEvent);
 
 
@@ -657,7 +671,15 @@ void DYTreeProducer::Init()
     offMuon_nMatchedStation_[i] = -999;
     offMuon_nMatchedRPCLayer_[i] = -999;
     offMuon_stationMask_[i] = -999;
+
+    offMuon_pt_inner_[i] = -999;
   }
+
+  offMuon_vtxTrkChi2_.clear();
+  offMuon_vtxTrkProb_.clear();
+  offMuon_vtxTrkNdof_.clear();
+  offMuon_vtxTrkPt1_.clear();
+  offMuon_vtxTrkPt2_.clear();
 }
 
 void DYTreeProducer::Make_Branch()
@@ -838,6 +860,14 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("offMuon_nMatchedStation", &offMuon_nMatchedStation_, "offMuon_nMatchedStation[nOffMuon]/I");
   ntuple_->Branch("offMuon_nMatchedRPCLayer", &offMuon_nMatchedRPCLayer_, "offMuon_nMatchedRPCLayer[nOffMuon]/I");
   ntuple_->Branch("offMuon_stationMask", &offMuon_stationMask_, "offMuon_stationMask[nOffMuon]/I");
+
+  ntuple_->Branch("offMuon_pt_inner", &offMuon_pt_inner_, "offMuon_pt_inner[nOffMuon]/D");
+
+  ntuple_->Branch("offMuon_vtxTrkChi2", &offMuon_vtxTrkChi2_);
+  ntuple_->Branch("offMuon_vtxTrkProb", &offMuon_vtxTrkProb_);
+  ntuple_->Branch("offMuon_vtxTrkNdof", &offMuon_vtxTrkNdof_);
+  ntuple_->Branch("offMuon_vtxTrkPt1",  &offMuon_vtxTrkPt1_);
+  ntuple_->Branch("offMuon_vtxTrkPt2",  &offMuon_vtxTrkPt2_);
 }
 
 
@@ -1242,8 +1272,13 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
   return flag;
 }
 
-void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent)
+void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
+  // -- for the dimuon vertex variable
+  // iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
+  ESHandle<MagneticField> B;
+  iSetup.get<IdealMagneticFieldRecord>().get(B);
+
   edm::Handle< edm::View<reco::Muon> > h_offlineMuon;
   iEvent.getByToken(t_offlineMuon_, h_offlineMuon);
 
@@ -1256,48 +1291,52 @@ void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent)
     const reco::Vertex & pv = h_offlineVertex->at(0);
 
     int _nOffMuon = 0;
-    for(auto mu=h_offlineMuon->begin(); mu!=h_offlineMuon->end(); ++mu)
-    {
-      offMuon_pt_[_nOffMuon]  = mu->pt();
-      offMuon_eta_[_nOffMuon] = mu->eta();
-      offMuon_phi_[_nOffMuon] = mu->phi();
-      offMuon_px_[_nOffMuon]  = mu->px();
-      offMuon_py_[_nOffMuon]  = mu->py();
-      offMuon_pz_[_nOffMuon]  = mu->pz();
-      offMuon_charge_[_nOffMuon] = mu->charge();
-      // if( isMiniAOD_ ) offMuon_dB_[_nOffMuon] = mu->dB(); // -- dB is only availabe in pat::Muon -- //
 
-      if( mu->isGlobalMuon() )     offMuon_isGLB_[_nOffMuon] = 1;
-      if( mu->isStandAloneMuon() ) offMuon_isSTA_[_nOffMuon] = 1;
-      if( mu->isTrackerMuon() )    offMuon_isTRK_[_nOffMuon] = 1;
-      if( mu->isPFMuon() )         offMuon_isPF_[_nOffMuon] = 1;
+    // for(auto mu=h_offlineMuon->begin(); mu!=h_offlineMuon->end(); ++mu)
+    for(unsigned int i_mu=0; i_mu<h_offlineMuon->size(); ++i_mu)
+    {
+      const auto& mu = (*h_offlineMuon)[i_mu]; // -- & is important; an error occurs without &
+
+      offMuon_pt_[_nOffMuon]  = mu.pt();
+      offMuon_eta_[_nOffMuon] = mu.eta();
+      offMuon_phi_[_nOffMuon] = mu.phi();
+      offMuon_px_[_nOffMuon]  = mu.px();
+      offMuon_py_[_nOffMuon]  = mu.py();
+      offMuon_pz_[_nOffMuon]  = mu.pz();
+      offMuon_charge_[_nOffMuon] = mu.charge();
+      // if( isMiniAOD_ ) offMuon_dB_[_nOffMuon] = mu.dB(); // -- dB is only availabe in pat::Muon -- //
+
+      if( mu.isGlobalMuon() )     offMuon_isGLB_[_nOffMuon] = 1;
+      if( mu.isStandAloneMuon() ) offMuon_isSTA_[_nOffMuon] = 1;
+      if( mu.isTrackerMuon() )    offMuon_isTRK_[_nOffMuon] = 1;
+      if( mu.isPFMuon() )         offMuon_isPF_[_nOffMuon] = 1;
 
       // -- defintion of ID functions: http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_9_4_0/doc/html/da/d18/namespacemuon.html#ac122b2516e5711ce206256d7945473d2 -- //
-      if( muon::isTightMuon( (*mu), pv ) )  offMuon_isTight_[_nOffMuon] = 1;
-      if( muon::isMediumMuon( (*mu) ) )     offMuon_isMedium_[_nOffMuon] = 1;
-      if( muon::isLooseMuon( (*mu) ) )      offMuon_isLoose_[_nOffMuon] = 1;
-      if( muon::isHighPtMuon( (*mu), pv ) ) offMuon_isHighPt_[_nOffMuon] = 1;
+      if( muon::isTightMuon( mu, pv ) )  offMuon_isTight_[_nOffMuon] = 1;
+      if( muon::isMediumMuon( mu ) )     offMuon_isMedium_[_nOffMuon] = 1;
+      if( muon::isLooseMuon( mu ) )      offMuon_isLoose_[_nOffMuon] = 1;
+      if( muon::isHighPtMuon( mu, pv ) ) offMuon_isHighPt_[_nOffMuon] = 1;
 
       // -- bool muon::isSoftMuon(const reco::Muon& muon, const reco::Vertex& vtx, bool run2016_hip_mitigation)
       // -- it is different under CMSSW_8_0_29: bool muon::isSoftMuon(const reco::Muon& muon, const reco::Vertex& vtx)
       // -- Remove this part to avoid compile error (and soft muon would not be used for now) - need to be fixed at some point
-      // if( muon::isSoftMuon( (*mu), pv, 0) ) offMuon_isSoft_[_nOffMuon] = 1;
+      // if( muon::isSoftMuon( mu, pv, 0) ) offMuon_isSoft_[_nOffMuon] = 1;
 
-      offMuon_iso03_sumPt_[_nOffMuon] = mu->isolationR03().sumPt;
-      offMuon_iso03_hadEt_[_nOffMuon] = mu->isolationR03().hadEt;
-      offMuon_iso03_emEt_[_nOffMuon]  = mu->isolationR03().emEt;
+      offMuon_iso03_sumPt_[_nOffMuon] = mu.isolationR03().sumPt;
+      offMuon_iso03_hadEt_[_nOffMuon] = mu.isolationR03().hadEt;
+      offMuon_iso03_emEt_[_nOffMuon]  = mu.isolationR03().emEt;
 
-      offMuon_PFIso03_charged_[_nOffMuon] = mu->pfIsolationR03().sumChargedHadronPt;
-      offMuon_PFIso03_neutral_[_nOffMuon] = mu->pfIsolationR03().sumNeutralHadronEt;
-      offMuon_PFIso03_photon_[_nOffMuon]  = mu->pfIsolationR03().sumPhotonEt;
-      offMuon_PFIso03_sumPU_[_nOffMuon]   = mu->pfIsolationR03().sumPUPt;
+      offMuon_PFIso03_charged_[_nOffMuon] = mu.pfIsolationR03().sumChargedHadronPt;
+      offMuon_PFIso03_neutral_[_nOffMuon] = mu.pfIsolationR03().sumNeutralHadronEt;
+      offMuon_PFIso03_photon_[_nOffMuon]  = mu.pfIsolationR03().sumPhotonEt;
+      offMuon_PFIso03_sumPU_[_nOffMuon]   = mu.pfIsolationR03().sumPUPt;
 
-      offMuon_PFIso04_charged_[_nOffMuon] = mu->pfIsolationR04().sumChargedHadronPt;
-      offMuon_PFIso04_neutral_[_nOffMuon] = mu->pfIsolationR04().sumNeutralHadronEt;
-      offMuon_PFIso04_photon_[_nOffMuon]  = mu->pfIsolationR04().sumPhotonEt;
-      offMuon_PFIso04_sumPU_[_nOffMuon]   = mu->pfIsolationR04().sumPUPt;
+      offMuon_PFIso04_charged_[_nOffMuon] = mu.pfIsolationR04().sumChargedHadronPt;
+      offMuon_PFIso04_neutral_[_nOffMuon] = mu.pfIsolationR04().sumNeutralHadronEt;
+      offMuon_PFIso04_photon_[_nOffMuon]  = mu.pfIsolationR04().sumPhotonEt;
+      offMuon_PFIso04_sumPU_[_nOffMuon]   = mu.pfIsolationR04().sumPUPt;
 
-      reco::TrackRef globalTrk = mu->globalTrack();
+      reco::TrackRef globalTrk = mu.globalTrack();
       if( globalTrk.isNonnull() )
       {
         offMuon_normChi2_global_[_nOffMuon] = globalTrk->normalizedChi2();
@@ -1309,9 +1348,10 @@ void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent)
         offMuon_nMuonHit_global_[_nOffMuon]   = globalTrkHit.numberOfValidMuonHits();
       }
 
-      reco::TrackRef innerTrk = mu->innerTrack();
+      reco::TrackRef innerTrk = mu.innerTrack();
       if( innerTrk.isNonnull() )
       {
+        offMuon_pt_inner_[_nOffMuon] = innerTrk->pt();
         offMuon_normChi2_inner_[_nOffMuon] = innerTrk->normalizedChi2();
 
         const reco::HitPattern & innerTrkHit = innerTrk->hitPattern();
@@ -1320,25 +1360,69 @@ void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent)
         offMuon_nPixelHit_inner_[_nOffMuon]     = innerTrkHit.numberOfValidPixelHits();
       }
 
-      reco::TrackRef tunePTrk = mu->tunePMuonBestTrack();
+      reco::TrackRef tunePTrk = mu.tunePMuonBestTrack();
       if( tunePTrk.isNonnull() )
       {
         offMuon_pt_tuneP_[_nOffMuon]      = tunePTrk->pt();
         offMuon_ptError_tuneP_[_nOffMuon] = tunePTrk->ptError();
       }
 
-      offMuon_dxyVTX_best_[_nOffMuon] = mu->muonBestTrack()->dxy( pv.position() );
-      offMuon_dzVTX_best_[_nOffMuon]  = mu->muonBestTrack()->dz( pv.position() );
+      offMuon_dxyVTX_best_[_nOffMuon] = mu.muonBestTrack()->dxy( pv.position() );
+      offMuon_dzVTX_best_[_nOffMuon]  = mu.muonBestTrack()->dz( pv.position() );
 
-      offMuon_nMatchedStation_[_nOffMuon] = mu->numberOfMatchedStations();
-      offMuon_nMatchedRPCLayer_[_nOffMuon] = mu->numberOfMatchedRPCLayers();
-      offMuon_stationMask_[_nOffMuon] = mu->stationMask();
+      offMuon_nMatchedStation_[_nOffMuon] = mu.numberOfMatchedStations();
+      offMuon_nMatchedRPCLayer_[_nOffMuon] = mu.numberOfMatchedRPCLayers();
+      offMuon_stationMask_[_nOffMuon] = mu.stationMask();
 
       _nOffMuon++;
-    }
 
+      // -- dimuon variables
+      for(unsigned int j_mu=0; j_mu<h_offlineMuon->size(); j_mu++)
+      {
+        if( i_mu >= j_mu ) continue; // -- avoid double counting
+
+        const auto& mu2 = h_offlineMuon->at(j_mu);
+
+        reco::TrackRef InnerTrk  = mu.innerTrack();
+        reco::TrackRef InnerTrk2 = mu2.innerTrack();
+
+        if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() )
+        {
+          reco::TransientTrack muTransient1(InnerTrk, B.product());
+          reco::TransientTrack muTransient2(InnerTrk2, B.product());
+
+          vector<reco::TransientTrack> dimuonTracksTrk;
+          dimuonTracksTrk.push_back(muTransient1);
+          dimuonTracksTrk.push_back(muTransient2);
+
+          KalmanVertexFitter KalmanFitterTrk(true);
+          CachingVertex<5> vertexTrk;
+
+          bool isVertexTrk = true;
+          try 
+          { 
+            vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
+          }
+          catch(exception & err)
+          { 
+            isVertexTrk = false;
+          }
+
+          if( isVertexTrk && vertexTrk.isValid() )
+          {
+            offMuon_vtxTrkPt1_.push_back(InnerTrk->pt());
+            offMuon_vtxTrkPt2_.push_back(InnerTrk2->pt());
+            offMuon_vtxTrkChi2_.push_back(vertexTrk.totalChiSquared());
+            offMuon_vtxTrkNdof_.push_back(vertexTrk.degreesOfFreedom());
+            offMuon_vtxTrkProb_.push_back( TMath::Prob(vertexTrk.totalChiSquared(),(int)vertexTrk.degreesOfFreedom()) );
+          }
+        } // -- end of if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() )
+      } // -- end of j-th muon iteration
+
+    } // -- end of i-th muon iteration
     nOffMuon_ = _nOffMuon;
-  }
+
+  } // -- end of if( h_offlineMuon.isValid() )
 }
 
 void DYTreeProducer::endJob() {}
