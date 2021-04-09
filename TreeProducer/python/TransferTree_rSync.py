@@ -117,12 +117,13 @@ class ScriptGenerator:
             self.tool.SEPath        = "%s/%s" % (self.SEBasePath, dataset)
             self.tool.crabDir       = "crab_%s" % crabJobName
             self.tool.outputDirPath = "%s/%s" % (self.destinationBasePath, crabJobName)
-            self.tool.Register()
 
             print "crabJobName   = %s" % self.tool.crabDir
             print "SEPath        = %s" % self.tool.SEPath
             print "outputDirPath = %s" % self.tool.outputDirPath
             print "\n"
+
+            self.tool.Register()
 
         self.tool.GenScript()
 
@@ -178,7 +179,7 @@ class ScriptGenerator:
                     dataset = commandLine.split("/")[1]
                     # print dataset
 
-        self.dic_crab_dataset[crabJobName] = dataset
+            self.dic_crab_dataset[crabJobName] = dataset
 
 
 
