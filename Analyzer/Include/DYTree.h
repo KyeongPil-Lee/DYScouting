@@ -173,6 +173,14 @@ public:
   Int_t           offMuon_nMatchedRPCLayer[ArrSize];
   Int_t           offMuon_stationMask[ArrSize];
 
+  Double_t        offMuon_pt_inner[ArrSize];
+  vector< Double_t >* offMuon_vtxTrkChi2;
+  vector< Double_t >* offMuon_vtxTrkProb;
+  vector< Double_t >* offMuon_vtxTrkNdof;
+  vector< Double_t >* offMuon_vtxTrkPt1;
+  vector< Double_t >* offMuon_vtxTrkPt2;
+
+
   DYTree()
   {
     cout << "Default constructor ... nothing happens" << endl;
@@ -567,6 +575,24 @@ public:
 
     chain_->SetBranchStatus("offMuon_stationMask", 1);
     chain_->SetBranchAddress("offMuon_stationMask", &offMuon_stationMask);
+
+    chain_->SetBranchStatus("offMuon_pt_inner", 1);
+    chain_->SetBranchAddress("offMuon_pt_inner", &offMuon_pt_inner);
+
+    chain_->SetBranchStatus("offMuon_vtxTrkChi2", 1);
+    chain_->SetBranchAddress("offMuon_vtxTrkChi2", &offMuon_vtxTrkChi2);
+
+    chain_->SetBranchStatus("offMuon_vtxTrkProb", 1);
+    chain_->SetBranchAddress("offMuon_vtxTrkProb", &offMuon_vtxTrkProb);
+
+    chain_->SetBranchStatus("offMuon_vtxTrkNdof", 1);
+    chain_->SetBranchAddress("offMuon_vtxTrkNdof", &offMuon_vtxTrkNdof);
+
+    chain_->SetBranchStatus("offMuon_vtxTrkPt1", 1);
+    chain_->SetBranchAddress("offMuon_vtxTrkPt1", &offMuon_vtxTrkPt1);
+
+    chain_->SetBranchStatus("offMuon_vtxTrkPt2", 1);
+    chain_->SetBranchAddress("offMuon_vtxTrkPt2", &offMuon_vtxTrkPt2);
   }
 
 

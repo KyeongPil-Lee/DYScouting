@@ -173,6 +173,18 @@ public:
     cout << "************************************************" << endl;
   }
 
+  // -- Give different name for each given text file
+  TString GetOutputFileName(TString tag)
+  {
+    TString textFilePath = sampleInfo_.ntuplePathFile;
+    TObjArray *tokens = textFilePath.Tokenize("/");
+    TString textFileName = ((TObjString*)tokens->Last())->GetString();
+    textFileName = textFileName.ReplaceAll(".txt", "");
+    TString outputName = TString::Format("ROOTFile_%s_%s_%s.root", tag.Data(), sampleInfo_.type.Data(), textFileName.Data());
+
+    return outputName;
+  }
+
 };
 
 void AddNtupleToChain(TChain* chain, TString textFileName)

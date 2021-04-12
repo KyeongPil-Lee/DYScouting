@@ -696,6 +696,8 @@ public:
   Double_t relPFIso_dBeta;
   Double_t relTrkIso;
 
+  Double_t pt_inner;
+
   OffMuon()
   {
     Init();
@@ -771,6 +773,8 @@ public:
     nMatchedRPCLayer = ntuple->offMuon_nMatchedRPCLayer[index];
     stationMask      = ntuple->offMuon_stationMask[index];
 
+    pt_inner = ntuple->offMuon_pt_inner[index];
+
     relPFIso_dBeta = (PFIso04_charged + max(0., PFIso04_neutral + PFIso04_photon - 0.5*PFIso04_sumPU))/pt;
     relTrkIso = iso03_sumPt / pt;
   }
@@ -829,6 +833,8 @@ private:
     nMatchedRPCLayer = -999;
     stationMask = -999;
 
+    pt_inner = -999;
+
     relPFIso_dBeta = -999;
     relTrkIso = -999;
   }
@@ -852,6 +858,11 @@ public:
   Double_t dPhi;
   Double_t dR;
   Double_t angle3D;
+
+  Double_t vtxProb;
+  Double_t vtxChi2;
+  Double_t vtxNdof;
+  Double_t vtxNormChi2;
 
   OffMuPair() { Init(); }
 
@@ -893,6 +904,32 @@ private:
     angle3D = first_.vecP.Angle( second_.vecP.Vect() );
   }
 
+  void Set_DimuonVertexVariables(DYTree* ntuple)
+  {
+    Int_t nPt = (Int_t)ntuple->offMuon_vtxTrkPt1->size();
+    if( nPt != (Int_t)ntuple->offMuon_vtxTrkPt2->size() )
+    {
+      cout << "[OffMuPair::Set_DimuonVertexVariables] offMuon_vtxTrkPt1.size() != offMuon_vtxTrkPt2.size()" << endl;
+      return;
+    }
+
+    for(Int_t i_pt=0; i_pt<nPt; i_pt++)
+    {
+      Double_t pt1 = ntuple->offMuon_vtxTrkPt1->at(i_pt);
+      Double_t pt2 = ntuple->offMuon_vtxTrkPt2->at(i_pt);
+
+      if( (first_.pt == pt1 && second_.pt == pt2) ||
+          (first_.pt == pt2 && second_.pt == pt1)  )
+      {
+        vtxProb = ntuple->offMuon_vtxTrkProb->at(i_pt);
+        vtxChi2 = ntuple->offMuon_vtxTrkChi2->at(i_pt);
+        vtxNdof = ntuple->offMuon_vtxTrkNdof->at(i_pt);
+        vtxNormChi2 = vtxChi2 / vtxNdof;
+        break;
+      }
+    }
+  }
+
   void Init()
   {
     mass = -999;
@@ -901,6 +938,11 @@ private:
     signSum = -999;
 
     isOS = kFALSE;
+
+    vtxProb = -999;
+    vtxChi2 = -999;
+    vtxNdof = -999;
+    vtxNormChi2 = -999;
   }
 };
 
