@@ -862,7 +862,7 @@ public:
   Double_t vtxProb;
   Double_t vtxChi2;
   Double_t vtxNdof;
-  Double_t vtxNormChi2;
+  Double_t normVtxChi2;
 
   OffMuPair() { Init(); }
 
@@ -880,6 +880,32 @@ public:
     }
 
     Assign();
+  }
+
+  void Set_DimuonVertexVariables(DYTree* ntuple)
+  {
+    Int_t nPt = (Int_t)ntuple->offMuon_vtxTrkPt1->size();
+    if( nPt != (Int_t)ntuple->offMuon_vtxTrkPt2->size() )
+    {
+      cout << "[OffMuPair::Set_DimuonVertexVariables] offMuon_vtxTrkPt1.size() != offMuon_vtxTrkPt2.size()" << endl;
+      return;
+    }
+
+    for(Int_t i_pt=0; i_pt<nPt; i_pt++)
+    {
+      Double_t pt1 = ntuple->offMuon_vtxTrkPt1->at(i_pt);
+      Double_t pt2 = ntuple->offMuon_vtxTrkPt2->at(i_pt);
+
+      if( (first_.pt == pt1 && second_.pt == pt2) ||
+          (first_.pt == pt2 && second_.pt == pt1)  )
+      {
+        vtxProb = ntuple->offMuon_vtxTrkProb->at(i_pt);
+        vtxChi2 = ntuple->offMuon_vtxTrkChi2->at(i_pt);
+        vtxNdof = ntuple->offMuon_vtxTrkNdof->at(i_pt);
+        normVtxChi2 = vtxChi2 / vtxNdof;
+        break;
+      }
+    }
   }
 
 private:
@@ -904,32 +930,6 @@ private:
     angle3D = first_.vecP.Angle( second_.vecP.Vect() );
   }
 
-  void Set_DimuonVertexVariables(DYTree* ntuple)
-  {
-    Int_t nPt = (Int_t)ntuple->offMuon_vtxTrkPt1->size();
-    if( nPt != (Int_t)ntuple->offMuon_vtxTrkPt2->size() )
-    {
-      cout << "[OffMuPair::Set_DimuonVertexVariables] offMuon_vtxTrkPt1.size() != offMuon_vtxTrkPt2.size()" << endl;
-      return;
-    }
-
-    for(Int_t i_pt=0; i_pt<nPt; i_pt++)
-    {
-      Double_t pt1 = ntuple->offMuon_vtxTrkPt1->at(i_pt);
-      Double_t pt2 = ntuple->offMuon_vtxTrkPt2->at(i_pt);
-
-      if( (first_.pt == pt1 && second_.pt == pt2) ||
-          (first_.pt == pt2 && second_.pt == pt1)  )
-      {
-        vtxProb = ntuple->offMuon_vtxTrkProb->at(i_pt);
-        vtxChi2 = ntuple->offMuon_vtxTrkChi2->at(i_pt);
-        vtxNdof = ntuple->offMuon_vtxTrkNdof->at(i_pt);
-        vtxNormChi2 = vtxChi2 / vtxNdof;
-        break;
-      }
-    }
-  }
-
   void Init()
   {
     mass = -999;
@@ -942,7 +942,7 @@ private:
     vtxProb = -999;
     vtxChi2 = -999;
     vtxNdof = -999;
-    vtxNormChi2 = -999;
+    normVtxChi2 = -999;
   }
 };
 

@@ -315,6 +315,7 @@ vector<DYTool::OffMuPair> GetAllOffMuPairs(DYTool::DYTree *ntuple)
       DYTool::OffMuon mu2 = vec_muon[j_mu];
 
       DYTool::OffMuPair muonPair(mu1, mu2);
+      muonPair.Set_DimuonVertexVariables(ntuple);
       vec_muonPair.push_back( muonPair );
     }
   }
@@ -1115,6 +1116,12 @@ Bool_t GenRecoMatching(DYTool::MuPair pair, DYTool::DYTree *ntuple)
   if( GenRecoMatching(pair.first_, ntuple) && GenRecoMatching(pair.second_, ntuple) ) flag = kTRUE;
 
   return flag;
+}
+
+Bool_t CompareOffMuonPair_SmallerVtxChi2( DYTool::OffMuPair pair1, DYTool::OffMuPair pair2 )
+{
+  // -- the pair with "smallest" vertex chi2 will be the first element -- //
+  return pair1.normVtxChi2 < pair2.normVtxChi2; 
 }
 
 class PUReweightTool
