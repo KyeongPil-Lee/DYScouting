@@ -1,6 +1,14 @@
+## v1.4 -> v1.5
+
+* Add more offline muon information
+  * muon's inner track  pt
+  * dimuon vertex information
+
+
+
 ## v1.3 -> v1.4
 
-* Add offline muon informations
+* Add offline muon information
 * Make it run on miniAOD samples
 
 
