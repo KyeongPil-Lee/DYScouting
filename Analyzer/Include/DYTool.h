@@ -1279,6 +1279,25 @@ private:
     else if( type_ == "QCDMuEnriched_Pt600to800" )  sumWeight_ = 16891461.0;
     else if( type_ == "QCDMuEnriched_Pt800to1000" ) sumWeight_ = 16749914.0;
     else if( type_ == "QCDMuEnriched_Pt1000toInf" ) sumWeight_ = 11039499.0;
+    // -- offline
+    else if( type_ == "Offline_DYMuMu_M10to50" )            sumWeight_ = 28814911.0;
+    else if( type_ == "Offline_DYMuMu_M50toInf" )           sumWeight_ = 43883508.0;
+    else if( type_ == "Offline_DYTauTau_M10to50" )          sumWeight_ = 28674230.0;
+    else if( type_ == "Offline_DYTauTau_M50toInf" )         sumWeight_ = 43843913.0;
+    else if( type_ == "Offline_ttbar" )                     sumWeight_ = 63791484.0;
+    else if( type_ == "Offline_WJets" )                     sumWeight_ = 70966439.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt15to20" )    sumWeight_ = 4576065.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt20to30" )    sumWeight_ = 30612338.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt30to50" )    sumWeight_ = 29884616.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt50to80" )    sumWeight_ = 20268872.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt80to120" )   sumWeight_ = 25652280.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt120to170" )  sumWeight_ = 21315922.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt170to300" )  sumWeight_ = 35978539.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt300to470" )  sumWeight_ = 29488563.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt470to600" )  sumWeight_ = 20495750.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt600to800" )  sumWeight_ = 16618977.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt800to1000" ) sumWeight_ = 16749914.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt1000toInf" ) sumWeight_ = 10719790.0;
     else
     {
       cout << "[SimpleSampleInfo::Set_SumWeight] no information for type = " << type_ << endl;
