@@ -70,7 +70,7 @@ public:
     h_sumWeight->SetBinContent(1, sumWeight);
     h_sumWeight->SetBinError(1, 0);
 
-    TString outputName = TString::Format("ROOTFile_SumWeight_%s.root", sampleInfo_.type.Data());
+    TString outputName = GetOutputFileName("SumWeight");
     TFile *f_output = TFile::Open(outputName, "RECREATE");
     h_sumWeight->Write();
     f_output->Close();

@@ -12,7 +12,7 @@ from Include.CondorJobGenerator import *
 
 generator = MultiCondorJobGenerator()
 
-generator.jobName = "ControlPlot" # -- used for workspace name
+generator.jobName = "sumWeight" # -- used for workspace name
 generator.ROOTCodePath = GetCWD()+"/MakeHist_SumWeight.h"
 generator.className = "HistProducer"
 
