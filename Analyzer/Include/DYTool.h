@@ -1331,6 +1331,26 @@ private:
     else if( type_ == "QCDMuEnriched_Pt600to800" )  xSec_ = 25.25; // -- TuneCUETP8M1
     else if( type_ == "QCDMuEnriched_Pt800to1000" ) xSec_ = 4.723; // -- TuneCUETP8M1
     else if( type_ == "QCDMuEnriched_Pt1000toInf" ) xSec_ = 1.613; // -- TuneCUETP8M1
+
+    else if( type_ == "Offline_DYMuMu_M10to50" )            xSec_ = 6203.3333 * kFactor_M40to50_NNLOtoNLO;
+    else if( type_ == "Offline_DYMuMu_M50toInf" )           xSec_ = 2009.41;
+    else if( type_ == "Offline_DYTauTau_M10to50" )          xSec_ = 6270.0;
+    else if( type_ == "Offline_DYTauTau_M50toInf" )         xSec_ = 2009.41;
+    else if( type_ == "Offline_ttbar" )                     xSec_ = 88.29;
+    else if( type_ == "Offline_WJets" )                     xSec_ = 61526.7;
+    else if( type_ == "Offline_QCDMuEnriched_Pt20toInf" )   xSec_ = 239400.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt15to20" )    xSec_ = 2799000.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt20to30" )    xSec_ = 2526000.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt30to50" )    xSec_ = 1362000.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt50to80" )    xSec_ = 376600.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt80to120" )   xSec_ = 88930.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt120to170" )  xSec_ = 21230.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt170to300" )  xSec_ = 7055.0;
+    else if( type_ == "Offline_QCDMuEnriched_Pt300to470" )  xSec_ = 797.3; // -- TuneCUETP8M1
+    else if( type_ == "Offline_QCDMuEnriched_Pt470to600" )  xSec_ = 59.24;
+    else if( type_ == "Offline_QCDMuEnriched_Pt600to800" )  xSec_ = 25.25; // -- TuneCUETP8M1
+    else if( type_ == "Offline_QCDMuEnriched_Pt800to1000" ) xSec_ = 4.723; // -- TuneCUETP8M1
+    else if( type_ == "Offline_QCDMuEnriched_Pt1000toInf" ) xSec_ = 1.613; // -- TuneCUETP8M1
     else
     {
       cout << "[SimpleSampleInfo::Set_xSec] no information for type = " << type_ << endl;
