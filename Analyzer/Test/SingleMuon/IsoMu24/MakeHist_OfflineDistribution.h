@@ -110,11 +110,11 @@ private:
     // -- 4 = L1_DoubleMu_15_7
     // -- 11 = L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18
     // -- 16 = L1_DoubleMu4p5_SQ_OS_dR_Max1p2
-    Bool_t doPassL1 = kFALSE;
+    // Bool_t doPassL1 = kFALSE;
     // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(11) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE;
-    if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE; // -- no L1 w/ mass cut
+    // if( ntuple->vec_L1Bit->at(4) || ntuple->vec_L1Bit->at(16) ) doPassL1 = kTRUE; // -- no L1 w/ mass cut
 
-    if( !doPassL1 ) return muPair_dummy;
+    // if( !doPassL1 ) return muPair_dummy;
 
     // -- pass HLT
     Bool_t doPassTrig = kFALSE;
