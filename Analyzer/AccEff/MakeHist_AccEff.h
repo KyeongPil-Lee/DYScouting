@@ -85,13 +85,13 @@ public:
       Double_t totWeight = genWeight;
       if( sampleInfo_.isMC ) totWeight = genWeight * PUTool->Weight( ntuple->truePU );
 
-      // -- DY low mass sample: apply NLO/LO k-factor
-      if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
-        totWeight *= nloWeightTool->GetWeight(ntuple);
-
       // -- only DY->mumu or DY->ee events according to its name -- //
       if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )
       {
+        // -- DY low mass sample: apply NLO/LO k-factor
+        if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
+          totWeight *= nloWeightTool->GetWeight(ntuple);
+
         vector<DYTool::GenParticle> vec_genLepton = DYTool::GetAllGenLeptons(ntuple, 13, "fromHardProcessFinalState");
         if( vec_genLepton.size() != 2 )
         {

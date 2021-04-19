@@ -53,12 +53,15 @@ public:
     DYTool::AddNtupleToChain(chain, sampleInfo_.ntuplePathFile);
 
     DYTool::DYTree *ntuple = new DYTool::DYTree( chain );
+    ntuple->TurnOnBranches_OffMuon();
 
     Int_t nEvent = chain->GetEntries();
     cout << "\t[Total Events: " << nEvent << "]" << endl;
 
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
+
+    nEvent = 1000000;
 
     for(Int_t i=0; i<nEvent; i++)
     {
@@ -73,13 +76,13 @@ public:
       Double_t totWeight = genWeight;
       if( sampleInfo_.isMC ) totWeight = genWeight * PUTool->Weight( ntuple->truePU );
 
-      // -- DY low mass sample: apply NLO/LO k-factor
-      if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
-        totWeight *= nloWeightTool->GetWeight(ntuple);
-
       // -- only DY->mumu or DY->ee events according to its name -- //
       if( DYTool::SelectGenEventBySampleType(sampleInfo_.type, ntuple) )
       {
+        // -- DY low mass sample: apply NLO/LO k-factor
+        if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
+          totWeight *= nloWeightTool->GetWeight(ntuple);
+
         vector<DYTool::GenParticle> vec_genLepton = DYTool::GetAllGenLeptons(ntuple, 13, "fromHardProcessFinalState");
         if( vec_genLepton.size() != 2 )
         {
