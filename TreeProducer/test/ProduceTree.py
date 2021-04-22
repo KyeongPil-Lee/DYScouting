@@ -78,8 +78,8 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
 
   isMiniAOD              = cms.untracked.bool(isMiniAOD),
   triggerObject_miniAOD  = cms.untracked.InputTag("notUsed"),
-  offlineMuon            = cms.untracked.InputTag("notUsed"),
-  offlineVertex          = cms.untracked.InputTag("notUsed"),
+  offlineMuon            = cms.untracked.InputTag("muons"), # -- will be skipped if the collection is not available (e.g. RAW)
+  offlineVertex          = cms.untracked.InputTag("offlinePrimaryVertices"), # -- will be skipped if the collection is not available (e.g. RAW)
 )
 
 if isMiniAOD:
