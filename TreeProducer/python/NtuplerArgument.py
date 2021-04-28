@@ -25,8 +25,14 @@ def GetArgument(sampleType):
         isMiniAOD = True
 
     elif sampleType == "MC2018":
-         exampleEDMFile = 'file:/u/user/kplee/scratch/Physics/AODSIM_Autumn18_DY10to50_MadgraphMLM.root'
+         exampleEDMFile = '/store/mc/RunIIAutumn18DRPremix/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/AODSIM/102X_upgrade2018_realistic_v15-v2/120000/362F2012-0EFD-6C45-8BFF-DED4B10C7F4F.root'
          globalTag = '102X_upgrade2018_realistic_v15'
+         isMC = True
+         isMiniAOD = False
+
+    elif sampleType == "MC2018UL": # -- AOD
+         exampleEDMFile = '/store/mc/RunIISummer19UL18RECO/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/AODSIM/106X_upgrade2018_realistic_v11_L1v1-v2/100004/F83D534F-17F0-884A-91D4-E42F43132438.root'
+         globalTag = '106X_upgrade2018_realistic_v11_L1v1'
          isMC = True
          isMiniAOD = False
 
