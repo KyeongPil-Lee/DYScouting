@@ -64,51 +64,6 @@
   },
 
   {
-    "tag": "tW",
-    "isMC": 1,
-    "xSec": 35.85,
-    "sumWeight": -1.0,
-    "comment": "NNLO cross section",
-    "list_dir": ["dummy"]
-  },
-
-  {
-    "tag": "tbarW",
-    "isMC": 1,
-    "xSec": 35.85,
-    "sumWeight": -1.0,
-    "comment": "NNLO cross section",
-    "list_dir": ["dummy"]
-  },
-
-  {
-    "tag": "WW",
-    "isMC": 1,
-    "xSec": 118.7,
-    "sumWeight": -1.0,
-    "comment": "NNLO cross section",
-    "list_dir": ["dummy"]
-  },
-
-  {
-    "tag": "WZ",
-    "isMC": 1,
-    "xSec": 47.13,
-    "sumWeight": -1.0,
-    "comment": "NNLO cross section",
-    "list_dir": ["dummy"]
-  },
-
-  {
-    "tag": "ZZ",
-    "isMC": 1,
-    "xSec": 16.523,
-    "sumWeight": -1.0,
-    "comment": "NNLO cross section",
-    "list_dir": ["dummy"]
-  },
-
-  {
     "tag": "Offline_QCDMuEnriched_Pt15to20",
     "isMC": 1,
     "xSec": 1.0,
@@ -268,6 +223,258 @@
     "sumWeight": -1.0,
     "comment": "",
     "list_dir": ["v1.5/offline/SingleMuon_Run2018D", "v1.5/offline/SingleMuon_Run2018C", "v1.5/offline/SingleMuon_Run2018B", "v1.5/offline/SingleMuon_Run2018A"]
+  },
+
+  {
+    "tag": "DYMuMu_M10to50",
+    "isMC": 1,
+    "xSec": 6627.7903501719,
+    "sumWeight": 28954287.0,
+    "comment": "NLO cross section (18610.0 / 3) * k-factor to have continuous distribution with M50-inf (1.0684240278)",
+    "list_dir": ["v1.5/DYJetsToLL_M10to50_Madgraph", "v1.5/DYJetsToLL_M10to50_Madgraph_ext"]
+  },
+
+  {
+    "tag": "DYMuMu_M50toInf",
+    "isMC": 1,
+    "xSec": 2009.41,
+    "sumWeight": 44318555.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
+    "list_dir": ["v1.5/DYJetsToLL_M50toInf_aMCNLO", "v1.5/DYJetsToLL_M50toInf_aMCNLO_ext"]
+  },
+
+  {
+    "tag": "DYTauTau_M10to50",
+    "isMC": 1,
+    "xSec": 6270.0,
+    "sumWeight": 28812901.0,
+    "comment": "Cross section is from XSDB: 18810.0 / 3",
+    "list_dir": ["v1.5/DYJetsToLL_M10to50_Madgraph", "v1.5/DYJetsToLL_M10to50_Madgraph_ext"]
+  },
+
+  {
+    "tag": "DYTauTau_M50toInf",
+    "isMC": 1,
+    "xSec": 2009.41,
+    "sumWeight": 44279551.0,
+    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
+    "list_dir": ["v1.5/DYJetsToLL_M50toInf_aMCNLO", "v1.5/DYJetsToLL_M50toInf_aMCNLO_ext"]
+  },
+
+  {
+    "tag": "WJets",
+    "isMC": 1,
+    "xSec": 61526.7,
+    "sumWeight": 70972166.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["v1.5/WJetsToLNu_Madgraph"]
+  },
+
+  {
+    "tag": "ttbar",
+    "isMC": 1,
+    "xSec": 88.29,
+    "sumWeight": 63811310.0,
+    "comment": "",
+    "list_dir": ["v1.5/TTTo2L2Nu_Powheg"]
+  },
+
+  {
+    "tag": "tW",
+    "isMC": 1,
+    "xSec": 35.85,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "tbarW",
+    "isMC": 1,
+    "xSec": 35.85,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "WW",
+    "isMC": 1,
+    "xSec": 118.7,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "WZ",
+    "isMC": 1,
+    "xSec": 47.13,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "ZZ",
+    "isMC": 1,
+    "xSec": 16.523,
+    "sumWeight": -1.0,
+    "comment": "NNLO cross section",
+    "list_dir": ["dummy"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt15to20",
+    "isMC": 1,
+    "xSec": 2799000.0,
+    "sumWeight": 1305996.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt15to20"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt20to30",
+    "isMC": 1,
+    "xSec": 2526000.0,
+    "sumWeight": 30612338.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt20to30"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt30to50",
+    "isMC": 1,
+    "xSec": 1362000.0,
+    "sumWeight": 30431342.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt30to50"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt50to80",
+    "isMC": 1,
+    "xSec": 376600.0,
+    "sumWeight": 12394148.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt50to80"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt80to120",
+    "isMC": 1,
+    "xSec": 88930.0,
+    "sumWeight": 25460964.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt80to120", "v1.5/QCDMuEnriched_Pt80to120_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt120to170",
+    "isMC": 1,
+    "xSec": 21230.0,
+    "sumWeight": 21315922.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt120to170", "v1.5/QCDMuEnriched_Pt120to170_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt170to300",
+    "isMC": 1,
+    "xSec": 7055.0,
+    "sumWeight": 36372547.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt170to300"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt300to470",
+    "isMC": 1,
+    "xSec": 797.3,
+    "sumWeight": 29283907.0,
+    "comment": "Cross section from TuneCUETP8M1 sample",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt300to470", "v1.5/QCDMuEnriched_Pt300to470_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt470to600",
+    "isMC": 1,
+    "xSec": 59.24,
+    "sumWeight": 4821468.0,
+    "comment": "",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt470to600", "v1.5/QCDMuEnriched_Pt470to600_ext"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt600to800",
+    "isMC": 1,
+    "xSec": 25.25,
+    "sumWeight": 16891461.0,
+    "comment": "Cross section from TuneCUETP8M1 sample",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt600to800"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt800to1000",
+    "isMC": 1,
+    "xSec": 4.723,
+    "sumWeight": 16749914.0,
+    "comment": "Cross section from TuneCUETP8M1 sample",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt800to1000"]
+  },
+
+  {
+    "tag": "QCDMuEnriched_Pt1000toInf",
+    "isMC": 1,
+    "xSec": 1.613,
+    "sumWeight": 11039499.0,
+    "comment": "Cross section from TuneCUETP8M1 sample",
+    "list_dir": ["v1.5/QCDMuEnriched_Pt1000toInf"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018A",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "WARNING: Missing small lumi. due to crab failing - [896, 914] in 315973, [1, 1] in 315974. v1.4 ntuple is used as there is no difference between v1.4 and v1.5 for the scouting data",
+    "list_dir": ["v1.4/ScoutingCaloMuon_Run2018Av1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018B",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "v1.4 ntuple is used as there is no difference between v1.4 and v1.5 for the scouting data",
+    "list_dir": ["v1.4/ScoutingCaloMuon_Run2018Bv1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018C",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "v1.4 ntuple is used as there is no difference between v1.4 and v1.5 for the scouting data",
+    "list_dir": ["v1.4/ScoutingCaloMuon_Run2018Cv1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018D",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "v1.4 ntuple is used as there is no difference between v1.4 and v1.5 for the scouting data",
+    "list_dir": ["v1.4/ScoutingCaloMuon_Run2018Dv1_GoldenJSON"]
+  },
+
+  {
+    "tag": "ScoutingCaloMuon_Run2018All",
+    "isMC": 0,
+    "xSec": -1.0,
+    "sumWeight": -1.0,
+    "comment": "WARNING: Missing small lumi. due to crab failing - [896, 914] in 315973, [1, 1] in 315974 (RunA); v1.4 ntuple is used as there is no difference between v1.4 and v1.5 for the scouting data",
+    "list_dir": ["v1.4/ScoutingCaloMuon_Run2018Av1_GoldenJSON", "v1.4/ScoutingCaloMuon_Run2018Bv1_GoldenJSON", "v1.4/ScoutingCaloMuon_Run2018Cv1_GoldenJSON", "v1.4/ScoutingCaloMuon_Run2018Dv1_GoldenJSON"]
   }
 ]
 
