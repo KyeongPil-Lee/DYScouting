@@ -52,7 +52,6 @@ public:
     HistContainer* hists_M10to60_OS = new HistContainer();
     HistContainer* hists_M10to60_SS = new HistContainer();
 
-    nEvent = 1000000;
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
