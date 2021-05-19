@@ -29,6 +29,11 @@ public:
   vector< Bool_t >* vec_L1Bit;
   vector< Int_t >*  vec_L1Prescale;
 
+  vector< std::string >* vec_filterName;
+  vector< Double_t >* vec_HLTObj_pt;
+  vector< Double_t >* vec_HLTObj_eta;
+  vector< Double_t >* vec_HLTObj_phi;
+
   // -- vertex information (@ HLT)
   Int_t nVtx;
   Double_t vtx_x[ArrSize];
@@ -220,6 +225,11 @@ public:
     chain_->SetBranchStatus("caloMET_phi", 1);
     chain_->SetBranchStatus("rho", 1);
 
+    chain_->SetBranchStatus("vec_filterName", 1);
+    chain_->SetBranchStatus("vec_HLTObj_pt", 1);
+    chain_->SetBranchStatus("vec_HLTObj_eta", 1);
+    chain_->SetBranchStatus("vec_HLTObj_phi", 1);
+
     chain_->SetBranchAddress("runNum",           &runNum);
     chain_->SetBranchAddress("lumiBlockNum",     &lumiBlockNum);
     chain_->SetBranchAddress("eventNum",         &eventNum);
@@ -231,6 +241,11 @@ public:
     chain_->SetBranchAddress("caloMET_pt", &caloMET_pt);
     chain_->SetBranchAddress("caloMET_phi", &caloMET_phi);
     chain_->SetBranchAddress("rho", &rho);
+
+    chain_->SetBranchAddress("vec_filterName",          &vec_filterName);
+    chain_->SetBranchAddress("vec_HLTObj_pt",           &vec_HLTObj_pt);
+    chain_->SetBranchAddress("vec_HLTObj_eta",          &vec_HLTObj_eta);
+    chain_->SetBranchAddress("vec_HLTObj_phi",          &vec_HLTObj_phi);
   }
 
   void TurnOnBranches_VtxInfo()
