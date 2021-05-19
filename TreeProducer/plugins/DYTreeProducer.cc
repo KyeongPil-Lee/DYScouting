@@ -1252,7 +1252,8 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
   // ---- HLT_Mu50_v*
   // ---- CAVEAT: the filter names are for 2018 setup; it needs to be checked (and updated if needed) if you want to run on 2016 or 17!
   if( filterName.find("hltL1sDoubleMuIorTripleMuIorQuadMu") != std::string::npos || 
-      filterName.find("hltDimuon3L1Filtered0")              != std::string::npos || 
+      filterName.find("hltDimuon3L1Filtered0")              != std::string::npos ||
+      filterName.find("hltDimuon3L2PreFiltered0")           != std::string::npos || 
       filterName.find("hltDoubleMu3L3FilteredNoVtx")        != std::string::npos || 
       filterName.find("hltL1sSingleMu22")                                            != std::string::npos || 
       filterName.find("hltL1fL1sMu22L1Filtered0")                                    != std::string::npos || 
