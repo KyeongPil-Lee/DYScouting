@@ -34,6 +34,7 @@ public:
     Int_t nEvent_filter_2mu = 0;
     Int_t nEvent_trigFired  = 0;
 
+    // nEvent = 1000000;
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
