@@ -184,6 +184,37 @@ private:
   }
 };
 
+class HLTObj: public Object
+{
+public:
+  TString filterName;
+
+  HLTObj() { Init(); };
+
+  HLTObj(DYTool::DYTree *ntuple, Int_t index): HLTObj()
+  {
+    FillFromNtuple(ntuple, index);
+  }
+
+  void FillFromNtuple(DYTool::DYTree *ntuple, Int_t index)
+  {
+    pt  = ntuple->vec_HLTObj_pt->at(index);
+    eta = ntuple->vec_HLTObj_eta->at(index);
+    phi = ntuple->vec_HLTObj_phi->at(index);
+    vecP.SetPtEtaPhiM(pt, eta, phi, DYTool::M_mu); // -- assumption: HLT "muon" object
+
+    filterName = ntuple->vec_filterName->at(index);
+  }
+
+private:
+  void Init()
+  {
+    pt = -999;
+    eta = -999;
+    phi = -999;
+  }
+};
+
 
 // -- Scouting muon
 class Muon: public Object

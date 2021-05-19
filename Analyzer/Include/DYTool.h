@@ -210,6 +210,25 @@ void AddNtupleToChain(TChain* chain, TString textFileName)
   cout << "==================================" << endl;
 }
 
+vector<DYTool::HLTObj> GetAllHLTObj(DYTool::DYTree *ntuple, TString theFilterName = "")
+{
+  vector<DYTool::HLTObj> vec_HLTObj;
+
+  Int_t nHLTObj = (Int_t)ntuple->vec_filterName->size();
+  for(Int_t i_obj=0; i_obj<nHLTObj; i_obj++)
+  {
+    DYTool::HLTObj obj(ntuple, i_obj);
+    if( theFilterName == "" )
+      vec_HLTObj.push_back( obj );
+    else
+    {
+      if( obj.filterName.Contains(theFilterName) )
+        vec_HLTObj.push_back( obj );
+    }
+  }
+
+  return vec_HLTObj;
+}
 
 vector<DYTool::Muon> GetAllMuons(DYTool::DYTree *ntuple)
 {

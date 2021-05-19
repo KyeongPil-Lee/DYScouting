@@ -421,6 +421,8 @@ public:
   Bool_t setSavePath_ = kFALSE;
   TString savePath_ = "";
 
+  Bool_t setRatioLogY_ = kFALSE;
+
   CanvasBase()
   {
     Init();
@@ -535,6 +537,12 @@ public:
     setSavePath_ = kTRUE;
     savePath_ = path;
   }
+
+  void SetRatioLogY( Bool_t flag = kTRUE )
+  {
+    setRatioLogY_ = flag;
+  }
+
   // -- implemented later
   virtual void Draw( TString drawOp )
   {
@@ -653,6 +661,7 @@ public:
     bottomPad_->SetLeftMargin(0.13);
 
     if( isLogX_ ) bottomPad_->SetLogx();
+    if( setRatioLogY_ ) bottomPad_->SetLogy();
   }
 
   void DrawLatexAll()
