@@ -47,7 +47,6 @@ public:
     }
     h_nEvent_HLTStep->GetXaxis()->SetBinLabel(nBin, "Trigger bit");
 
-
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
