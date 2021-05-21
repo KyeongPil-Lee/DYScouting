@@ -12,8 +12,8 @@ from Include.CondorJobGenerator import *
 
 generator = MultiCondorJobGenerator()
 
-generator.jobName = "ControlPlot" # -- used for workspace name
-generator.ROOTCodePath = GetCWD()+"/CountEvent_HLTStep.h"
+generator.jobName = "DataMCRatio" # -- used for workspace name
+generator.ROOTCodePath = GetCWD()+"/DataDimuonMass_PerRun.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now
