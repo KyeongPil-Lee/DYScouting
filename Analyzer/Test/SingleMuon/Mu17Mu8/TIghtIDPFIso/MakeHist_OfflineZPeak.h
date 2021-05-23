@@ -115,7 +115,7 @@ private:
     for(const auto& firedTrigger : *(ntuple->vec_firedTrigger) )
     {
       TString tstr_firedTrig = firedTrigger;
-      if( tstr_firedTrig.Contains("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*") ) doPass_HLT = kTRUE;
+      if( tstr_firedTrig.Contains("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v") ) doPass_HLT = kTRUE;
 
       if( doPass_HLT ) break;
     }
