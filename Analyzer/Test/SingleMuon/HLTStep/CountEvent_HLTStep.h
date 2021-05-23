@@ -1,4 +1,3 @@
-#include <Test/SingleMuon/OfflineHistContainer.h>
 #include <NLOReweight/NLOWeightTool.h>
 
 class HistProducer: public DYTool::ClassTemplate
@@ -30,19 +29,20 @@ public:
     vector<TString> vec_filter = {
       "hltL1sDoubleMuIorTripleMuIorQuadMu",
       "hltDimuon3L1Filtered0",
-      // "hltDimuon3L2PreFiltered0", # -- not stored yet
+      "hltDimuon3L2PreFiltered0", # -- not stored yet
       "hltDoubleMu3L3FilteredNoVtx"
     };    
     Int_t nFilter = (Int_t)vec_filter.size();
 
-    Int_t nBin = nFilter+2; // -- two more bins: 1 for L1 bit and 1 for final HLT bit
+    Int_t nBin = nFilter+3; // -- three more bins: 1 for IsoMu24+Dimuon (starting point), 1 for L1 bit and 1 for final HLT bit
     TH1D* h_nEvent_HLTStep = new TH1D("h_nEvent_HLTStep", "", nBin, 0, nBin);
 
     // -- set label
-    h_nEvent_HLTStep->GetXaxis()->SetBinLabel(1, "L1 bit");
+    h_nEvent_HLTStep->GetXaxis()->SetBinLabel(1, "IsoMu24+Dimuon sel.");
+    h_nEvent_HLTStep->GetXaxis()->SetBinLabel(2, "L1 bit");
     for(Int_t i_filter=0; i_filter<nFilter; i_filter++)
     {
-      Int_t i_bin = i_filter+2;
+      Int_t i_bin = i_filter+3;
       h_nEvent_HLTStep->GetXaxis()->SetBinLabel(i_bin, vec_filter[i_filter]);
     }
     h_nEvent_HLTStep->GetXaxis()->SetBinLabel(nBin, "Trigger bit");
@@ -73,15 +73,16 @@ public:
 
         if( isDYEvent_IsoMu24Z )
         {
+          h_nEvent_HLTStep->Fill( 0.5, totWeight ); // -- 0.5 = 1st bin
           if( IsFired_L1(ntuple) )
           {
-            h_nEvent_HLTStep->Fill( 0.5, totWeight ); // -- 0.5 = first bin
+            h_nEvent_HLTStep->Fill( 1.5, totWeight ); // -- 1.5 = 2nd bin
 
             for(Int_t i_filter=0; i_filter<nFilter; i_filter++)
             {
               TString filterName = vec_filter[i_filter];
               if( DoPass_GivenFilter(ntuple, filterName) )
-                h_nEvent_HLTStep->Fill(i_filter+1.5, totWeight); // -- example: i_filter=0 -> i_filter+1.5 = 1.5: 2nd bin
+                h_nEvent_HLTStep->Fill(i_filter+2.5, totWeight); // -- example: i_filter=0 -> i_filter+2.5 = 2.5: 3rd bin
             }
 
             if( IsFired_DoubleMu3(ntuple) )
