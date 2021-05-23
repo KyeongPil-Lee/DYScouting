@@ -29,7 +29,7 @@ public:
     vector<TString> vec_filter = {
       "hltL1sDoubleMuIorTripleMuIorQuadMu",
       "hltDimuon3L1Filtered0",
-      "hltDimuon3L2PreFiltered0", # -- not stored yet
+      "hltDimuon3L2PreFiltered0", // -- not stored yet
       "hltDoubleMu3L3FilteredNoVtx"
     };    
     Int_t nFilter = (Int_t)vec_filter.size();
