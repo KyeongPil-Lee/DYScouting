@@ -12,8 +12,8 @@ from Include.CondorJobGenerator import *
 
 generator = MultiCondorJobGenerator()
 
-generator.jobName = "ControlPlot" # -- used for workspace name
-generator.ROOTCodePath = GetCWD()+"/MakeHist_OfflineDistribution.h"
+generator.jobName = "OfflineZPeak" # -- used for workspace name
+generator.ROOTCodePath = GetCWD()+"/MakeHist_OfflineZPeak.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 1.0 # -- not used for now
