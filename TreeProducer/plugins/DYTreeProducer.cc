@@ -27,6 +27,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 // -- triggers
+#include "DataFormats/L1Trigger/interface/Muon.h"
 #include "L1Trigger/L1TGlobal/interface/L1TGlobalUtil.h"
 #include "DataFormats/L1TGlobal/interface/GlobalAlgBlk.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
@@ -61,6 +62,9 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Scalers/interface/LumiScalers.h"
+
+// -- for the extrapolation of the offline muon to the 2nd muon station
+#include "MuonAnalysis/MuonAssociators/interface/PropagateToMuon.h"
 
 // -- tracking
 #include "MagneticField/Engine/interface/MagneticField.h"
@@ -111,6 +115,8 @@ private:
 
 
   // -- tokens
+  edm::EDGetTokenT< l1t::MuonBxCollection >          t_L1Muon_;
+
   edm::EDGetTokenT< BXVector<GlobalAlgBlk> >         t_globalAlgBlk_;
 
   edm::EDGetTokenT< edm::TriggerResults >            t_triggerResults_;
@@ -144,6 +150,9 @@ private:
   edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> > t_trigObj_miniAOD_;
   edm::EDGetTokenT< reco::VertexCollection >                    t_offlineVertex_;
   edm::EDGetTokenT< edm::View<reco::Muon> >                     t_offlineMuon_;
+
+  // -- propagator
+  PropagateToMuon propagatorToMuon;
 
   // -- debugging switch
   bool debug_ = false;
@@ -350,14 +359,26 @@ private:
   int offMuon_stationMask_[arrSize_];
 
   double offMuon_pt_inner_[arrSize_];
+
+  double offMuon_propEta_[arrSize_];
+  double offMuon_propPhi_[arrSize_];
+
   std::vector<double> offMuon_vtxTrkChi2_;
   std::vector<double> offMuon_vtxTrkProb_;
   std::vector<double> offMuon_vtxTrkNdof_;
   std::vector<double> offMuon_vtxTrkPt1_;
   std::vector<double> offMuon_vtxTrkPt2_;
+
+  int nL1Muon;
+  double L1Muon_pt_[arrSize_];
+  double L1Muon_eta_[arrSize_];
+  double L1Muon_phi_[arrSize_];
+  double L1Muon_charge_[arrSize_];
+  double L1Muon_quality_[arrSize_];
 };
 
 DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
+t_L1Muon_              ( consumes< l1t::MuonBxCollection  >         (iConfig.getUntrackedParameter<edm::InputTag>("L1Muon")) ),
 t_globalAlgBlk_        ( consumes< BXVector< GlobalAlgBlk > >       (iConfig.getUntrackedParameter<edm::InputTag>("globalAlgBlk")) ),
 t_triggerResults_      ( consumes< edm::TriggerResults >            (iConfig.getUntrackedParameter<edm::InputTag>("triggerResults")) ),
 // t_triggerEvent_        ( consumes< trigger::TriggerEvent >          (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ),
@@ -374,7 +395,8 @@ t_caloMETPt_           ( consumes< double >                         (iConfig.get
 t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
 t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- not used in AOD case
 t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
-t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) )
+t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) ),
+propagatorToMuon(iConfig)
 {
    // usesResource("TFileService");
   vec_L1Seed_ = iConfig.getUntrackedParameter<std::vector<std::string> >("L1SeedList");
@@ -673,6 +695,9 @@ void DYTreeProducer::Init()
     offMuon_stationMask_[i] = -999;
 
     offMuon_pt_inner_[i] = -999;
+
+    offMuon_propEta_[i] = -999;
+    offMuon_propPhi_[i] = -999;
   }
 
   offMuon_vtxTrkChi2_.clear();
@@ -680,6 +705,17 @@ void DYTreeProducer::Init()
   offMuon_vtxTrkNdof_.clear();
   offMuon_vtxTrkPt1_.clear();
   offMuon_vtxTrkPt2_.clear();
+
+  nL1Muon_ = -999;
+  for( int i=0; i<arrSize_; i++)
+  {
+    L1Muon_pt_[i] = -999;
+    L1Muon_eta_[i] = -999;
+    L1Muon_phi_[i] = -999;
+    L1Muon_charge_[i] = -999;
+    L1Muon_quality_[i] = -999;
+  }
+
 }
 
 void DYTreeProducer::Make_Branch()
@@ -863,11 +899,21 @@ void DYTreeProducer::Make_Branch()
 
   ntuple_->Branch("offMuon_pt_inner", &offMuon_pt_inner_, "offMuon_pt_inner[nOffMuon]/D");
 
+  ntuple_->Branch("offMuon_propEta", &offMuon_propEta_, "offMuon_propEta[nOffMuon]/D");
+  ntuple_->Branch("offMuon_propPhi", &offMuon_propPhi_, "offMuon_propPhi[nOffMuon]/D");
+
   ntuple_->Branch("offMuon_vtxTrkChi2", &offMuon_vtxTrkChi2_);
   ntuple_->Branch("offMuon_vtxTrkProb", &offMuon_vtxTrkProb_);
   ntuple_->Branch("offMuon_vtxTrkNdof", &offMuon_vtxTrkNdof_);
   ntuple_->Branch("offMuon_vtxTrkPt1",  &offMuon_vtxTrkPt1_);
   ntuple_->Branch("offMuon_vtxTrkPt2",  &offMuon_vtxTrkPt2_);
+
+  ntuple_->Branch("nL1Muon",        &nL1Muon_,        "nL1Muon/I");
+  ntuple_->Branch("L1Muon_pt",      &L1Muon_pt_,      "L1Muon_pt[nL1Muon]/D");
+  ntuple_->Branch("L1Muon_eta",     &L1Muon_eta_,     "L1Muon_eta[nL1Muon]/D");
+  ntuple_->Branch("L1Muon_phi",     &L1Muon_phi_,     "L1Muon_phi[nL1Muon]/D");
+  ntuple_->Branch("L1Muon_charge",  &L1Muon_charge_,  "L1Muon_charge[nL1Muon]/D");
+  ntuple_->Branch("L1Muon_quality", &L1Muon_quality_, "L1Muon_quality[nL1Muon]/D");
 }
 
 
@@ -1182,6 +1228,7 @@ void DYTreeProducer::Fill_ScoutingCaloJet( const edm::Event& iEvent )
 
 void DYTreeProducer::Fill_L1( const edm::Event& iEvent, const edm::EventSetup& iSetup )
 {
+  // -- seed information
   L1GtUtils_->retrieveL1(iEvent, iSetup, t_globalAlgBlk_);
 
   for(unsigned int i_seed=0; i_seed<vec_L1Seed_.size(); i_seed++)
@@ -1198,6 +1245,31 @@ void DYTreeProducer::Fill_L1( const edm::Event& iEvent, const edm::EventSetup& i
     vec_L1Bit_.push_back( isFired );
     vec_L1Prescale_.push_back( L1Prescale );
   }
+
+  // -- L1 muon information
+  edm::Handle<l1t::MuonBxCollection> h_L1Muon;
+  if( iEvent.getByToken(t_L1Muon_, h_L1Muon) )
+  {
+    int _nL1Muon = 0;
+    for(int ibx = h_L1Muon->getFirstBX(); ibx<=h_L1Muon->getLastBX(); ++ibx)
+    {
+      if(ibx != 0) continue; // -- only take when ibx == 0 -- //
+      for(auto it=h_L1Muon->begin(ibx); it!=h_L1Muon->end(ibx); it++)
+      {
+        l1t::MuonRef ref_L1Mu(h_L1Muon, distance(h_L1Muon->begin(h_L1Muon->getFirstBX()), it) );
+
+        L1Muon_pt_[_nL1Muon]      = ref_L1Mu->pt();
+        L1Muon_eta_[_nL1Muon]     = ref_L1Mu->eta();
+        L1Muon_phi_[_nL1Muon]     = ref_L1Mu->phi();
+        L1Muon_charge_[_nL1Muon]  = ref_L1Mu->charge();
+        L1Muon_quality_[_nL1Muon] = ref_L1Mu->hwQual();
+
+        _nL1Muon++;
+      }
+    }
+    nL1Muon_ = _nL1Muon;
+  }
+
 }
 
 
@@ -1275,6 +1347,9 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
 
 void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
+  // -- initialize the propagator
+  propagatorToMuon.init(iSetup);
+
   // -- for the dimuon vertex variable
   // iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   ESHandle<MagneticField> B;
@@ -1374,6 +1449,17 @@ void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent, const edm::Event
       offMuon_nMatchedStation_[_nOffMuon] = mu.numberOfMatchedStations();
       offMuon_nMatchedRPCLayer_[_nOffMuon] = mu.numberOfMatchedRPCLayers();
       offMuon_stationMask_[_nOffMuon] = mu.stationMask();
+
+      // -- propagation to the 2nd station and get eta and phi value (for the matching with L1 muons)
+      TrajectoryStateOnSurface prop = propagatorToMuon.extrapolate( *(mu.muonBestTrack()) );
+      if( prop.isValid() )
+      {
+        offMuon_propEta_[_nOffMuon] = prop.globalPosition().eta();
+        offMuon_propPhi_[_nOffMuon] = prop.globalPosition().phi();
+        // printf("[Propagation: suceeded (isGLB, isTRK, isSTA, isPF) = (%d, %d, %d, %d)]\n", offMuon_isGLB_[_nOffMuon], offMuon_isTRK_[_nOffMuon], offMuon_isSTA_[_nOffMuon], offMuon_isPF_[_nOffMuon]);
+        // printf("  (eta, propagated eta) = (%lf, %lf)\n", offMuon_eta_[_nOffMuon], offMuon_propEta_[_nOffMuon]);
+        // printf("  (phi, propagated phi) = (%lf, %lf)\n", offMuon_phi_[_nOffMuon], offMuon_propPhi_[_nOffMuon]);
+      }
 
       _nOffMuon++;
 
