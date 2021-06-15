@@ -1,3 +1,11 @@
+## v1.5 -> v1.6
+
+* Add L1 muon information (L1 pt, eta, phi, charge and quality)
+* Add eta and phi information of the offline muon after the propagation to the 2nd muon station
+  * They will be used to properly calculate dR(offline muon, L1 muon)
+
+
+
 ## v1.4 -> v1.5
 
 * Add more offline muon information
