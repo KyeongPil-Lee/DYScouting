@@ -152,7 +152,7 @@ private:
   edm::EDGetTokenT< edm::View<reco::Muon> >                     t_offlineMuon_;
 
   // -- propagator
-  PropagateToMuon propagatorToMuon;
+  PropagateToMuon propagatorToMuon_;
 
   // -- debugging switch
   bool debug_ = false;
@@ -369,7 +369,7 @@ private:
   std::vector<double> offMuon_vtxTrkPt1_;
   std::vector<double> offMuon_vtxTrkPt2_;
 
-  int nL1Muon;
+  int nL1Muon_;
   double L1Muon_pt_[arrSize_];
   double L1Muon_eta_[arrSize_];
   double L1Muon_phi_[arrSize_];
@@ -396,7 +396,7 @@ t_rho_                 ( consumes< double >                         (iConfig.get
 t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- not used in AOD case
 t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
 t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) ),
-propagatorToMuon(iConfig)
+propagatorToMuon_(iConfig)
 {
    // usesResource("TFileService");
   vec_L1Seed_ = iConfig.getUntrackedParameter<std::vector<std::string> >("L1SeedList");
@@ -1348,7 +1348,7 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
 void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
   // -- initialize the propagator
-  propagatorToMuon.init(iSetup);
+  propagatorToMuon_.init(iSetup);
 
   // -- for the dimuon vertex variable
   // iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
@@ -1451,7 +1451,7 @@ void DYTreeProducer::Fill_OfflineMuon(const edm::Event &iEvent, const edm::Event
       offMuon_stationMask_[_nOffMuon] = mu.stationMask();
 
       // -- propagation to the 2nd station and get eta and phi value (for the matching with L1 muons)
-      TrajectoryStateOnSurface prop = propagatorToMuon.extrapolate( *(mu.muonBestTrack()) );
+      TrajectoryStateOnSurface prop = propagatorToMuon_.extrapolate( *(mu.muonBestTrack()) );
       if( prop.isValid() )
       {
         offMuon_propEta_[_nOffMuon] = prop.globalPosition().eta();

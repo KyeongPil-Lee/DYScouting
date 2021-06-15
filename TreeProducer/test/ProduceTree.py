@@ -48,6 +48,11 @@ process.TFileService = cms.Service("TFileService",
   closeFileFast = cms.untracked.bool(False),
 )
 
+# -- for the extrapolation of offlie muon to 2nd muon station
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi")
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorOpposite_cfi")
+
 ##--- l1 stage2 digis ---
 process.load("EventFilter.L1TRawToDigi.gtStage2Digis_cfi")
 process.gtStage2Digis.InputLabel = cms.InputTag( "hltFEDSelectorL1" )
