@@ -48,6 +48,11 @@ process.TFileService = cms.Service("TFileService",
   closeFileFast = cms.untracked.bool(False),
 )
 
+# -- for the extrapolation of offlie muon to 2nd muon station
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi")
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorOpposite_cfi")
+
 ##--- l1 stage2 digis ---
 process.load("EventFilter.L1TRawToDigi.gtStage2Digis_cfi")
 process.gtStage2Digis.InputLabel = cms.InputTag( "hltFEDSelectorL1" )
@@ -56,6 +61,7 @@ process.load('PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff')
 from DYScouting.TreeProducer.L1SeedList import GetL1SeedList
 
 process.DYTree = cms.EDAnalyzer('DYTreeProducer',
+  L1Muon                = cms.untracked.InputTag("gmtStage2Digis", "Muon", "RECO"),
   globalAlgBlk          = cms.untracked.InputTag("gtStage2Digis"),
   l1tAlgBlkInputTag     = cms.InputTag("gtStage2Digis"), # -- for L1TGlobalUtil
   l1tExtBlkInputTag     = cms.InputTag("gtStage2Digis"), # -- for L1TGlobalUtil
@@ -80,6 +86,16 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
   triggerObject_miniAOD  = cms.untracked.InputTag("notUsed"),
   offlineMuon            = cms.untracked.InputTag("muons"), # -- will be skipped if the collection is not available (e.g. RAW)
   offlineVertex          = cms.untracked.InputTag("offlinePrimaryVertices"), # -- will be skipped if the collection is not available (e.g. RAW)
+
+  # -- for the extrapolation of offlie muon to 2nd muon station
+  preselection = cms.string("gmtMuonCand.quality > 1"), # FIXME: maybe exclude CSC-only region?
+  useTrack     = cms.string("tracker"),
+  useState     = cms.string("atVertex"),
+  maxDeltaR    = cms.double(1.5),             ## FIXME: to be tuned
+  maxDeltaEta  = cms.double(0.3),             ## FIXME: to be tuned
+  l1PhiOffset  = cms.double(1.25 * 3.14159265359/180.),
+  useSimpleGeometry = cms.bool(True),
+  fallbackToME1     = cms.bool(True),
 )
 
 if isMiniAOD:

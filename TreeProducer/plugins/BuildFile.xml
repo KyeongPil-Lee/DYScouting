@@ -24,6 +24,7 @@
 <use name="DataFormats/L1Trigger"/>
 <use name="HLTrigger/HLTcore"/>
 <use name="CommonTools/CandUtils"/>
+<use name="MuonAnalysis/MuonAssociators"/>
 <!-- <use name="SHarper/HEEPAnalyzer"/> -->
 <use name="root"/>
 <use name="boost"/>
