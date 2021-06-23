@@ -3,9 +3,9 @@
   {
     "tag": "Offline_DYMuMu_M10to50",
     "isMC": 1,
-    "xSec": 35090.3,
-    "sumWeight": -1.0,
-    "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (WARNING: PDF error is 57657.3 pb (164%)!!)",
+    "xSec": 6627.7903501719,
+    "sumWeight": 28954287.0,
+    "comment": "NLO cross section (6203.3333 pb) * k-factor (1.0684240278) to have smooth distribution with M50-inf normalized to NNLO cross section",
     "list_dir": ["v1.6/offline/DYJetsToLL_M10to50_Madgraph", "v1.6/offline/DYJetsToLL_M10to50_Madgraph_ext"]
   },
 
@@ -13,7 +13,7 @@
     "tag": "Offline_DYMuMu_M50toInf",
     "isMC": 1,
     "xSec": 2009.41,
-    "sumWeight": -1.0,
+    "sumWeight": 44318555.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
     "list_dir": ["v1.6/offline/DYJetsToLL_M50toInf_aMCNLO", "v1.6/offline/DYJetsToLL_M50toInf_aMCNLO_ext"]
   },
