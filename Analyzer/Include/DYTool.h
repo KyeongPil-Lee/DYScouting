@@ -230,6 +230,21 @@ vector<DYTool::HLTObj> GetAllHLTObj(DYTool::DYTree *ntuple, TString theFilterNam
   return vec_HLTObj;
 }
 
+vector<DYTool::L1Muon> GetAllL1Muon(DYTool::DYTree *ntuple, Double_t minQuality = -1)
+{
+  vector<DYTool::L1Muon> vec_L1Muon;
+
+  Int_t nL1Muon = (Int_t)ntuple->nL1Muon;
+  for(Int_t i_obj=0; i_obj<nL1Muon; i_obj++)
+  {
+    DYTool::L1Muon obj(ntuple, i_obj);
+    if( obj.quality >= minQuality )
+      vec_L1Muon.push_back( obj );
+  }
+
+  return vec_L1Muon;
+}
+
 vector<DYTool::Muon> GetAllMuons(DYTool::DYTree *ntuple)
 {
   vector<DYTool::Muon> vec_muon;

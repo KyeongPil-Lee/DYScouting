@@ -179,11 +179,22 @@ public:
   Int_t           offMuon_stationMask[ArrSize];
 
   Double_t        offMuon_pt_inner[ArrSize];
+
+  Double_t offMuon_propEta[ArrSize];
+  Double_t offMuon_propPhi[ArrSize];
+
   vector< Double_t >* offMuon_vtxTrkChi2;
   vector< Double_t >* offMuon_vtxTrkProb;
   vector< Double_t >* offMuon_vtxTrkNdof;
   vector< Double_t >* offMuon_vtxTrkPt1;
   vector< Double_t >* offMuon_vtxTrkPt2;
+
+  Int_t nL1Muon;
+  Double_t L1Muon_pt[ArrSize];
+  Double_t L1Muon_eta[ArrSize];
+  Double_t L1Muon_phi[ArrSize];
+  Double_t L1Muon_charge[ArrSize];
+  Double_t L1Muon_quality[ArrSize];
 
 
   DYTree()
@@ -596,6 +607,12 @@ public:
     chain_->SetBranchStatus("offMuon_pt_inner", 1);
     chain_->SetBranchAddress("offMuon_pt_inner", &offMuon_pt_inner);
 
+    chain_->SetBranchStatus("offMuon_propEta", 1);
+    chain_->SetBranchAddress("offMuon_propEta", &offMuon_propEta);
+
+    chain_->SetBranchStatus("offMuon_propPhi", 1);
+    chain_->SetBranchAddress("offMuon_propPhi", &offMuon_propPhi);
+
     chain_->SetBranchStatus("offMuon_vtxTrkChi2", 1);
     chain_->SetBranchAddress("offMuon_vtxTrkChi2", &offMuon_vtxTrkChi2);
 
@@ -610,6 +627,27 @@ public:
 
     chain_->SetBranchStatus("offMuon_vtxTrkPt2", 1);
     chain_->SetBranchAddress("offMuon_vtxTrkPt2", &offMuon_vtxTrkPt2);
+  }
+
+  void TurnOnBranches_L1Muon()
+  {
+    chain_->SetBranchStatus("nL1Muon", 1);
+    chain_->SetBranchAddress("nL1Muon", &nL1Muon);
+
+    chain_->SetBranchStatus("L1Muon_pt", 1);
+    chain_->SetBranchAddress("L1Muon_pt", &L1Muon_pt);
+
+    chain_->SetBranchStatus("L1Muon_eta", 1);
+    chain_->SetBranchAddress("L1Muon_eta", &L1Muon_eta);
+
+    chain_->SetBranchStatus("L1Muon_phi", 1);
+    chain_->SetBranchAddress("L1Muon_phi", &L1Muon_phi);
+
+    chain_->SetBranchStatus("L1Muon_charge", 1);
+    chain_->SetBranchAddress("L1Muon_charge", &L1Muon_charge);
+
+    chain_->SetBranchStatus("L1Muon_quality", 1);
+    chain_->SetBranchAddress("L1Muon_quality", &L1Muon_quality);
   }
 
 

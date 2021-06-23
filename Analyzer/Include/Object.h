@@ -215,6 +215,41 @@ private:
   }
 };
 
+class L1Muon: public Object
+{
+public:
+  Double_t charge;
+  Double_t quality;
+
+  L1Muon() { Init(); };
+
+  L1Muon(DYTool::DYTree *ntuple, Int_t index): L1Muon()
+  {
+    FillFromNtuple(ntuple, index);
+  }
+
+  void FillFromNtuple(DYTool::DYTree *ntuple, Int_t index)
+  {
+    pt       = ntuple->L1Muon_pt[index];
+    eta      = ntuple->L1Muon_eta[index];
+    phi      = ntuple->L1Muon_phi[index];
+    charge   = ntuple->L1Muon_charge[index];
+    quality  = ntuple->L1Muon_quality[index];
+
+    vecP.SetPtEtaPhiM(pt, eta, phi, DYTool::M_mu); // -- assumption: L1 "muon" object
+  }
+
+private:
+  void Init()
+  {
+    pt = -999;
+    eta = -999;
+    phi = -999;
+    charge = -999;
+    quality = -999;
+  }
+};
+
 
 // -- Scouting muon
 class Muon: public Object
@@ -751,6 +786,9 @@ public:
 
   Double_t pt_inner;
 
+  Double_t propEta;
+  Double_t propPhi;
+
   OffMuon()
   {
     Init();
@@ -827,6 +865,9 @@ public:
     stationMask      = ntuple->offMuon_stationMask[index];
 
     pt_inner = ntuple->offMuon_pt_inner[index];
+
+    propEta = ntuple->offMuon_propEta[index];
+    propPhi = ntuple->offMuon_propPhi[index];
 
     relPFIso_dBeta = (PFIso04_charged + max(0., PFIso04_neutral + PFIso04_photon - 0.5*PFIso04_sumPU))/pt;
     relTrkIso = iso03_sumPt / pt;
