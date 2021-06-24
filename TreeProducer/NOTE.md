@@ -3,6 +3,8 @@
 * Add L1 muon information (L1 pt, eta, phi, charge and quality)
 * Add eta and phi information of the offline muon after the propagation to the 2nd muon station
   * They will be used to properly calculate dR(offline muon, L1 muon)
+* Save trigger object for AOD also
+  * Previously, the trigger objects are saved only for miniAOD case
 
 
 
@@ -74,5 +76,4 @@ Workspace:
   * Without this, vec_firedTrigger is not filled for MC
 * Add L1 seed information
 * GenParticle: muon -> electron, muon and tau (to select DYTauTau events)
-
 
