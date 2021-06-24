@@ -1110,8 +1110,7 @@ DYTool::MuPair EventSelection_EXO19018(DYTool::DYTree *ntuple, Bool_t& doPass)
   }
 }
 
-
-Bool_t GenRecoMatching(DYTool::Muon muon, DYTool::DYTree *ntuple)
+Bool_t GenRecoMatching(TLorentzVector vecP, DYTool::DYTree *ntuple)
 {
   Bool_t flag = kFALSE;
 
@@ -1132,7 +1131,7 @@ Bool_t GenRecoMatching(DYTool::Muon muon, DYTool::DYTree *ntuple)
 
   for(auto& genLepton : vec_genLepton)
   {
-    Double_t dR = genLepton.vecP.DeltaR( muon.vecP );
+    Double_t dR = genLepton.vecP.DeltaR( vecP );
     if( dR < 0.3 )
     {
       flag = kTRUE;
@@ -1143,6 +1142,12 @@ Bool_t GenRecoMatching(DYTool::Muon muon, DYTool::DYTree *ntuple)
   return flag;
 }
 
+
+Bool_t GenRecoMatching(DYTool::Muon muon, DYTool::DYTree *ntuple)
+{
+  return GenRecoMatching(muon.vecP, ntuple);
+}
+
 Bool_t GenRecoMatching(DYTool::MuPair pair, DYTool::DYTree *ntuple)
 {
   Bool_t flag = kFALSE;
@@ -1151,6 +1156,54 @@ Bool_t GenRecoMatching(DYTool::MuPair pair, DYTool::DYTree *ntuple)
 
   return flag;
 }
+
+// -- return the vector of offline muons matched to the given vec_genLepton
+// ---- 1) loop over genLepton
+// ---- 2) find the best matched offline muon (dR<0,3, dpT/pT < 100%, smallest dR if there are multiple candidates)
+// ---- 3) remove matched offline muon in the next loop
+vector<DYTool::OffMuon> GenMatchedOfflineMuon(vector<DYTool::GenParticle> vec_genLepton, DYTool::DYTree *ntuple)
+{
+  vector<DYTool::OffMuon> vec_matchedOffMuon;
+
+  vector<DYTool::OffMuon> vec_offMuon = DYTool::GetAllOfflineMuons(ntuple);
+
+  for(auto& genLepton : vec_genLepton)
+  {
+    Double_t minDR = 9999;
+    Int_t i_matchedMu = -1;
+
+    Int_t nOffMuon = (Int_t)vec_offMuon.size(); // -- recalculate nOffMuon as the matched offline muon will be removed from the vector
+    for(Int_t i_mu=0; i_mu<nOffMuon; i_mu++)
+    {
+      DYTool::OffMuon mu = vec_offMuon[i_mu];
+
+      Double_t dR = genLepton.vecP.DeltaR( mu.vecP );
+      Double_t rel_dPt = fabs( mu.pt - genLepton.pt ) / genLepton.pt;
+
+      if( dR < 0.3 && rel_dPt < 1 && dR < minDR ) // -- add dPt/Pt < 1.00 (within 100%) to avoid too large different pT
+      {
+        minDR = dR;
+        i_matchedMu = i_mu;
+      }
+    }
+
+    if( i_matchedMu != -1 )
+    {
+      vec_matchedOffMuon.push_back( vec_offMuon[i_matchedMu] );
+      // -- remove the matched muon to avoid duplicated matching to different gen lepton
+      vec_offMuon.erase( vec_offMuon.begin() + i_matchedMu );
+    }
+  }
+
+  return vec_matchedOffMuon;
+}
+
+vector<DYTool::OffMuon> GenMatchedOfflineMuon(DYTool::DYTree *ntuple)
+{
+  vector<DYTool::GenParticle> vec_genMuon = DYTool::GetAllGenLeptons(ntuple, 13, "fromHardProcessFinalState");
+  return GenMatchedOfflineMuon(vec_genMuon, ntuple);
+}
+
 
 Bool_t CompareOffMuonPair_SmallerVtxChi2( DYTool::OffMuPair pair1, DYTool::OffMuPair pair2 )
 {
