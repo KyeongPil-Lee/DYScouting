@@ -61,7 +61,7 @@ public:
           {
             h_muPt_DEN->Fill( matchedOffMuon.pt, totWeight );
 
-            Bool_t isMatchedToHLTObj = DYTool::dRMatching_HLTObj(matchedOffMuon.vecP, ntuple, "hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07::HLT", 0.1);
+            Bool_t isMatchedToHLTObj = DYTool::dRMatching_HLTObj(matchedOffMuon.vecP, ntuple, "hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07", 0.1);
             if( isMatchedToHLTObj ) h_muPt_NUM->Fill( matchedOffMuon.pt, totWeight );
 
 

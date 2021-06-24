@@ -17,12 +17,12 @@ generator.ROOTCodePath = GetCWD()+"/MakeHist_IsoMu24.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 59740.565202 # -- 2018
-generator.jsonName = "SampleInfo_v1p6.json" # -- under DY_ANALYZER_PATH/Include
+generator.jsonName = "SampleInfo_v1p5.json" # -- under DY_ANALYZER_PATH/Include
 
 # -- if "_skim" is added, it runs over skimmed ntuples
 generator.dic_nJob = { 
   # "DYMuMu_M10to50":    10,
-  "DYMuMu_M50toInf":   10,
+  "Offline_DYMuMu_M50toInf":   10,
   }
 
 generator.baseWSPath = "/data9/Users/kplee/DYScoutingJob"

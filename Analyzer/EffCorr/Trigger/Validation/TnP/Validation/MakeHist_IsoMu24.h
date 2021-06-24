@@ -14,7 +14,7 @@ Bool_t PassTagCondition(DYTool::OffMuon mu, DYTool::DYTree* ntuple)
   // -- Mu50 final filter: hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q -- //
   Bool_t flag = kFALSE;
 
-  if( DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07::HLT", 0.1) &&
+  if( DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07", 0.1) &&
       mu.pt > 26 &&
       fabs(mu.eta) < 2.4 &&
       mu.isTight && 
@@ -38,7 +38,7 @@ Bool_t PassProbeCondition(DYTool::OffMuon mu, DYTool::DYTree* ntuple)
 Bool_t PassPassingProbeCondition(DYTool::OffMuon mu, DYTool::DYTree* ntuple)
 {
   Bool_t flag = kFALSE;
-  if( DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07::HLT", 0.1) )
+  if( DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07", 0.1) )
     flag = kTRUE;
 
   return flag;

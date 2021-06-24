@@ -218,6 +218,7 @@ vector<DYTool::HLTObj> GetAllHLTObj(DYTool::DYTree *ntuple, TString theFilterNam
   for(Int_t i_obj=0; i_obj<nHLTObj; i_obj++)
   {
     DYTool::HLTObj obj(ntuple, i_obj);
+    // printf("[%dth HLT object] (pt, eta, phi, filterMame) = (%.1lf, %.3lf, %.3lf, %s)\n", i_obj, obj.pt, obj.eta, obj.phi, obj.filterName.Data());
     if( theFilterName == "" )
       vec_HLTObj.push_back( obj );
     else
