@@ -230,7 +230,7 @@ vector<DYTool::HLTObj> GetAllHLTObj(DYTool::DYTree *ntuple, TString theFilterNam
   return vec_HLTObj;
 }
 
-vector<DYTool::L1Muon> GetAllL1Muon(DYTool::DYTree *ntuple, Double_t minQuality = -1)
+vector<DYTool::L1Muon> GetAllL1Muon(DYTool::DYTree *ntuple, Double_t minQuality = -1, Double_t minPt = -1, Double_t maxPt = 9999)
 {
   vector<DYTool::L1Muon> vec_L1Muon;
 
@@ -238,7 +238,7 @@ vector<DYTool::L1Muon> GetAllL1Muon(DYTool::DYTree *ntuple, Double_t minQuality 
   for(Int_t i_obj=0; i_obj<nL1Muon; i_obj++)
   {
     DYTool::L1Muon obj(ntuple, i_obj);
-    if( obj.quality >= minQuality )
+    if( obj.quality >= minQuality && minPt <= obj.pt && obj.pt <= maxPt )
       vec_L1Muon.push_back( obj );
   }
 
@@ -357,7 +357,44 @@ vector<DYTool::OffMuPair> GetAllOffMuPairs(DYTool::DYTree *ntuple)
   return vec_muonPair;
 }
 
+Bool_t dRMatching( TLorentzVector vecP_ref, vector<TLorentzVector> vec_vecP, Double_t minDR )
+{
+  bool flag = kFALSE;
 
+  Int_t nObj = (Int_t)vec_vecP.size();
+  for(const auto& vecP_target: vec_vecP )
+  {
+    Double_t dR = vecP_ref.DeltaR( vecP_target );
+    if( dR < minDR )
+    {
+      flag = kTRUE;
+      break;
+    }
+  }
+
+  return flag;
+}
+
+Bool_t dRMatching_HLTObj( TLorentzVector vecP_ref, DYTool::DYTree* ntuple, TString filterName, Double_t minDR )
+{
+  vector<DYTool::HLTObj> vec_HLTObj = DYTool::GetAllHLTObj(ntuple, filterName);
+  vector<TLorentzVector> vec_vecP_HLTObj;
+  for(const auto& HLTObj : vec_HLTObj )
+    vec_vecP_HLTObj.push_back( HLTObj.vecP );
+
+  return DYTool::dRMatching( vecP_ref, vec_vecP_HLTObj, minDR );
+}
+
+Bool_t dRMatching_L1Muon( TLorentzVector vecP_ref, DYTool::DYTree* ntuple, Double_t minDR, Double_t minQuality = -1, Double_t minL1Pt = -1, Double_t maxL1Pt = 9999)
+{
+  vector<DYTool::L1Muon> vec_L1Muon = DYTool::GetAllL1Muon(ntuple, minQuality, minL1Pt, maxL1Pt);
+
+  vector<TLorentzVector> vec_vecP_L1Muon;
+  for(const auto& L1Muon : vec_L1Muon )
+    vec_vecP_L1Muon.push_back( L1Muon.vecP );
+
+  return DYTool::dRMatching( vecP_ref, vec_vecP_L1Muon, minDR );
+}
 
 
 Bool_t CompareMuPair_LargerDimuonMass( DYTool::MuPair pair1, DYTool::MuPair pair2 )

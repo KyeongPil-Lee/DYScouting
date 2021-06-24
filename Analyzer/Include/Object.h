@@ -873,6 +873,15 @@ public:
     relTrkIso = iso03_sumPt / pt;
   }
 
+  // -- return TLorentzVector with the eta and phi propagated to the 2nd muon station (used for the matching with L1 muons)
+  TLorentzVector vecP_Propagated()
+  {
+    TLorentzVector vecP_prop;
+    vecP_prop.SetPtEtaPhiM(pt, propEta, propPhi, M_mu);
+
+    return vecP_prop;
+  }
+
 private:
   void Init()
   {
