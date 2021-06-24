@@ -68,6 +68,7 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
   ReadPrescalesFromFile = cms.bool( False ),             # -- for L1TGlobalUtil
   L1SeedList            = cms.untracked.vstring(GetL1SeedList()),
   triggerResults        = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+  triggerEvent          = cms.untracked.InputTag("hltTriggerSummaryAOD"), # -- for the trigger objects in AOD: will be skipped if the collection is not available (e.g. RAW)
 
   scoutingVertex      = cms.untracked.InputTag("hltScoutingMuonPackerCalo",              "displacedVtx", "HLT"),
   pixelVertex         = cms.untracked.InputTag("hltScoutingPrimaryVertexPacker",         "primaryVtx",   "HLT"),

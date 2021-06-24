@@ -127,6 +127,8 @@ public:
   Double_t rho;
 
   // -- offline objects
+  Int_t nOffVertex; // -- offline vertex
+
   // -- offline muons
   Int_t           nOffMuon;
   Double_t        offMuon_pt[ArrSize];
@@ -257,6 +259,9 @@ public:
     chain_->SetBranchAddress("vec_HLTObj_pt",           &vec_HLTObj_pt);
     chain_->SetBranchAddress("vec_HLTObj_eta",          &vec_HLTObj_eta);
     chain_->SetBranchAddress("vec_HLTObj_phi",          &vec_HLTObj_phi);
+
+    chain_->SetBranchStatus("nVertex", 1);
+    chain_->SetBranchAddress("nVertex", &nOffVertex);
   }
 
   void TurnOnBranches_VtxInfo()

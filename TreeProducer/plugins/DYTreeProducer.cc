@@ -33,6 +33,7 @@
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
 
 // -- scouting
 #include "DataFormats/Scouting/interface/ScoutingMuon.h"
@@ -120,7 +121,7 @@ private:
   edm::EDGetTokenT< BXVector<GlobalAlgBlk> >         t_globalAlgBlk_;
 
   edm::EDGetTokenT< edm::TriggerResults >            t_triggerResults_;
-  // edm::EDGetTokenT< trigger::TriggerEvent >          t_triggerEvent_;
+  edm::EDGetTokenT< trigger::TriggerEvent >          t_triggerEvent_;
 
   edm::EDGetTokenT<std::vector<ScoutingVertex> >     t_scoutingVertex_;
   edm::EDGetTokenT<std::vector<ScoutingVertex> >     t_pixelVertex_;
@@ -381,7 +382,6 @@ DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
 t_L1Muon_              ( consumes< l1t::MuonBxCollection  >         (iConfig.getUntrackedParameter<edm::InputTag>("L1Muon")) ),
 t_globalAlgBlk_        ( consumes< BXVector< GlobalAlgBlk > >       (iConfig.getUntrackedParameter<edm::InputTag>("globalAlgBlk")) ),
 t_triggerResults_      ( consumes< edm::TriggerResults >            (iConfig.getUntrackedParameter<edm::InputTag>("triggerResults")) ),
-// t_triggerEvent_        ( consumes< trigger::TriggerEvent >          (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ),
 t_scoutingVertex_      ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("scoutingVertex")) ),
 t_pixelVertex_         ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertex")) ),
 t_pixelVertexNearMuon_ ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertexNearMuon")) ),
@@ -393,7 +393,8 @@ t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.get
 t_caloMETPhi_          ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPhi")) ),
 t_caloMETPt_           ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPt")) ),
 t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- not used in AOD case
+t_triggerEvent         ( mayConsume< trigger::TriggerEvent >                     (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ), // -- only for AOD (even not in RAW) -- //
+t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- only for miniAOD -- //
 t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
 t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) ),
 propagatorToMuon_(iConfig)
@@ -975,13 +976,10 @@ void DYTreeProducer::Fill_GenParticle(const edm::Event &iEvent)
 void DYTreeProducer::Fill_HLT(const edm::Event &iEvent)
 {
   edm::Handle<edm::TriggerResults>  h_triggerResults;
-  // edm::Handle<trigger::TriggerEvent> h_triggerEvent;
-
   iEvent.getByToken(t_triggerResults_, h_triggerResults);
-  // iEvent.getByToken(t_triggerEvent_,   h_triggerEvent);
 
+  // -- save trigger bit
   edm::TriggerNames triggerNames = iEvent.triggerNames(*h_triggerResults);
-
   for(unsigned int i_trig=0; i_trig<triggerNames.size(); ++i_trig)
   {
     LogDebug("triggers") << triggerNames.triggerName(i_trig);
@@ -994,29 +992,7 @@ void DYTreeProducer::Fill_HLT(const edm::Event &iEvent)
 
   } // -- end of iteration over all trigger names -- //
 
-  // const trigger::size_type nFilter(h_triggerEvent->sizeFilters());
-  // for( trigger::size_type i_filter=0; i_filter<nFilter; i_filter++)
-  // {
-  //   std::string filterName = h_triggerEvent->filterTag(i_filter).encode();
-
-  //   if( SavedFilterCondition(filterName) )
-  //   {
-  //     trigger::Keys objectKeys = h_triggerEvent->filterKeys(i_filter);
-  //     const trigger::TriggerObjectCollection& triggerObjects(h_triggerEvent->getObjects());
-
-  //     for( trigger::size_type i_key=0; i_key<objectKeys.size(); i_key++)
-  //     {
-  //       trigger::size_type objKey = objectKeys.at(i_key);
-  //       const trigger::TriggerObject& triggerObj(triggerObjects[objKey]);
-
-  //       vec_filterName_.push_back( filterName );
-  //       vec_HLTObj_pt_.push_back( triggerObj.pt() );
-  //       vec_HLTObj_eta_.push_back( triggerObj.eta() );
-  //       vec_HLTObj_phi_.push_back( triggerObj.phi() );
-  //     }
-  //   } // -- end of if( muon filters )-- //
-  // } // -- end of filter iteration -- //
-
+  // -- save trigger object (if available)
   if( isMiniAOD_ )
   {
     edm::Handle< std::vector<pat::TriggerObjectStandAlone> > h_triggerObject;
@@ -1044,6 +1020,35 @@ void DYTreeProducer::Fill_HLT(const edm::Event &iEvent)
       } // -- loop over filters
 
     } // -- loop over trigger objects
+  }
+  else // -- AOD (reco data or MC) or RAW (scouting data) case
+  {
+    edm::Handle<trigger::TriggerEvent> h_triggerEvent;
+    if( iEvent.getByToken(t_triggerEvent_, h_triggerEvent) ) // -- run only when TriggerEvent content is available (e.g. RAW tier (Scouting data) doesn't have TriggerEvent so below lines will not run. But it will run for usual data or MC in AOD format)
+    {
+      const trigger::size_type nFilter(h_triggerEvent->sizeFilters());
+      for( trigger::size_type i_filter=0; i_filter<nFilter; i_filter++)
+      {
+        std::string filterName = h_triggerEvent->filterTag(i_filter).encode();
+
+        if( SavedFilterCondition(filterName) )
+        {
+          trigger::Keys objectKeys = h_triggerEvent->filterKeys(i_filter);
+          const trigger::TriggerObjectCollection& triggerObjects(h_triggerEvent->getObjects());
+
+          for( trigger::size_type i_key=0; i_key<objectKeys.size(); i_key++)
+          {
+            trigger::size_type objKey = objectKeys.at(i_key);
+            const trigger::TriggerObject& triggerObj(triggerObjects[objKey]);
+
+            vec_filterName_.push_back( filterName );
+            vec_HLTObj_pt_.push_back( triggerObj.pt() );
+            vec_HLTObj_eta_.push_back( triggerObj.eta() );
+            vec_HLTObj_phi_.push_back( triggerObj.phi() );
+          }
+        } // -- end of if( muon filters )-- //
+      } // -- end of filter iteration -- //
+    } // -- end of if(token is available)
   }
   
 }
