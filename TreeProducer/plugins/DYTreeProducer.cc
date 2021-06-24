@@ -382,6 +382,7 @@ DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
 t_L1Muon_              ( consumes< l1t::MuonBxCollection  >         (iConfig.getUntrackedParameter<edm::InputTag>("L1Muon")) ),
 t_globalAlgBlk_        ( consumes< BXVector< GlobalAlgBlk > >       (iConfig.getUntrackedParameter<edm::InputTag>("globalAlgBlk")) ),
 t_triggerResults_      ( consumes< edm::TriggerResults >            (iConfig.getUntrackedParameter<edm::InputTag>("triggerResults")) ),
+t_triggerEvent_        ( mayConsume< trigger::TriggerEvent >        (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ), // -- only for AOD (even not in RAW) -- //
 t_scoutingVertex_      ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("scoutingVertex")) ),
 t_pixelVertex_         ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertex")) ),
 t_pixelVertexNearMuon_ ( consumes< std::vector<ScoutingVertex> >    (iConfig.getUntrackedParameter<edm::InputTag>("pixelVertexNearMuon")) ),
@@ -393,7 +394,6 @@ t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.get
 t_caloMETPhi_          ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPhi")) ),
 t_caloMETPt_           ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPt")) ),
 t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-t_triggerEvent         ( mayConsume< trigger::TriggerEvent >                     (iConfig.getUntrackedParameter<edm::InputTag>("triggerEvent")) ), // -- only for AOD (even not in RAW) -- //
 t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- only for miniAOD -- //
 t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
 t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) ),
