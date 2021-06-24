@@ -19,7 +19,7 @@ config.Data.publication = False
 config.Site.storageSite = 'T3_KR_KNU'
 
 version = 'v1p6'
-config.Data.outLFNDirBase = '/store/user/kplee/DYScoutingTree_%s' % version
+config.Data.outLFNDirBase = '/store/user/kplee/DYScoutingTree/%s' % version
 
 config.JobType.allowUndistributedCMSSW = True
 
@@ -44,6 +44,11 @@ if __name__ == '__main__':
 
     config.General.requestName = 'DYJetsToLL_M50toInf_aMCNLO_ext'
     config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v1/AODSIM'
+    crabCommand('submit', config = config)
+
+    # -- J/Psi (for tag and probe test)
+    config.General.requestName = 'JPsiToMuMu_JPsiPt8_Pythia8'
+    config.Data.inputDataset = '/JpsiToMuMu_JpsiPt8_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
     crabCommand('submit', config = config)
 
     # # -- QCD, inclusive
