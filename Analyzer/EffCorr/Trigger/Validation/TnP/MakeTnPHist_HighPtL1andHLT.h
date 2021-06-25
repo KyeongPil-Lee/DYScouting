@@ -46,6 +46,14 @@ Bool_t PassPassingProbeCondition(DYTool::OffMuon mu, DYTool::DYTree* ntuple)
       DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltDoubleMu3L3FilteredNoVtx", 0.1) )
     flag = kTRUE;
 
+  // Bool_t isL1Matched = DYTool::dRMatching_L1Muon(mu.vecP_Propagated(), ntuple, minDR, minQuality, minL1Pt, maxL1Pt );
+  // Bool_t isHLTMatched = DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltDoubleMu3L3FilteredNoVtx", 0.1);
+
+  // if( isL1Matched ) cout << "Matched to L1" << endl;
+  // if( isHLTMatched ) cout << "Matched to HLT" << endl;
+
+  // if( isL1Matched && isHLTMatched ) flag = kTRUE;
+
   return flag;
 }
 
@@ -103,10 +111,10 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
-    Double_t minPt = 26.0; // -- minimum pt for vs. eta, phi, #vtx plots
+    Double_t minPt = 5.0; // -- minimum pt for vs. eta, phi, #vtx plots
     TnPHistProducer* tnpHist = new TnPHistProducer(minPt);
 
-
+    // nEvent = 100;
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);

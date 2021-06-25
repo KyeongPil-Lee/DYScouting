@@ -105,7 +105,7 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
-    Double_t minPt = 26.0; // -- minimum pt for vs. eta, phi, #vtx plots
+    Double_t minPt = 5.0; // -- minimum pt for vs. eta, phi, #vtx plots
     TnPHistProducer* tnpHist = new TnPHistProducer(minPt);
 
 

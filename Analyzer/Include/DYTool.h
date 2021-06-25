@@ -390,6 +390,8 @@ Bool_t dRMatching_L1Muon( TLorentzVector vecP_ref, DYTool::DYTree* ntuple, Doubl
 {
   vector<DYTool::L1Muon> vec_L1Muon = DYTool::GetAllL1Muon(ntuple, minQuality, minL1Pt, maxL1Pt);
 
+  // cout << "vec_L1Muon.size() = " << vec_L1Muon.size() << endl;
+  
   vector<TLorentzVector> vec_vecP_L1Muon;
   for(const auto& L1Muon : vec_L1Muon )
     vec_vecP_L1Muon.push_back( L1Muon.vecP );
