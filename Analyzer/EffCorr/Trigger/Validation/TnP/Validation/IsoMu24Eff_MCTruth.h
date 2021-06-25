@@ -28,13 +28,13 @@ public:
 
     const Int_t nPtBin = 12;
     const Double_t arr_ptBinEdge[nPtBin+1] = {2, 18, 22, 24, 26, 30, 40, 50, 60, 120, 200, 300, 500};
-    TH1D* h_muPt_DEN = new TH1D("h_diMuM_DEN", "", nPtBin, arr_ptBinEdge);
-    TH1D* h_muPt_NUM = new TH1D("h_diMuM_NUM", "", nPtBin, arr_ptBinEdge);
+    TH1D* h_muPt_DEN = new TH1D("h_muPt_DEN", "", nPtBin, arr_ptBinEdge);
+    TH1D* h_muPt_NUM = new TH1D("h_muPt_NUM", "", nPtBin, arr_ptBinEdge);
 
     const Int_t nEtaBin = 14;
     const Double_t arr_etaBinEdge[nEtaBin+1] = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
-    TH1D* h_muEta_DEN = new TH1D("h_diMuM_DEN", "", nEtaBin, arr_etaBinEdge);
-    TH1D* h_muEta_NUM = new TH1D("h_diMuM_NUM", "", nEtaBin, arr_etaBinEdge);
+    TH1D* h_muEta_DEN = new TH1D("h_muEta_DEN", "", nEtaBin, arr_etaBinEdge);
+    TH1D* h_muEta_NUM = new TH1D("h_muEta_NUM", "", nEtaBin, arr_etaBinEdge);
 
     for(Int_t i=0; i<nEvent; i++)
     {
