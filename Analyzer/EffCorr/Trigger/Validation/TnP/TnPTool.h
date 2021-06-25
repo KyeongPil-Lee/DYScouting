@@ -335,7 +335,7 @@ public:
     vector< TH1D* > vec_passHist;
     vector< TH1D* > vec_failHist;
 
-    TString histNameBase = TString::Format("h%s", varName.Data());
+    TString histNameBase = TString::Format("h_%s", varName.Data());
 
     for(Int_t i=0; i<nBin; i++)
     {
