@@ -197,11 +197,11 @@ private:
     {
       TString binInfo = TString::Format("%02dbin", i);
 
-      TString histNamePass = histNameBase + "pass_" + binInfo;
+      TString histNamePass = histNameBase + "_pass_" + binInfo;
       TH1D* hTempPass = new TH1D(histNamePass, "", nMassBin, minM_, maxM_ );
       vec_passHist_.push_back( hTempPass );
 
-      TString histNameFail = histNameBase + "fail_" + binInfo;
+      TString histNameFail = histNameBase + "_fail_" + binInfo;
       TH1D* hTempFail = new TH1D(histNameFail, "", nMassBin, minM_, maxM_ );
       vec_failHist_.push_back( hTempFail );
     }
@@ -216,6 +216,80 @@ private:
     for(Int_t i=0; i<nBin_; i++)
     {
       if( arr_binEdge_[i] < value && value < arr_binEdge_[i+1] )
+      {       
+        i_return = i;
+        break;
+      }
+    }
+
+    return i_return;
+  }
+
+};
+
+class TnPHist2D
+{
+public:
+  TString binType_;
+  Double_t minPtCut_;
+
+  Int_t nBinX_;
+  vector<Double_t> vec_binEdgeX_;
+  vector<Double_t> vec_binEdgeY_;
+
+  TnPHist2D( TString binType, Double_t minPtCut, vector<Double_t> vec_binEdgeX, vector<Double_t> vec_binEdgeY )
+  {
+    binType_ = binType;
+    minPtCut_ = minPtCut;
+
+    vec_binEdgeX_ = vec_binEdgeX;
+    vec_binEdgeY_ = vec_binEdgeY;
+
+    nBinX_ = (Int_t)vec_binEdgeX.size()-1; // -- # bins = # bin edges - 1
+
+    Init();
+  }
+
+  ~TnPHist2D()
+  {
+    for(auto tnpHist : vec_TnPHist_ )
+      delete tnpHist;
+  }
+
+  void Fill( TnPPairBase* pair, Double_t valueX, Double_t valueY, Double_t weight = 1.0 )
+  {
+    Int_t i_binX = FindBinNumberX(valueX);
+    if( i_binX < 0 ) return; // -- not in x range
+
+    vec_TnPHist_[i_binX]->Fill( pair, valueY, weight );
+  }
+
+  void Save( TFile* f_output )
+  {
+    for(auto tnpHist : vec_TnPHist_ )
+      tnpHist->Save( f_output );
+  }
+
+private:
+  vector<TnPHist*> vec_TnPHist_; // -- TnP mass histgoram for Y variable in each X bin
+
+  void Init()
+  {
+    for(Int_t i_x=0; i_x<nBinX_; i_x++)
+    {
+      TString binType_binX = TString::Format("%s_%02dbinX", binType_.Data(), i_x);
+      TnPHist* tnpHist_temp = new TnPHist(binType_binX, minPtCut_, vec_binEdgeY_ );
+      vec_TnPHist_.push_back( tnpHist_temp );
+    }
+  }
+
+  Int_t FindBinNumberX(Double_t valueX)
+  {
+    Int_t i_return = -1;
+
+    for(Int_t i=0; i<nBinX_; i++)
+    {
+      if( vec_binEdgeX_[i] < valueX && valueX < vec_binEdgeX_[i+1] )
       {       
         i_return = i;
         break;
@@ -250,6 +324,7 @@ public:
     delete TnPHistEta_;
     delete TnPHistPhi_;
     delete TnPHistVtx_;
+    delete TnPHist2DPtEta_;
   }
 
   void Fill( TnPPairBase* pair, Double_t weight = 1.0 )
@@ -259,6 +334,7 @@ public:
     TnPHistEta_->Fill( pair, pair->ProbeEta(), weight );
     TnPHistPhi_->Fill( pair, pair->ProbePhi(), weight );
     TnPHistVtx_->Fill( pair, pair->nVtx(), weight );
+    TnPHist2DPtEta_->Fill( pair, pair->ProbePt(), pair->ProbeEta(), weight );
   }
 
   void Save( TFile *f_output )
@@ -268,6 +344,7 @@ public:
     TnPHistEta_->Save( f_output );
     TnPHistPhi_->Save( f_output );
     TnPHistVtx_->Save( f_output );
+    TnPHist2DPtEta_->Save( f_output );
   }
 
 private:
@@ -277,6 +354,7 @@ private:
   TnPHist* TnPHistEta_;
   TnPHist* TnPHistPhi_;
   TnPHist* TnPHistVtx_;
+  TnPHist2D* TnPHist2DPtEta_;
 
   void Init()
   {
@@ -298,11 +376,15 @@ private:
       42.5, 44.5, 46.5, 48.5, 50.5, 52.5, 54.5, 56.5, 58.5, 60.5
     };
 
+    vector<Double_t> vec_ptEtaBinEdge_pt  = {5, 6, 7, 10, 15, 20, 30, 40, 50, 60, 120, 500};
+    vector<Double_t> vec_ptEtaBinEdge_eta = {-2.4, -2.1, -1.2, -0.9, 0, 0.9, 1.2, 2.1, 2.4};
+
     TnPHistPt_     = new TnPHist("pt",     0,      vec_PtBinEdge);
     TnPHistHighPt_ = new TnPHist("highPt", 0,      vec_HighPtBinEdge);
     TnPHistEta_    = new TnPHist("eta",    ptCut_, vec_EtaBinEdge);
     TnPHistPhi_    = new TnPHist("phi",    ptCut_, vec_PhiBinEdge);
     TnPHistVtx_    = new TnPHist("vtx",    ptCut_, vec_VtxBinEdge);
+    TnPHist2DPtEta_ = new TnPHist2D("pteta", 0, vec_ptEtaBinEdge_pt, vec_ptEtaBinEdge_eta);
   }
 
   void Set_ptCut( Double_t ptCut ) { ptCut_ = ptCut; }
@@ -341,11 +423,11 @@ public:
     {
       TString binInfo = TString::Format("%02dbin", i);
 
-      TString histNamePass = histNameBase + "pass_" + binInfo;
+      TString histNamePass = histNameBase + "_pass_" + binInfo;
       TH1D* hTempPass = PlotTool::Get_Hist( inputFileName_, histNamePass );
       vec_passHist.push_back( hTempPass );
 
-      TString histNameFail = histNameBase + "fail_" + binInfo;
+      TString histNameFail = histNameBase + "_fail_" + binInfo;
       TH1D* hTempFail = PlotTool::Get_Hist( inputFileName_, histNameFail );
       vec_failHist.push_back( hTempFail );
     }
