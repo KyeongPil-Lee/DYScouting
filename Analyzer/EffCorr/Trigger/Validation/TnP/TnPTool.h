@@ -598,7 +598,7 @@ public:
       return nullptr;
     }
 
-    vector<Double_t> vec_binEdgeY = Get_BinEdgeVector(vec_effGraph_[0] );
+    vector<Double_t> vec_binEdgeY = Get_BinEdgeVector(vec_effGraph_[0]);
     Int_t nBinY = (Int_t)vec_binEdgeY.size()-1;
 
     Double_t* arr_binEdgeX = Convert_VectorToArray(vec_binEdgeX_);
@@ -663,10 +663,19 @@ private:
     Int_t nPoint = g->GetN();
     for(Int_t i_p=0; i_p<nPoint; i_p++)
     {
-      Double_t binEdge = g->GetXaxis()->GetBinLowEdge(i_p);
+      Double_t x, y;
+      g->GetPoint(i_p, x, y);
+      Double_t errorX_low  = g->GetErrorXlow(i_p);
+      Double_t binEdge = x - errorX_low;
       vec_binEdge.push_back( binEdge );
+
+      if( i_p == i_p - 1 ) // -- last point
+      {
+        Double_t errorX_high  = g->GetErrorXhigh(i_p);
+        Double_t binEdge_last = x + errorX_high;
+        vec_binEdge.push_back( binEdge_last );
+      }
     }
-    vec_binEdge.push_back( g->GetXaxis()->GetBinLowEdge(nPoint) ); // -- last bin edge
 
     return vec_binEdge;
   }
