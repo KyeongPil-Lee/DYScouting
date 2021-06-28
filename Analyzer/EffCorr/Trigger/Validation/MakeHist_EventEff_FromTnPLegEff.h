@@ -90,9 +90,8 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
-    TH1D* h_diMuM_noSF      = new TH1D("h_diMuM_noSF",   "", 200, 0, 200);
-    TH1D* h_diMuM_corrected = new TH1D("h_diMuM_corrected", "", 200, 0, 200);
-    TH1D* h_eff_diMuM       = new TH1D("h_eff_diMuM", "", 200, 0, 200);
+    TH1D* h_diMuM_noEff   = new TH1D("h_diMuM_noEff",   "", 200, 0, 200);
+    TH1D* h_diMuM_withEff = new TH1D("h_diMuM_withEff", "", 200, 0, 200);
 
     TnPEffMapTool* effTool = new TnPEffMapTool();
 
@@ -133,19 +132,13 @@ public:
 
             if( IsFired_L1(ntuple) && IsFired_DoubleMu3(ntuple) )
             {
-              h_diMuM_noSF->Fill(diMuM, totWeight); // -- already MC efficiency is taken into account
+              h_diMuM_noEff->Fill(diMuM, totWeight); // -- already MC efficiency is taken into account
 
               Double_t eff_mu1 = GetLegEfficiency(effTool, vec_matchedOffMuon[0], ntuple);
               Double_t eff_mu2 = GetLegEfficiency(effTool, vec_matchedOffMuon[1], ntuple);
 
               Double_t eventEff = eff_mu1 * eff_mu2;
-              h_eff_diMuM->Fill( eventEff, totWeight );
-
-              Double_t corr;
-              if( eventEff == 0 ) corr = 1e10;
-              else                corr = 1.0 / eventEff; // -- correct the inefficiency
-
-              h_diMuM_corrected->Fill(diMuM, totWeight*corr);
+              h_diMuM_withEff->Fill(diMuM, totWeight*eventEff);
             } // -- is L1+HLT fired?
           } // -- pass acceptance at the reco level
         } // -- pass acceptance at the gen level
@@ -154,10 +147,8 @@ public:
 
     TString outputName = GetOutputFileName("MakeHist_EventEff");
     TFile *f_output = TFile::Open(outputName, "RECREATE");
-    h_diMuM_noSF->Write();
-    h_eff_diMuM->Write();
-    h_diMuM_corrected->Write();
-
+    h_diMuM_noEff->Write();
+    h_diMuM_withEff->Write();
     f_output->Close();
 
     PrintRunTime();
