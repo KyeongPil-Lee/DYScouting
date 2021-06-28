@@ -1402,4 +1402,71 @@ public:
   }
 };
 
+class Hist2DCanvas : public CanvasBase
+{
+public:
+  TH2D* h2D_ = nullptr;
+
+  Bool_t isLogZ_ = kFALSE;
+
+  Bool_t setRangeZ_ = kFALSE;
+  Double_t minZ_ = 0.0;
+  Double_t maxZ_ = 1.0;
+
+  Hist2DCanvas() {};
+
+  Hist2DCanvas(TString canvasName, Bool_t isLogX = kFALSE, Bool_t isLogY = kFALSE, Bool_t isLogZ = kFALSE ): Hist2DCanvas()
+  {
+    canvasName_ = canvasName;
+    isLogX_ = isLogX;
+    isLogY_ = isLogY;
+    isLogZ_ = isLogZ;
+  }
+
+  void Register( TH2D* h2D )
+  {
+    h2D_ = h2D;
+  }
+
+  void SetRangeZ( Double_t minZ, Double_t maxZ )
+  {
+    setRangeZ_ = kTRUE;
+    minZ_ = minZ;
+    maxZ_ = maxZ;
+  }
+
+  void Draw( TString drawOp = "COLZ" )
+  {
+    // -- draw canvas
+    SetCanvas_Square();
+
+    // c_->SetTopMargin(0.05);
+    // c_->SetBottomMargin(0.13);
+
+    c_->SetLeftMargin(0.13);
+    c_->SetRightMargin(0.12);
+
+    c_->cd();
+    h2D_->Draw(drawOp);
+    h2D_->SetStats(kFALSE);
+    h2D_->SetTitle("");
+
+    PlotTool::SetAxis_SinglePad( h2D_->GetXaxis(), h2D_->GetYaxis(), titleX_, titleY_ );
+    if( setRangeX_ ) h2D_->GetXaxis()->SetRangeUser( minX_, maxX_ );
+    if( setRangeY_ ) h2D_->GetYaxis()->SetRangeUser( minY_, maxY_ );
+    if( setRangeZ_ ) h2D_->GetZaxis()->SetRangeUser( minZ_, maxZ_ );
+
+    // -- adjustment
+    h2D_->GetXaxis()->SetLabelSize(0.035);
+    h2D_->GetYaxis()->SetLabelSize(0.035);
+    h2D_->GetYaxis()->SetTitleOffset(1.1);
+
+    DrawLatexAll();
+
+    if( setSavePath_ ) c_->SaveAs(savePath_);
+    else               c_->SaveAs(".pdf");
+  }
+
+};
+
 }; // -- namespace PlotTool

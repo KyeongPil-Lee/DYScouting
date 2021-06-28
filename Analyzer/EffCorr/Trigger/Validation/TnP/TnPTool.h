@@ -543,3 +543,132 @@ private:
             nPass, nTotal, eff, absUncHigh_eff, relUncHigh_eff, absUncLow_eff, relUncLow_eff );
   }
 };
+
+class TnP2DEffTool
+{
+public:
+  TString fileName_;
+
+  Double_t minMass_;
+  Double_t maxMass_;
+
+  Int_t nBinX_;
+  vector<Double_t> vec_binEdgeX_;
+
+  vector<TGraphAsymmErrors*> vec_effGraph_;
+
+
+
+  TnP2DEffTool(TString fileName, vector<Double_t> vec_binEdgeX): 
+  fileName_(fileName),
+  vec_binEdgeX_(vec_binEdgeX)
+  {
+    Init();
+  }
+
+  void SetCutAndCountRange(Double_t min, Double_t max)
+  {
+    minMass_ = min;
+    maxMass_ = max;
+  }
+
+  vector<TGraphAsymmErrors*> CalcTnPEff_CutAndCount( TString varName )
+  {
+    vec_effGraph_.clear();
+
+    for(Int_t i_x=0; i_x<nBinX_; i_x++)
+    {
+      TString binType = TString::Format("%s_%02dbinX", varName.Data(), i_x);
+
+      TnPEffTool* tool = new TnPEffTool(fileName_);
+      tool->SetCutAndCountRange(minMass_, maxMass_);
+      TGraphAsymmErrors* g_eff = tool->CalcTnPEff_CutAndCount( binType );
+
+      vec_effGraph_.push_back( g_eff );
+    }
+
+    return vec_effGraph_;
+  }
+
+  TH2D* Get_2DEffMap()
+  {
+    if( vec_effGraph_.size() == 0 )
+    {
+      cout << "Run CalcTnPEff_CutAndCount(varName) first!" << endl;
+      return nullptr;
+    }
+
+    vector<Double_t> vec_binEdgeY = Get_BinEdgeVector(vec_effGraph_[0] );
+    Int_t nBinY = (Int_t)vec_binEdgeY.size()-1;
+
+    Double_t* arr_binEdgeX = Convert_VectorToArray(vec_binEdgeX_);
+    Double_t* arr_binEdgeY = Convert_VectorToArray(vec_binEdgeY);
+
+    TH2D* h2D_eff = new TH2D("h2D_eff", "", nBinX_, arr_binEdgeX, nBinY, arr_binEdgeY);
+    for(Int_t i_x=0; i_x<nBinX_; i_x++)
+    {
+      Int_t i_binX = i_x+1;
+
+      TGraphAsymmErrors* g_eff = vec_effGraph_[i_x];
+
+      Int_t nPoint = g_eff->GetN();
+      for(Int_t i_y=0; i_y<nPoint; i_y++)
+      {
+        Int_t i_binY = i_y+1;
+
+        Double_t temp;
+        Double_t eff;
+        g_eff->GetPoint(i_y, temp, eff);
+
+        Double_t error_low  = g_eff->GetErrorYlow(i_y);
+        Double_t error_high = g_eff->GetErrorYhigh(i_y);
+        Double_t error = error_low > error_high ? error_low : error_high; // -- larger one
+
+        h2D_eff->SetBinContent(i_binX, i_binY, eff);
+        h2D_eff->SetBinError(i_binX, i_binY, error);
+      }
+    }
+
+    return h2D_eff;
+  }
+
+  Double_t* Convert_VectorToArray(vector<Double_t> v)
+  {
+    Int_t nElement = (Int_t)v.size();
+    Double_t* arr = new Double_t[nElement]; // -- dynamic allocation   
+    for(Int_t i=0; i<nElement; i++)
+      arr[i] = v[i];
+
+    return arr;
+  }
+
+private:
+  void Init()
+  {
+    vec_effGraph_.clear();
+
+    minMass_ = 81;
+    maxMass_ = 101;
+    cout << "==========================================================" << endl;
+    cout << "Default cut & count mass range: " << minMass_ << " < M < " << maxMass_ << " GeV" << endl;
+    cout << "==========================================================" << endl;
+
+    nBinX_ = (Int_t)vec_binEdgeX_.size()-1;
+  }
+
+  vector<Double_t> Get_BinEdgeVector(TGraphAsymmErrors* g)
+  {
+    vector<Double_t> vec_binEdge;
+
+    Int_t nPoint = g->GetN();
+    for(Int_t i_p=0; i_p<nPoint; i_p++)
+    {
+      Double_t binEdge = g->GetXaxis()->GetBinLowEdge(i_p);
+      vec_binEdge.push_back( binEdge );
+    }
+    vec_binEdge.push_back( g->GetXaxis()->GetBinLowEdge(nPoint) ); // -- last bin edge
+
+    return vec_binEdge;
+  }
+
+};
