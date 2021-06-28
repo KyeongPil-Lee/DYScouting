@@ -92,6 +92,7 @@ public:
 
     TH1D* h_diMuM_noSF      = new TH1D("h_diMuM_noSF",   "", 200, 0, 200);
     TH1D* h_diMuM_corrected = new TH1D("h_diMuM_corrected", "", 200, 0, 200);
+    TH1D* h_eff_diMuM       = new TH1D("h_eff_diMuM", "", 200, 0, 200);
 
     TnPEffMapTool* effTool = new TnPEffMapTool();
 
@@ -137,7 +138,12 @@ public:
               Double_t eff_mu1 = GetLegEfficiency(effTool, vec_matchedOffMuon[0], ntuple);
               Double_t eff_mu2 = GetLegEfficiency(effTool, vec_matchedOffMuon[1], ntuple);
 
-              Double_t corr = 1.0 / (eff_mu1 * eff_mu2); // -- correct the inefficiency
+              Double_t eventEff = eff_mu1 * eff_mu2;
+              h_eff_diMuM->Fill( eventEff, totWeight );
+
+              Double_t corr;
+              if( eventEff == 0 ) corr = 1e10;
+              else                corr = 1.0 / eventEff; // -- correct the inefficiency
 
               h_diMuM_corrected->Fill(diMuM, totWeight*corr);
             } // -- is L1+HLT fired?
@@ -146,9 +152,10 @@ public:
       } // -- SelectGenEventBySampleType      
     } // -- end of event iteration
 
-    TString outputName = GetOutputFileName("MakeHist_Dimuon");
+    TString outputName = GetOutputFileName("MakeHist_EventEff");
     TFile *f_output = TFile::Open(outputName, "RECREATE");
     h_diMuM_noSF->Write();
+    h_eff_diMuM->Write();
     h_diMuM_corrected->Write();
 
     f_output->Close();
