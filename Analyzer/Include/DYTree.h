@@ -214,6 +214,7 @@ public:
     TurnOnBranches_VtxInfo();
     TurnOnBranches_Muon();
     TurnOnBranches_GenParticle();
+    TurnOnBranches_L1Muon();
 
     cout << "[DYTree] NOTE: TurnOnBranches_OffMuon is not used: it should manually be used if offline muon is used in the code" << endl;
   }

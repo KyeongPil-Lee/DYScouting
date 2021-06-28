@@ -34,6 +34,15 @@
     "sumWeight": 44279551.0,
     "comment": "QCD@NNLO + EWK@NLO cross section by FEWZ with NNPDF3.1+luxQED (50 < M < 10000, integ. error = 1.55728 pb, PDF error = 14.7185)",
     "list_dir": ["v1.6/DYJetsToLL_M50toInf_aMCNLO", "v1.6/DYJetsToLL_M50toInf_aMCNLO_ext"]
+  },
+
+  {
+    "tag": "JPsiToMuMu_JPsiPt8_Pythia8",
+    "isMC": 1,
+    "xSec": 874800.0,
+    "sumWeight": 1.0,
+    "comment": "Cross section is from XSDB (uncertainty = 2750.0 pb)",
+    "list_dir": ["v1.6/JPsiToMuMu_JPsiPt8_Pythia8"]
   }
 ]
 
