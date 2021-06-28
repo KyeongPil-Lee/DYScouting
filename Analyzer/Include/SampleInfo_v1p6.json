@@ -40,7 +40,7 @@
     "tag": "JPsiToMuMu_JPsiPt8_Pythia8",
     "isMC": 1,
     "xSec": 874800.0,
-    "sumWeight": 1.0,
+    "sumWeight": 50429607.0,
     "comment": "Cross section is from XSDB (uncertainty = 2750.0 pb)",
     "list_dir": ["v1.6/JPsiToMuMu_JPsiPt8_Pythia8"]
   }
