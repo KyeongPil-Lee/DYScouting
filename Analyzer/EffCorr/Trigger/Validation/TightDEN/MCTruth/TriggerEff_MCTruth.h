@@ -61,7 +61,7 @@ public:
           if( vec_matchedOffMuon.size() != 2 ) continue;
 
           if( vec_matchedOffMuon[0].pt > 20 && fabs(vec_matchedOffMuon[0].eta) < 2.4 && vec_matchedOffMuon[0].isTight && vec_matchedOffMuon[0].relPFIso_dBeta < 0.15 &&
-              vec_matchedOffMuon[1].pt > 20 && fabs(vec_matchedOffMuon[1].eta) < 2.4 && vec_matchedOffMuon[1].isTight && vec_matchedOffMuon[0].relPFIso_dBeta < 0.15 )
+              vec_matchedOffMuon[1].pt > 20 && fabs(vec_matchedOffMuon[1].eta) < 2.4 && vec_matchedOffMuon[1].isTight && vec_matchedOffMuon[1].relPFIso_dBeta < 0.15 )
           {
             Double_t diMuM = (vec_matchedOffMuon[0].vecP + vec_matchedOffMuon[1].vecP).M();
 
