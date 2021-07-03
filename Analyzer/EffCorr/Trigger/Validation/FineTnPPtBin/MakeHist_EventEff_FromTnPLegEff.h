@@ -52,7 +52,7 @@ private:
   void Init()
   {
     TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
-    fileName_ = analyzerPath+"/EffCorr/Trigger/Validation/TnP/FineTnPPtBin/ROOTFile_L1HLTLegEfficiencyMap.root";
+    fileName_ = analyzerPath+"/EffCorr/Trigger/Validation/FineTnPPtBin/ROOTFile_L1HLTLegEfficiencyMap.root";
     h2D_eff_ = PlotTool::Get_Hist2D(fileName_, "h2D_eff");
     h_eff_pt_ = PlotTool::Get_Hist(fileName_, "h_eff_pt");
 
