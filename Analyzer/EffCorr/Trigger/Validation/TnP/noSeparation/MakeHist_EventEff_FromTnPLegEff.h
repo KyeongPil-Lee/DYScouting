@@ -88,7 +88,7 @@ public:
       
       ntuple->GetEvent(i);
 
-      if( debug_ ) cout << "[" << i << "th events]" << endl;
+      // if( debug_ ) cout << "[" << i << "th events]" << endl;
 
       Double_t genWeight;
       ntuple->genWeight < 0 ? genWeight = -1 : genWeight = 1;
@@ -119,11 +119,13 @@ public:
           {
             Double_t diMuM = (vec_matchedOffMuon[0].vecP + vec_matchedOffMuon[1].vecP).M();
 
-            if( debug_ && diMuM > 15.0 ) continue;
+            if( debug_ && diMuM > 11.0 ) continue;
 
             if( IsFired_L1(ntuple) && IsFired_DoubleMu3(ntuple) )
             {
-              if( debug_ ) cout << "--> pass L1 + HLT + diMuM < 15 GeV" << endl;
+              if( debug_ ) cout << "[" << i << "th events]" << endl;
+              if( debug_ ) cout << "--> pass L1 + HLT + diMuM = " << diMuM << " < 11 GeV" << endl;
+              nEvent_debug++;
 
               h_diMuM_noEff->Fill(diMuM, totWeight); // -- already MC efficiency is taken into account
 
@@ -132,12 +134,15 @@ public:
 
               Double_t eventEff = eff_mu1 * eff_mu2;
               h_diMuM_withEff->Fill(diMuM, totWeight*eventEff);
+
+              if( debug_ ) cout << endl;
             } // -- is L1+HLT fired?
           } // -- pass acceptance at the reco level
         } // -- pass acceptance at the gen level
       } // -- SelectGenEventBySampleType
 
-      if( debug_ ) cout << endl;      
+      // if( debug_ ) cout << endl;
+      if( debug_ && nEvent_debug >= 100 ) return;      
     } // -- end of event iteration
 
     TString outputName = GetOutputFileName("MakeHist_EventEff");
@@ -191,9 +196,10 @@ private:
 
     if( debug_ )
     {
-      printf("  [OffMuon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", mu.pt, mu.eta, mu.phi);
-      printf("  --> (isL1Matched, isHLTMatched, eff) = (%d, %d, %.3lf)\n", isL1Matched, isHLTMatched, eff);
+      printf("  [OffMuon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", mu.pt, mu.eta, mu.phi);
+      printf(" --> (isL1Matched, isHLTMatched, eff) = (%d, %d, %.3lf)\n", isL1Matched, isHLTMatched, eff);
     }
+
 
     return eff;
   }
