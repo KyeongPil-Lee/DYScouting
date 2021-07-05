@@ -129,6 +129,7 @@ public:
 
     TH1D* h_diMuM_noEff   = new TH1D("h_diMuM_noEff",   "", 200, 0, 200);
     TH1D* h_diMuM_withEff = new TH1D("h_diMuM_withEff", "", 200, 0, 200);
+    TH1D* h_diMuM_corr    = new TH1D("h_diMuM_corr",    "", 200, 0, 200);
 
     TnPEffMapTool* effTool = new TnPEffMapTool();
 
@@ -176,6 +177,16 @@ public:
 
               Double_t eventEff = eff_mu1 * eff_mu2;
               h_diMuM_withEff->Fill(diMuM, totWeight*eventEff);
+
+              Double_t corr;
+              if( eventEff > 0 ) corr = 1.0 / eventEff;
+              else
+              {
+                cout << "eventEff = " << eventEff << " ... set the correction as 1e10" << endl;
+                corr = 1e10;
+              }
+              h_diMuM_corr->Fill(diMuM, totWeight*corr);
+
             } // -- is L1+HLT fired?
           } // -- pass acceptance at the reco level
         } // -- pass acceptance at the gen level
@@ -186,6 +197,7 @@ public:
     TFile *f_output = TFile::Open(outputName, "RECREATE");
     h_diMuM_noEff->Write();
     h_diMuM_withEff->Write();
+    h_diMuM_corr->Write();
     f_output->Close();
 
     PrintRunTime();
