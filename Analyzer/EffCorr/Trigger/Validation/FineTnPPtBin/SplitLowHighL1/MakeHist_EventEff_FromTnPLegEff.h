@@ -127,6 +127,7 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
+    TH1D* h_diMuM_acc     = new TH1D("h_diMuM_acc",     "", 200, 0, 200);
     TH1D* h_diMuM_noEff   = new TH1D("h_diMuM_noEff",   "", 200, 0, 200);
     TH1D* h_diMuM_withEff = new TH1D("h_diMuM_withEff", "", 200, 0, 200);
     TH1D* h_diMuM_corr    = new TH1D("h_diMuM_corr",    "", 200, 0, 200);
@@ -167,6 +168,7 @@ public:
               vec_matchedOffMuon[1].pt > 5 && fabs(vec_matchedOffMuon[1].eta) < 2.4 && vec_matchedOffMuon[1].isTRK )
           {
             Double_t diMuM = (vec_matchedOffMuon[0].vecP + vec_matchedOffMuon[1].vecP).M();
+            h_diMuM_acc->Fill( diMuM, totWeight );
 
             if( IsFired_L1(ntuple) && IsFired_DoubleMu3(ntuple) )
             {
@@ -195,6 +197,7 @@ public:
 
     TString outputName = GetOutputFileName("MakeHist_EventEff");
     TFile *f_output = TFile::Open(outputName, "RECREATE");
+    h_diMuM_acc->Write();
     h_diMuM_noEff->Write();
     h_diMuM_withEff->Write();
     h_diMuM_corr->Write();
