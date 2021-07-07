@@ -59,12 +59,16 @@ public:
         // -- calc. efficiency using gen-matched offline muons
         for(auto offMuon : vec_matchedOffMuon )
         {
-          h_mu_pt_lowPtBin_all->Fill( offMuon.pt, totWeight );
-          h_mu_pt_highPtBin_all->Fill( offMuon.pt, totWeight );
+          if( offMuon.isTRK ) // -- only if it is tracker muon
+          {
+            h_mu_pt_lowPtBin_all->Fill( offMuon.pt, totWeight );
+            h_mu_pt_highPtBin_all->Fill( offMuon.pt, totWeight );
 
-          TString matchingType = EfficiencyType(offMuon, ntuple);
-          if( matchingType == "lowPt" )  h_mu_pt_lowPtBin_matched->Fill( offMuon.pt, totWeight );
-          if( matchingType == "highPt" ) h_mu_pt_highPtBin_matched->Fill( offMuon.pt, totWeight );
+            TString matchingType = EfficiencyType(offMuon, ntuple);
+            if( matchingType == "lowPt" )  h_mu_pt_lowPtBin_matched->Fill( offMuon.pt, totWeight );
+            if( matchingType == "highPt" ) h_mu_pt_highPtBin_matched->Fill( offMuon.pt, totWeight );
+          }
+
         } // -- end of loop over offline muons
       } // -- SelectGenEventBySampleType      
     } // -- end of event iteration
