@@ -42,6 +42,9 @@ public:
     TH1D* h_mu_pt_lowPtBin_L1Matched = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_L1Matched", vec_ptBinEdge);
     TH1D* h_mu_pt_highPtBin_L1Matched = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_L1Matched", vec_highPtBinEdge);
 
+    TH1D* h_mu_pt_lowPtBin_HLTMatched  = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_HLTMatched", vec_ptBinEdge);
+    TH1D* h_mu_pt_highPtBin_HLTMatched = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_HLTMatched", vec_highPtBinEdge);
+
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
@@ -78,6 +81,9 @@ public:
             if( IsMatched_LowPtL1(offMuon, ntuple) )  h_mu_pt_lowPtBin_L1Matched->Fill( offMuon.pt, totWeight );
             if( IsMatched_HighPtL1(offMuon, ntuple) ) h_mu_pt_highPtBin_L1Matched->Fill( offMuon.pt, totWeight );
 
+            if( IsMatched_HLTObj(offMuon, ntuple) ) h_mu_pt_lowPtBin_HLTMatched->Fill( offMuon.pt, totWeight );
+            if( IsMatched_HLTObj(offMuon, ntuple) ) h_mu_pt_highPtBin_HLTMatched->Fill( offMuon.pt, totWeight );
+
             TString matchingType = EfficiencyType(offMuon, ntuple);
             if( matchingType == "lowPt" ) 
             {
@@ -110,6 +116,9 @@ public:
 
     h_mu_pt_lowPtBin_L1Matched->Write();
     h_mu_pt_highPtBin_L1Matched->Write();
+
+    h_mu_pt_lowPtBin_HLTMatched->Write();
+    h_mu_pt_highPtBin_HLTMatched->Write();
 
     f_output->Close();
 
