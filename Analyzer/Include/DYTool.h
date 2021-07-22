@@ -1639,5 +1639,23 @@ TH1D* MakeTH1D_BinEdgeVector(TString histName, vector<Double_t> vec_binEdge)
   return new TH1D(histName, "", nBin, arr_binEdge);
 }
 
+TH2D* MakeTH2D_BinEdgeVector(TString histName, vector<Double_t> vec_binEdgeX, vector<Double_t> vec_binEdgeY)
+{
+  Int_t nBinX = (Int_t)vec_binEdgeX.size()-1; // -- # bins = # bin edges - 1
+
+  Double_t* arr_binEdgeX = new Double_t[nBinX+1]; // -- dynamic allocation   
+  for(Int_t i=0; i<nBinX+1; i++)
+    arr_binEdgeX[i] = vec_binEdgeX[i]; // -- or use std::copy( vec_binEdgeX.begin(), vec_binEdgeX.end(), arr_binEdgeX);
+
+
+  Int_t nBinY = (Int_t)vec_binEdgeY.size()-1; // -- # bins = # bin edges - 1
+
+  Double_t* arr_binEdgeY = new Double_t[nBinY+1]; // -- dynamic allocation   
+  for(Int_t i=0; i<nBinY+1; i++)
+    arr_binEdgeY[i] = vec_binEdgeY[i]; // -- or use std::copy( vec_binEdgeY.begin(), vec_binEdgeY.end(), arr_binEdgeX);
+
+  return new TH2D(histName, "", nBinX, arr_binEdgeX, nBinY, arr_binEdgeY);
+}
+
 
 }; // -- end of namespace DYTool
