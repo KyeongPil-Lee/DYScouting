@@ -340,6 +340,40 @@ void Print_Histogram( TH1D* h, Bool_t NegativeCheck = kFALSE )
   printf("\n\n");
 }
 
+void Print_Histogram2D( TH2D* h2D )
+{
+  cout << "[Print_Histogram2D] histName = " << h2D->GetName() << endl;
+  Int_t nBinX = h2D->GetNbinsX();
+  Int_t nBinY = h2D->GetNbinsY();
+
+  for(Int_t i_x=0; i_x<nBinX; i_x++)
+  {
+    Int_t i_binX = i_x+1;
+
+    Double_t lowerEdgeX = h2D->GetXaxis()->GetBinLowEdge(i_binX);
+    Double_t upperEdgeX = h2D->GetXaxis()->GetBinLowEdge(i_binX+1);
+
+    printf("[%dth x-axis bin (%.3lf < x < %.3lf)]\n", i_binX, lowerEdgeX, upperEdgeX);
+
+    for(Int_t i_y=0; i_y<nBinY; i_y++)
+    {
+      Int_t i_binY = i_y+1;
+
+      Double_t lowerEdgeY = h2D->GetYaxis()->GetBinLowEdge(i_binY);
+      Double_t upperEdgeY = h2D->GetYaxis()->GetBinLowEdge(i_binY+1);
+
+      Double_t value = h2D->GetBinContent(i_binX, i_binY);
+      Double_t error = h2D->GetBinError(i_binX, i_binY);
+
+      printf("  [%03d, %03d bin (%.3lf < y < %.3lf)] (value, error) = (%.3lf, %.3lf)\n", i_binX, i_binY, lowerEdgeY, upperEdgeY, value, error);
+    }
+
+    cout << endl;
+  }
+
+  cout << "[Print_Histogram2D] end" << endl;
+}
+
 struct HistInfo
 {
   TH1D* h;
