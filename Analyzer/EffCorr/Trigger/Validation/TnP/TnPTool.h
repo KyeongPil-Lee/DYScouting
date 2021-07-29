@@ -443,11 +443,21 @@ public:
       Int_t i_bin = i+1;
 
       Double_t nEventPass = CountEvent( vec_passHist[i] );
+      if( nEventPass < 0 )
+      {
+        printf("\n[TnPEffTool::CalcTnPEff_CutAndCount] # pass events in %dth bin = %lf < 0 ... force it to be 0\n\n", i_bin, nEventPass);
+        nEventPass = 0;
+      }
       h_nPass->SetBinContent(i_bin, nEventPass );
       h_nPass->SetBinError( i_bin, sqrt(nEventPass) );
 
       Double_t nEventFail = CountEvent( vec_failHist[i] );
       Double_t nEventTotal = nEventPass + nEventFail;
+      if( nEventTotal < 0 )
+      {
+        printf("[TnPEffTool::CalcTnPEff_CutAndCount] (# total events in %dth bin = %lf < 0 ... force it to be 0\n", i_bin, nEventTotal);
+        nEventTotal = 0;
+      }
       h_nTotal->SetBinContent(i_bin, nEventTotal );
       h_nTotal->SetBinError(i_bin, sqrt(nEventTotal) );
 
