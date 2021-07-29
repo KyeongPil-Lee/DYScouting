@@ -139,7 +139,7 @@ public:
     // -- when one muon is matched to low pT L1 leg & the other one is matched to high pT L1 leg
     TH2D* h2D_lowPt_highPt  = DYTool::MakeTH2D_BinEdgeVector("h2D_lowPt_highPt", vec_lowPtBinEdge, vec_highPtBinEdge);
     // -- when both muons are matched to high pT L1 leg
-    TH2D* h2D_highPt_highPt = DYTool::MakeTH2D_BinEdgeVector("h2D_lowPt_highPt", vec_highPtBinEdge, vec_highPtBinEdge);
+    TH2D* h2D_highPt_highPt = DYTool::MakeTH2D_BinEdgeVector("h2D_highPt_highPt", vec_highPtBinEdge, vec_highPtBinEdge);
 
     TnPEffMapTool* effTool = new TnPEffMapTool();
 
