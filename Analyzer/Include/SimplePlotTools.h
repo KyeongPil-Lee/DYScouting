@@ -1473,6 +1473,7 @@ public:
   {
     // -- draw canvas
     SetCanvas_Square();
+    c_->SetLogz(isLogZ_);
 
     // c_->SetTopMargin(0.05);
     // c_->SetBottomMargin(0.13);
