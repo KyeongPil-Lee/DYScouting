@@ -404,7 +404,7 @@ t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.get
 t_caloMETPhi_          ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPhi")) ),
 t_caloMETPt_           ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPt")) ),
 t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-t_trigObj_L3MuonNoVtx_ ( consume< std::vector<pat::TriggerObjectStandAlone> >    (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_L3MuonNoVtx")) ), // -- only for miniAOD -- //
+t_trigObj_L3MuonNoVtx_ ( consumes< std::vector<pat::TriggerObjectStandAlone> >   (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_L3MuonNoVtx")) ),
 t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- only for miniAOD -- //
 t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
 t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) ),
@@ -1080,24 +1080,24 @@ void DYTreeProducer::Fill_HLT(const edm::Event &iEvent)
 
 void DYTreeProducer::Fill_L3MuonNoVtx( const edm::Event& iEvent )
 {
-  Handle<std::vector<pat::TriggerObjectStandAlone> > h_L3MuonNoVtx;
-  iEvent.getByToken(t_L3MuonNoVtx_, h_L3MuonNoVtx);
+  Handle<std::vector<pat::TriggerObjectStandAlone> > h_trigObj_L3MuonNoVtx;
+  iEvent.getByToken(t_trigObj_L3MuonNoVtx_, h_trigObj_L3MuonNoVtx);
 
-  if( h_L3MuonNoVtx.isValid() )
+  if( h_trigObj_L3MuonNoVtx.isValid() )
   {
     int _nL3MuonNoVtx = 0;
-    for(unsigned int i_mu=0; i_mu<h_L3MuonNoVtx->size(); ++i_mu)
+    for(unsigned int i_mu=0; i_mu<h_trigObj_L3MuonNoVtx->size(); ++i_mu)
     {
-      const pat::TriggerObjectStandAlone &triggerObj = (*h_L3MuonNoVtx)[i_mu];
+      const pat::TriggerObjectStandAlone &triggerObj = (*h_trigObj_L3MuonNoVtx)[i_mu];
       L3MuonNoVtx_pt_[i_mu] = triggerObj.pt();
       L3MuonNoVtx_eta_[i_mu] = triggerObj.eta();
       L3MuonNoVtx_phi_[i_mu] = triggerObj.phi();
 
       _nL3MuonNoVtx++;
     } // -- loop over trigger objects
-  } // -- handle: valid?
 
-  nL3MuonNoVtx_ = _nL3MuonNoVtx;
+    nL3MuonNoVtx_ = _nL3MuonNoVtx;
+  } // -- handle: valid?
 }
 
 

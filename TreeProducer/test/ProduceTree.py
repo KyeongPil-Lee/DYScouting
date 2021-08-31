@@ -49,12 +49,12 @@ process.TFileService = cms.Service("TFileService",
 )
 
 # -- produce PAT trigger object (to use the trigger information with a pre-defined format)
-from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger as patTriggerFull
-patTriggerFull.onlyStandAlone = True # -- produce triggerObjectStandAlone objects only
+process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi")
+process.patTrigger.onlyStandAlone = True # -- produce triggerObjectStandAlone objects only
 
-# -- extract IterL3MuonCandidateNoVtx object (TriggerObjectStandAlone) from patTriggerFull
+# -- extract IterL3MuonCandidateNoVtx object (TriggerObjectStandAlone) from patTrigger
 process.IterL3MuonCandidatesNoVtx = cms.EDProducer("TriggerObjectFilterByCollection",
-    src = cms.InputTag("patTriggerFull"),
+    src = cms.InputTag("patTrigger"),
     collections = cms.vstring("hltIterL3MuonCandidatesNoVtx"),
 )
 
@@ -121,6 +121,6 @@ if isMiniAOD:
   process.DYTree.offlineVertex         = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
 
 if not isMC and not isMiniAOD: # -- if it is DATA and RAW tier, RAWtoDigi step is needed to retrieve L1 information
-  process.p = cms.Path(process.IterL3MuonCandidatesNoVtx + process.gtStage2Digis + process.DYTree)
+  process.p = cms.Path(process.patTrigger + process.IterL3MuonCandidatesNoVtx + process.gtStage2Digis + process.DYTree)
 else: # -- else (MC or DATA with miniAOD format)
-  process.p = cms.Path(process.IterL3MuonCandidatesNoVtx + process.DYTree)
+  process.p = cms.Path(process.patTrigger + process.IterL3MuonCandidatesNoVtx + process.DYTree)
