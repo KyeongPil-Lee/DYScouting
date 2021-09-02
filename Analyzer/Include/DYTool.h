@@ -246,7 +246,7 @@ vector<DYTool::L1Muon> GetAllL1Muon(DYTool::DYTree *ntuple, Double_t minQuality 
   return vec_L1Muon;
 }
 
-vector<DYTool::L1Muon> GetAllL3MuonNoVtx(DYTool::DYTree *ntuple, Double_t minPt = -1)
+vector<DYTool::L3MuonNoVtx> GetAllL3MuonNoVtx(DYTool::DYTree *ntuple, Double_t minPt = -1)
 {
   vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx;
 

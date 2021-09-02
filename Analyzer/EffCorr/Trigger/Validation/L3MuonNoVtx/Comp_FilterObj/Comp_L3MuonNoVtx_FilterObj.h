@@ -51,7 +51,7 @@ public:
 
         Bool_t isL1Fired  = IsFired_L1(ntuple);
         Bool_t isHLTFired = IsFired_DoubleMu3(ntuple);
-        printf("[%d event] (L1, HLT) = (%d, %d)\n", isL1Fired, isHLTFired);
+        printf("[%d event] (L1, HLT) = (%d, %d)\n", i, isL1Fired, isHLTFired);
 
         vector<DYTool::HLTObj>      vec_filterObj   = DYTool::GetAllHLTObj(ntuple, "hltDoubleMu3L3FilteredNoVtx");
         vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3 = DYTool::GetAllL3MuonNoVtx(ntuple, 3.0);
