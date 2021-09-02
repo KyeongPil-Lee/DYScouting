@@ -250,6 +250,35 @@ private:
   }
 };
 
+class L3MuonNoVtx: public Object
+{
+public:
+
+  L3MuonNoVtx() { Init(); };
+
+  L3MuonNoVtx(DYTool::DYTree *ntuple, Int_t index): L3MuonNoVtx()
+  {
+    FillFromNtuple(ntuple, index);
+  }
+
+  void FillFromNtuple(DYTool::DYTree *ntuple, Int_t index)
+  {
+    pt       = ntuple->L3MuonNoVtx_pt[index];
+    eta      = ntuple->L3MuonNoVtx_eta[index];
+    phi      = ntuple->L3MuonNoVtx_phi[index];
+
+    vecP.SetPtEtaPhiM(pt, eta, phi, DYTool::M_mu); // -- assumption: L1 "muon" object
+  }
+
+private:
+  void Init()
+  {
+    pt = -999;
+    eta = -999;
+    phi = -999;
+  }
+};
+
 
 // -- Scouting muon
 class Muon: public Object

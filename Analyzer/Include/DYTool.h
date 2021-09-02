@@ -246,6 +246,21 @@ vector<DYTool::L1Muon> GetAllL1Muon(DYTool::DYTree *ntuple, Double_t minQuality 
   return vec_L1Muon;
 }
 
+vector<DYTool::L1Muon> GetAllL3MuonNoVtx(DYTool::DYTree *ntuple, Double_t minPt = -1)
+{
+  vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx;
+
+  Int_t nL3MuonNoVtx = (Int_t)ntuple->nL3MuonNoVtx;
+  for(Int_t i_obj=0; i_obj<nL3MuonNoVtx; i_obj++)
+  {
+    DYTool::L3MuonNoVtx obj(ntuple, i_obj);
+    if( minPt <= obj.pt )
+      vec_L3MuonNoVtx.push_back( obj );
+  }
+
+  return vec_L3MuonNoVtx;
+}
+
 vector<DYTool::Muon> GetAllMuons(DYTool::DYTree *ntuple)
 {
   vector<DYTool::Muon> vec_muon;

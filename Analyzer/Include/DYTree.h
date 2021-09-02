@@ -198,6 +198,11 @@ public:
   Double_t L1Muon_charge[ArrSize];
   Double_t L1Muon_quality[ArrSize];
 
+  Int_t nL3MuonNoVtx;
+  Double_t L3MuonNoVtx_pt[ArrSize];
+  Double_t L3MuonNoVtx_eta[ArrSize];
+  Double_t L3MuonNoVtx_phi[ArrSize];
+
 
   DYTree()
   {
@@ -215,6 +220,7 @@ public:
     TurnOnBranches_Muon();
     TurnOnBranches_GenParticle();
     TurnOnBranches_L1Muon();
+    TurnOnBranches_L3MuonNoVtx();
 
     cout << "[DYTree] NOTE: TurnOnBranches_OffMuon is not used: it should manually be used if offline muon is used in the code" << endl;
   }
@@ -654,6 +660,21 @@ public:
 
     chain_->SetBranchStatus("L1Muon_quality", 1);
     chain_->SetBranchAddress("L1Muon_quality", &L1Muon_quality);
+  }
+
+  void TurnOnBranches_L3MuonNoVtx()
+  {
+    chain_->SetBranchStatus("nL3MuonNoVtx", 1);
+    chain_->SetBranchAddress("nL3MuonNoVtx", &nL3MuonNoVtx);
+
+    chain_->SetBranchStatus("L3MuonNoVtx_pt", 1);
+    chain_->SetBranchAddress("L3MuonNoVtx_pt", &L3MuonNoVtx_pt);
+
+    chain_->SetBranchStatus("L3MuonNoVtx_eta", 1);
+    chain_->SetBranchAddress("L3MuonNoVtx_eta", &L3MuonNoVtx_eta);
+
+    chain_->SetBranchStatus("L3MuonNoVtx_phi", 1);
+    chain_->SetBranchAddress("L3MuonNoVtx_phi", &L3MuonNoVtx_phi);
   }
 
 
