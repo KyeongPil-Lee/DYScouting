@@ -414,6 +414,16 @@ Bool_t dRMatching_L1Muon( TLorentzVector vecP_ref, DYTool::DYTree* ntuple, Doubl
   return DYTool::dRMatching( vecP_ref, vec_vecP_L1Muon, minDR );
 }
 
+Bool_t dRMatching_L3MuonNoVtx( TLorentzVector vecP_ref, DYTool::DYTree* ntuple, Double_t minPt, Double_t minDR )
+{
+  vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, minPt);
+  vector<TLorentzVector> vec_vecP_L3MuonNoVtx;
+  for(const auto& L3MuonNoVtx : vec_L3MuonNoVtx )
+    vec_vecP_L3MuonNoVtx.push_back( L3MuonNoVtx.vecP );
+
+  return DYTool::dRMatching( vecP_ref, vec_vecP_L3MuonNoVtx, minDR );
+}
+
 
 Bool_t CompareMuPair_LargerDimuonMass( DYTool::MuPair pair1, DYTool::MuPair pair2 )
 {
