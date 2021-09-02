@@ -17,7 +17,7 @@ generator.ROOTCodePath = GetCWD()+"/MakeHist_MCTruthLegEff.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 59740.565202 # -- 2018
-generator.jsonName = "SampleInfo_v1p6.json" # -- under DY_ANALYZER_PATH/Include
+generator.jsonName = "SampleInfo_v1p7.json" # -- under DY_ANALYZER_PATH/Include
 
 # -- if "_skim" is added, it runs over skimmed ntuples
 generator.dic_nJob = { 
