@@ -103,6 +103,7 @@ private:
 
   void Fill_L1( const edm::Event&, const edm::EventSetup& );
   void Fill_HLT( const edm::Event & );
+  void Fill_L3MuonNoVtx( const edm::Event& );
   void Fill_ScoutingVertex( const edm::Event& );
   void Fill_PixelVertex( const edm::Event& );
   void Fill_PixelVertexNearMuon( const edm::Event& );
@@ -110,6 +111,7 @@ private:
   void Fill_ScoutingCaloJet( const edm::Event& );
   void Fill_GenParticle( const edm::Event& );
   void Fill_OfflineMuon( const edm::Event&, const edm::EventSetup& );
+
 
   bool SavedTriggerCondition( std::string& );
   bool SavedFilterCondition( std::string& );
@@ -145,6 +147,9 @@ private:
   // -- variable for L1 information
   vector< std::string> vec_L1Seed_;
   l1t::L1TGlobalUtil   *L1GtUtils_;
+
+  // -- IterL3MuonCandidateNoVtx object
+  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> > t_trigObj_L3MuonNoVtx_;
 
   // -- isMiniAOD?
   bool isMiniAOD_;
@@ -376,6 +381,11 @@ private:
   double L1Muon_phi_[arrSize_];
   double L1Muon_charge_[arrSize_];
   double L1Muon_quality_[arrSize_];
+
+  int nL3MuonNoVtx_;
+  double L3MuonNoVtx_pt_[arrSize_];
+  double L3MuonNoVtx_eta_[arrSize_];
+  double L3MuonNoVtx_phi_[arrSize_];
 };
 
 DYTreeProducer::DYTreeProducer(const edm::ParameterSet& iConfig):
@@ -394,6 +404,7 @@ t_genParticle_         ( consumes< reco::GenParticleCollection >    (iConfig.get
 t_caloMETPhi_          ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPhi")) ),
 t_caloMETPt_           ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("caloMETPt")) ),
 t_rho_                 ( consumes< double >                         (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+t_trigObj_L3MuonNoVtx_ ( consumes< std::vector<pat::TriggerObjectStandAlone> >   (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_L3MuonNoVtx")) ),
 t_trigObj_miniAOD_     ( mayConsume< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("triggerObject_miniAOD")) ), // -- only for miniAOD -- //
 t_offlineVertex_       ( mayConsume< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("offlineVertex")) ),
 t_offlineMuon_         ( mayConsume< edm::View<reco::Muon> >                     (iConfig.getUntrackedParameter<edm::InputTag>("offlineMuon")) ),
@@ -456,6 +467,7 @@ void DYTreeProducer::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
   // -- fill each object
   Fill_L1(iEvent, iSetup);
   Fill_HLT(iEvent);
+  Fill_L3MuonNoVtx(iEvent);
   Fill_ScoutingVertex(iEvent);
   Fill_PixelVertex(iEvent);
   Fill_PixelVertexNearMuon(iEvent);
@@ -717,6 +729,14 @@ void DYTreeProducer::Init()
     L1Muon_quality_[i] = -999;
   }
 
+  nL3MuonNoVtx_ = -999;
+  for( int i=0; i<arrSize_; i++)
+  {
+    L3MuonNoVtx_pt_[i] = -999;
+    L3MuonNoVtx_eta_[i] = -999;
+    L3MuonNoVtx_phi_[i] = -999;
+  }
+
 }
 
 void DYTreeProducer::Make_Branch()
@@ -915,6 +935,11 @@ void DYTreeProducer::Make_Branch()
   ntuple_->Branch("L1Muon_phi",     &L1Muon_phi_,     "L1Muon_phi[nL1Muon]/D");
   ntuple_->Branch("L1Muon_charge",  &L1Muon_charge_,  "L1Muon_charge[nL1Muon]/D");
   ntuple_->Branch("L1Muon_quality", &L1Muon_quality_, "L1Muon_quality[nL1Muon]/D");
+
+  ntuple_->Branch("nL3MuonNoVtx",        &nL3MuonNoVtx_,        "nL3MuonNoVtx/I");
+  ntuple_->Branch("L3MuonNoVtx_pt",      &L3MuonNoVtx_pt_,      "L3MuonNoVtx_pt[nL3MuonNoVtx]/D");
+  ntuple_->Branch("L3MuonNoVtx_eta",     &L3MuonNoVtx_eta_,     "L3MuonNoVtx_eta[nL3MuonNoVtx]/D");
+  ntuple_->Branch("L3MuonNoVtx_phi",     &L3MuonNoVtx_phi_,     "L3MuonNoVtx_phi[nL3MuonNoVtx]/D");
 }
 
 
@@ -1051,6 +1076,28 @@ void DYTreeProducer::Fill_HLT(const edm::Event &iEvent)
     } // -- end of if(token is available)
   }
   
+}
+
+void DYTreeProducer::Fill_L3MuonNoVtx( const edm::Event& iEvent )
+{
+  Handle<std::vector<pat::TriggerObjectStandAlone> > h_trigObj_L3MuonNoVtx;
+  iEvent.getByToken(t_trigObj_L3MuonNoVtx_, h_trigObj_L3MuonNoVtx);
+
+  if( h_trigObj_L3MuonNoVtx.isValid() )
+  {
+    int _nL3MuonNoVtx = 0;
+    for(unsigned int i_mu=0; i_mu<h_trigObj_L3MuonNoVtx->size(); ++i_mu)
+    {
+      const pat::TriggerObjectStandAlone &triggerObj = (*h_trigObj_L3MuonNoVtx)[i_mu];
+      L3MuonNoVtx_pt_[i_mu] = triggerObj.pt();
+      L3MuonNoVtx_eta_[i_mu] = triggerObj.eta();
+      L3MuonNoVtx_phi_[i_mu] = triggerObj.phi();
+
+      _nL3MuonNoVtx++;
+    } // -- loop over trigger objects
+
+    nL3MuonNoVtx_ = _nL3MuonNoVtx;
+  } // -- handle: valid?
 }
 
 

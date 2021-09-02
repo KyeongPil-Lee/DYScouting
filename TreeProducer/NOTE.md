@@ -1,3 +1,10 @@
+## v1.6 -> v1.7
+
+* Add L3Muon_NoVtx object information (pt, eta, phi)
+  * It will be saved for AOD and miniAOD samples (not RAW)
+
+
+
 ## v1.5 -> v1.6
 
 * Add L1 muon information (L1 pt, eta, phi, charge and quality)

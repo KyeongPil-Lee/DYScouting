@@ -48,6 +48,16 @@ process.TFileService = cms.Service("TFileService",
   closeFileFast = cms.untracked.bool(False),
 )
 
+# -- produce PAT trigger object (to use the trigger information with a pre-defined format)
+process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi")
+process.patTrigger.onlyStandAlone = True # -- produce triggerObjectStandAlone objects only
+
+# -- extract IterL3MuonCandidateNoVtx object (TriggerObjectStandAlone) from patTrigger
+process.IterL3MuonCandidatesNoVtx = cms.EDProducer("TriggerObjectFilterByCollection",
+    src = cms.InputTag("patTrigger"),
+    collections = cms.vstring("hltIterL3MuonCandidatesNoVtx"),
+)
+
 # -- for the extrapolation of offlie muon to 2nd muon station
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi")
@@ -83,6 +93,8 @@ process.DYTree = cms.EDAnalyzer('DYTreeProducer',
   caloMETPt      = cms.untracked.InputTag("hltScoutingCaloPacker", "caloMetPt", "HLT"),
   rho            = cms.untracked.InputTag("hltScoutingCaloPacker", "rho", "HLT"),
 
+  triggerObject_L3MuonNoVtx = cms.untracked.InputTag("IterL3MuonCandidatesNoVtx"),
+
   isMiniAOD              = cms.untracked.bool(isMiniAOD),
   triggerObject_miniAOD  = cms.untracked.InputTag("notUsed"),
   offlineMuon            = cms.untracked.InputTag("muons"), # -- will be skipped if the collection is not available (e.g. RAW)
@@ -109,6 +121,6 @@ if isMiniAOD:
   process.DYTree.offlineVertex         = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
 
 if not isMC and not isMiniAOD: # -- if it is DATA and RAW tier, RAWtoDigi step is needed to retrieve L1 information
-  process.p = cms.Path(process.gtStage2Digis + process.DYTree)
+  process.p = cms.Path(process.patTrigger + process.IterL3MuonCandidatesNoVtx + process.gtStage2Digis + process.DYTree)
 else: # -- else (MC or DATA with miniAOD format)
-  process.p = cms.Path(process.DYTree)
+  process.p = cms.Path(process.patTrigger + process.IterL3MuonCandidatesNoVtx + process.DYTree)
