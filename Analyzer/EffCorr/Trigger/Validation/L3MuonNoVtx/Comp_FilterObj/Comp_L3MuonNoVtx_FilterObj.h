@@ -29,6 +29,7 @@ public:
     TH1D* h_nFilterObj       = new TH1D("h_nFilterObj",       "", 100, 0, 100);
     TH1D* h_nL3MuonNoVtx_pt3 = new TH1D("h_nL3MuonNoVtx_pt3", "", 100, 0, 100);
 
+    Int_t i_event = 0;
     for(Int_t i=0; i<nEvent; i++)
     {
       DYTool::loadBar(i+1, nEvent, 100, 100);
@@ -49,22 +50,35 @@ public:
         if( sampleInfo_.type.Contains("DYMuMu_M10to50"))
           totWeight *= nloWeightTool->GetWeight(ntuple);
 
+        vector<DYTool::GenParticle> vec_genMuon = DYTool::GetAllGenLeptons(ntuple, 13, "fromHardProcessFinalState");
+        if( vec_genMuon.size() != 2 ) continue;
+
+        i_event++;
+
         Bool_t isL1Fired  = IsFired_L1(ntuple);
         Bool_t isHLTFired = IsFired_DoubleMu3(ntuple);
-        printf("[%d event] (L1, HLT) = (%d, %d)\n", i, isL1Fired, isHLTFired);
+        printf("[%d event] (L1, HLT) = (%d, %d)\n", i_event, isL1Fired, isHLTFired);
+        printf("  [1st gen-muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", vec_genMuon[0].pt, vec_genMuon[0].eta, vec_genMuon[0].phi);
+        printf("  [2nd gen-muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", vec_genMuon[1].pt, vec_genMuon[1].eta, vec_genMuon[1].phi);
 
         vector<DYTool::HLTObj>      vec_filterObj   = DYTool::GetAllHLTObj(ntuple, "hltDoubleMu3L3FilteredNoVtx");
         vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3 = DYTool::GetAllL3MuonNoVtx(ntuple, 3.0);
 
-        printf("[Filter(hltDoubleMu3L3FilteredNoVtx) object]\n");
-        for(auto& filterObj : vec_filterObj )
-          printf("(pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", filterObj.pt, filterObj.eta, filterObj.phi);
+        vector<DYTool::L1Muon> vec_L1Muon = DYTool::GetAllL1Muon(ntuple, 8.0);
+        printf("[L1 muons]\n");
+        for(auto& L1Muon : vec_L1Muon )
+          printf("  (pt, eta, phi, quality) = (%.1lf, %.3lf, %.3lf, %.0lf)\n", L1Muon.pt, L1Muon.eta, L1Muon.phi, L1Muon.quality);
 
         printf("[L3MuonCandidateNoVtx object with pT > 3 GeV]\n");
         for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
-          printf("(pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
+          printf("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
 
-        if( i > 100 ) break;
+        printf("[Filter(hltDoubleMu3L3FilteredNoVtx) object]\n");
+        for(auto& filterObj : vec_filterObj )
+          printf("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", filterObj.pt, filterObj.eta, filterObj.phi);
+
+        printf("\n");
+        if( i_event > 100 ) break;
 
 
         Int_t nFilterObj       = (Int_t)vec_filterObj.size();
