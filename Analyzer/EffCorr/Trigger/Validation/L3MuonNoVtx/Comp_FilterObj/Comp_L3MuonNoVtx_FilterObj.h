@@ -53,32 +53,39 @@ public:
         vector<DYTool::GenParticle> vec_genMuon = DYTool::GetAllGenLeptons(ntuple, 13, "fromHardProcessFinalState");
         if( vec_genMuon.size() != 2 ) continue;
 
-        i_event++;
+        // i_event++;
 
-        Bool_t isL1Fired  = IsFired_L1(ntuple);
-        Bool_t isHLTFired = IsFired_DoubleMu3(ntuple);
-        printf("[%d event] (L1, HLT) = (%d, %d)\n", i_event, isL1Fired, isHLTFired);
-        printf("  [1st gen-muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", vec_genMuon[0].pt, vec_genMuon[0].eta, vec_genMuon[0].phi);
-        printf("  [2nd gen-muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", vec_genMuon[1].pt, vec_genMuon[1].eta, vec_genMuon[1].phi);
+        // Bool_t isL1Fired  = IsFired_L1(ntuple);
+        // Bool_t isHLTFired = IsFired_DoubleMu3(ntuple);
+        // printf("[%d event] (L1, HLT) = (%d, %d)\n", i_event, isL1Fired, isHLTFired);
+        // printf("  [1st gen-muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", vec_genMuon[0].pt, vec_genMuon[0].eta, vec_genMuon[0].phi);
+        // printf("  [2nd gen-muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", vec_genMuon[1].pt, vec_genMuon[1].eta, vec_genMuon[1].phi);
 
-        vector<DYTool::HLTObj>      vec_filterObj   = DYTool::GetAllHLTObj(ntuple, "hltDoubleMu3L3FilteredNoVtx");
-        vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3 = DYTool::GetAllL3MuonNoVtx(ntuple, 3.0);
+        // vector<DYTool::HLTObj>      vec_filterObj       = DYTool::GetAllHLTObj(ntuple, "hltDoubleMu3L3FilteredNoVtx");
+        // vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3 = DYTool::GetAllL3MuonNoVtx(ntuple, 3.0);
 
-        vector<DYTool::L1Muon> vec_L1Muon = DYTool::GetAllL1Muon(ntuple, 8.0);
-        printf("[L1 muons]\n");
-        for(auto& L1Muon : vec_L1Muon )
-          printf("  (pt, eta, phi, quality) = (%.1lf, %.3lf, %.3lf, %.0lf)\n", L1Muon.pt, L1Muon.eta, L1Muon.phi, L1Muon.quality);
+        // vector<DYTool::L1Muon> vec_L1Muon = DYTool::GetAllL1Muon(ntuple, 8.0);
+        // printf("[L1 muons]\n");
+        // for(auto& L1Muon : vec_L1Muon )
+        //   printf("  (pt, eta, phi, quality) = (%.1lf, %.3lf, %.3lf, %.0lf)\n", L1Muon.pt, L1Muon.eta, L1Muon.phi, L1Muon.quality);
 
-        printf("[L3MuonCandidateNoVtx object with pT > 3 GeV]\n");
-        for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
-          printf("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
+        // printf("[L3MuonCandidateNoVtx object with pT > 3 GeV]\n");
+        // for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
+        //   printf("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
 
-        printf("[Filter(hltDoubleMu3L3FilteredNoVtx) object]\n");
-        for(auto& filterObj : vec_filterObj )
-          printf("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", filterObj.pt, filterObj.eta, filterObj.phi);
+        // printf("[Filter(hltDoubleMu3L3FilteredNoVtx) object]\n");
+        // for(auto& filterObj : vec_filterObj )
+        //   printf("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", filterObj.pt, filterObj.eta, filterObj.phi);
 
-        printf("\n");
-        if( i_event > 100 ) break;
+        // printf("\n");
+        // if( i_event > 100 ) break;
+
+        vector<DYTool::HLTObj> vec_filterObj_temp = DYTool::GetAllHLTObj(ntuple, "hltDoubleMu3L3FilteredNoVtx");
+        vector<DYTool::HLTObj> vec_filterObj = RemoveDuplicatedObject( vec_filterObj_temp );
+
+
+        vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3;
+        Bool_t doPass_customFilter = CustomFilter_DoubleMu3(ntuple, vec_L3MuonNoVtx_pt3);
 
 
         Int_t nFilterObj       = (Int_t)vec_filterObj.size();
@@ -125,44 +132,48 @@ private:
     return doPass_HLT;
   }
 
-  TString EfficiencyType(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
-  {
-    TString type = "none";
-
-    Double_t minDR = 0.3;
-    Double_t minQuality = 8.0;
-    Double_t minL1Pt = 15.0;
-    Double_t maxL1Pt = 9999.0;
-    Bool_t isHighPtL1Matched = DYTool::dRMatching_L1Muon(mu.vecP_Propagated(), ntuple, minDR, minQuality, minL1Pt, maxL1Pt );
-
-    minL1Pt = 7.0;
-    maxL1Pt = 14.9999;
-    Bool_t isLowPtL1Matched = DYTool::dRMatching_L1Muon(mu.vecP_Propagated(), ntuple, minDR, minQuality, minL1Pt, maxL1Pt );
-
-    Bool_t isHLTMatched = DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltDoubleMu3L3FilteredNoVtx", 0.1);
-
-    if( isHLTMatched )
-    {
-      if( isHighPtL1Matched ) type = "highPt";
-      if( isLowPtL1Matched ) type = "lowPt";
-    }
-
-    return type;
-  }
-
-  Bool_t CheckMatching_L1_15_7_HLT_DoubleMu3(DYTool::DYTree* ntuple, DYTool::OffMuon mu1, DYTool::OffMuon mu2)
+  Bool_t CustomFilter_DoubleMu3(DYTool::DYTree *ntuple, vector<DYTool::L3MuonNoVtx> &vec_filterObj)
   {
     Bool_t flag = kFALSE;
 
-    TString type1 = EfficiencyType(mu1, ntuple);
-    TString type2 = EfficiencyType(mu2, ntuple);
+    vector<DYTool::L3MuonNoVtx> vec_filterObj_singleMu;
+    Bool_t flag_singleMu = CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj_singleMu);
 
-    if( type1 != "none" && type2 != "none" &&
-        (type1 == "highPt" || type2 == "highPt") ) // -- two muons should be matched (not "none") && at least one muon should be matched to high pT L1 (pT >15 GeV)
+    if( vec_filterObj_singleMu.size() >= 2 )
+    {
       flag = kTRUE;
+      vec_filterObj = vec_filterObj_singleMu;
+    }
 
     return flag;
   }
 
+  vector<DYTool::HLTObj> RemoveDuplicatedObject( vector<DYTool::HLTObj> vec_obj )
+  {
+    vector<DYTool::HLTObj> vec_obj_cleaned;
+    vec_obj_cleaned.clear();
+
+    for( auto obj : vec_obj )
+    {
+      Double_t pt = obj.pt;
+      Double_t eta = obj.eta;
+      Double_t phi = obj.phi;
+
+      Bool_t isDuplicated = kFALSE;
+      for( auto obj_cleaned : vec_obj_cleaned )
+      {
+        if(  pt == obj_cleaned.pt && eta == obj_cleaned.eta && phi == obj_cleaned.phi )
+        {
+          isDuplicated = kTRUE;
+          break;
+        }
+      }
+
+      if( !isDuplicated )
+        vec_obj_cleaned.push_back( obj );
+    }
+
+    return vec_obj_cleaned;
+  }
 
 };
