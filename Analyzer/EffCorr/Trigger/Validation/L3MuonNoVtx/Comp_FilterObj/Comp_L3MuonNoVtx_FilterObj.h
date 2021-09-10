@@ -29,6 +29,15 @@ public:
     TH1D* h_nFilterObj       = new TH1D("h_nFilterObj",       "", 100, 0, 100);
     TH1D* h_nL3MuonNoVtx_pt3 = new TH1D("h_nL3MuonNoVtx_pt3", "", 100, 0, 100);
 
+    TH1D* h_pt_filterObj   = new TH1D("h_pt_filterObj",   "", 10000, 0, 10000);
+    TH1D* h_pt_L3MuonNoVtx = new TH1D("h_pt_L3MuonNoVtx", "", 10000, 0, 10000);
+
+    TH1D* h_eta_filterObj   = new TH1D("h_eta_filterObj",   "", 60, -3, 3);
+    TH1D* h_eta_L3MuonNoVtx = new TH1D("h_eta_L3MuonNoVtx", "", 60, -3, 3);
+
+    TH1D* h_phi_filterObj   = new TH1D("h_phi_filterObj",   "", 80, -4, 4);
+    TH1D* h_phi_L3MuonNoVtx = new TH1D("h_phi_L3MuonNoVtx", "", 80, -4, 4);
+
     Int_t i_event = 0;
     for(Int_t i=0; i<nEvent; i++)
     {
@@ -83,16 +92,28 @@ public:
         vector<DYTool::HLTObj> vec_filterObj_temp = DYTool::GetAllHLTObj(ntuple, "hltDoubleMu3L3FilteredNoVtx");
         vector<DYTool::HLTObj> vec_filterObj = RemoveDuplicatedObject( vec_filterObj_temp );
 
-
         vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3;
         Bool_t doPass_customFilter = CustomFilter_DoubleMu3(ntuple, vec_L3MuonNoVtx_pt3);
-
 
         Int_t nFilterObj       = (Int_t)vec_filterObj.size();
         Int_t nL3MuonNoVtx_pt3 = (Int_t)vec_L3MuonNoVtx_pt3.size();
 
         h_nFilterObj->Fill( nFilterObj, totWeight );
         h_nL3MuonNoVtx_pt3->Fill( nL3MuonNoVtx_pt3, totWeight );
+
+        for(auto& filterObj : vec_filterObj )
+        {
+          h_pt_filterObj->Fill( filterObj.pt, totWeight );
+          h_eta_filterObj->Fill( filterObj.eta, totWeight );
+          h_phi_filterObj->Fill( filterObj.phi, totWeight );
+        }
+
+        for(auto& L3MuonNoVtx : vec_L3MuonNoVtx_pt3 )
+        {
+          h_pt_L3MuonNoVtx->Fill( L3MuonNoVtx.pt, totWeight );
+          h_eta_L3MuonNoVtx->Fill( L3MuonNoVtx.eta, totWeight );
+          h_phi_L3MuonNoVtx->Fill( L3MuonNoVtx.phi, totWeight );
+        }
 
       } // -- SelectGenEventBySampleType      
     } // -- end of event iteration
@@ -102,6 +123,14 @@ public:
 
     h_nFilterObj->Write();
     h_nL3MuonNoVtx_pt3->Write();
+
+    h_pt_filterObj->Write();
+    h_eta_filterObj->Write();
+    h_phi_filterObj->Write();
+
+    h_pt_L3MuonNoVtx->Write();
+    h_eta_L3MuonNoVtx->Write();
+    h_phi_L3MuonNoVtx->Write();
 
     f_output->Close();
 
@@ -137,7 +166,7 @@ private:
     Bool_t flag = kFALSE;
 
     vector<DYTool::L3MuonNoVtx> vec_filterObj_singleMu;
-    Bool_t flag_singleMu = CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj_singleMu);
+    Bool_t flag_singleMu = DYTool::CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj_singleMu);
 
     if( vec_filterObj_singleMu.size() >= 2 )
     {
