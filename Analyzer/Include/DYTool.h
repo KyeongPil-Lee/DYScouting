@@ -1682,5 +1682,29 @@ TH2D* MakeTH2D_BinEdgeVector(TString histName, vector<Double_t> vec_binEdgeX, ve
   return new TH2D(histName, "", nBinX, arr_binEdgeX, nBinY, arr_binEdgeY);
 }
 
+Bool_t CustomSingleMuFilter_MimicDoubleMu3Leg(DYTool::DYTree *ntuple, vector<DYTool::L3MuonNoVtx> &vec_filterObj)
+{
+  vec_filterObj.clear();
+  
+  Bool_t flag = kFALSE;
+
+  vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
+  for( L3MuonNoVtx : vec_L3MuonNoVtx )
+  {
+    Bool_t isMatched_L1 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
+    Bool_t isMatched_L2 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
+
+    Bool_t isMatched_prevCand = isMatched_L1 || isMatched_L2;
+
+    Bool_t doPass_PtCut = L3MuonNoVtx.pt > 3.0;
+
+    if( isMatched_prevCand && doPass_PtCut ) vec_filterObj.push_back( L3MuonNoVtx );
+  }
+
+  if( vec_filterObj.size() >= 1 ) flag = kTRUE;
+
+  return flag;
+}
+
 
 }; // -- end of namespace DYTool
