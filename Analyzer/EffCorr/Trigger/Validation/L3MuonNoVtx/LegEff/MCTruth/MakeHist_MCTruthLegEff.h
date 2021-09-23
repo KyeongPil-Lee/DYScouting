@@ -161,7 +161,7 @@ private:
 
   Bool_t IsMatched_L3MuonNoVtx_CustomSingleMu3Filter(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
   {
-    vetor<DYTool::L3MuonNoVtx> vec_filterObj;
+    vector<DYTool::L3MuonNoVtx> vec_filterObj;
     Bool_t flag_pass = DYTool::CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj);
 
     vector<TLorentzVector> vec_vecP_filterObj;
