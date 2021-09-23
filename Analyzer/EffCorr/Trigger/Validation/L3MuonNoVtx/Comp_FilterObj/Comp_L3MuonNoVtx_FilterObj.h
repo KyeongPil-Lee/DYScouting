@@ -142,6 +142,7 @@ public:
             TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", filterObj.pt, filterObj.eta, filterObj.phi);
             logEvent << str_temp << endl;
           }
+          logEvent << endl;
 
           // -- when the custom filter reject more than the real filter: trace the rejected objects to understand the reason
           if( nFilterObj > nL3MuonNoVtx_pt3 )
@@ -257,8 +258,8 @@ private:
     vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
     for( auto& L3MuonNoVtx : vec_L3MuonNoVtx )
     {
-      Bool_t isMatched_L1 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
-      Bool_t isMatched_L2 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
+      Bool_t isMatched_L1 = dRMatching_HLTObj_Debug(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
+      Bool_t isMatched_L2 = dRMatching_HLTObj_Debug(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
 
       Bool_t isMatched_prevCand = isMatched_L1 || isMatched_L2;
 
@@ -276,6 +277,40 @@ private:
     logEvent << endl;
 
     if( vec_filterObj.size() >= 1 ) flag = kTRUE;
+
+    return flag;
+  }
+
+  Bool_t dRMatching_HLTObj_Debug( TLorentzVector vecP_ref, DYTool::DYTree* ntuple, TString filterName, Double_t minDR, ofstream& logEvent )
+  {
+    logEvent << "   [dRMatching_HLTObj_Debug] filterName = " << filterName << endl;
+    logEvent << TString::Format("   reference momentum (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", vecP_ref.Pt(), vecP_ref.Eta(), vecP_ref.Phi()) << endl;
+
+    vector<DYTool::HLTObj> vec_HLTObj = DYTool::GetAllHLTObj(ntuple, filterName);
+    vector<TLorentzVector> vec_vecP_HLTObj;
+    for(const auto& HLTObj : vec_HLTObj )
+      vec_vecP_HLTObj.push_back( HLTObj.vecP );
+
+    return dRMatching_Debug( vecP_ref, vec_vecP_HLTObj, minDR, logEvent );
+  }
+
+  Bool_t dRMatching_Debug( TLorentzVector vecP_ref, vector<TLorentzVector> vec_vecP, Double_t minDR, ofstream& logEvent )
+  {
+    bool flag = kFALSE;
+
+    Int_t nObj = (Int_t)vec_vecP.size();
+    for(const auto& vecP_target: vec_vecP )
+    {
+      Double_t dR = vecP_ref.DeltaR( vecP_target );
+
+      logEvent << TString::Format("      -> dR with (pt, eta, phi) = (%.1lf, %.3lf, %.3lf): %.3lf", vecP_target.Pt(), vecP_target.Eta(), vecP_target.Phi(), dR) << endl;
+
+      if( dR < minDR )
+      {
+        flag = kTRUE;
+        break;
+      }
+    }
 
     return flag;
   }
