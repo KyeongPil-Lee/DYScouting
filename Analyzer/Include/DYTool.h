@@ -1691,7 +1691,7 @@ Bool_t CustomSingleMuFilter_MimicDoubleMu3Leg(DYTool::DYTree *ntuple, vector<DYT
   vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
   for( auto& L3MuonNoVtx : vec_L3MuonNoVtx )
   {
-    Double_t dR_L1 = 0.3; // -- it is fixed according to the real filter (it also do dR matching with L1 objects using L3 muon default momentum)
+    Double_t dR_L1 = 0.3; // -- it is fixed according to the real DoubleMu3 filter (it also does dR matching with L1 objects using L3 muon default momentum)
     // -- it was set as 0.3 before, but some of muons are failed to be matched as they have dR in the range of 0.3 < dR < 0.5.
     // -- so it is decided to increase to 0.5.
     Double_t dR_L2 = 0.5;
@@ -1708,6 +1708,19 @@ Bool_t CustomSingleMuFilter_MimicDoubleMu3Leg(DYTool::DYTree *ntuple, vector<DYT
   if( vec_filterObj.size() >= 1 ) flag = kTRUE;
 
   return flag;
+}
+
+Bool_t IsMatched_L3MuonNoVtx_CustomSingleMuLegFilter(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
+{
+  vector<DYTool::L3MuonNoVtx> vec_filterObj;
+  Bool_t flag_pass = DYTool::CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj);
+
+  vector<TLorentzVector> vec_vecP_filterObj;
+  for( auto& filterObj : vec_filterObj )
+    vec_vecP_filterObj.push_back( filterObj.vecP );
+
+  Double_t minDR = 0.1;
+  return DYTool::dRMatching(mu.vecP, vec_vecP_filterObj, minDR);
 }
 
 
