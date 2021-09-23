@@ -93,6 +93,7 @@ public:
         vector<DYTool::HLTObj> vec_filterObj = RemoveDuplicatedObject( vec_filterObj_temp );
 
         vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx_pt3;
+        // Bool_t doPass_customFilter = CustomFilter_DoubleMu3(ntuple, vec_L3MuonNoVtx_pt3);
         Bool_t doPass_customFilter = CustomFilter_DoubleMu3(ntuple, vec_L3MuonNoVtx_pt3);
 
         Int_t nFilterObj       = (Int_t)vec_filterObj.size();
@@ -141,6 +142,14 @@ public:
             TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", filterObj.pt, filterObj.eta, filterObj.phi);
             logEvent << str_temp << endl;
           }
+
+          // -- when the custom filter reject more than the real filter: trace the rejected objects to understand the reason
+          if( nFilterObj > nL3MuonNoVtx_pt3 )
+          {
+            vector<DYTool::L3MuonNoVtx> vec_filterObj_singleMu_debug;
+            Bool_t flag_singleMu = CustomSingleMuFilter_MimicDoubleMu3Leg_Debug(ntuple, vec_filterObj_singleMu_debug, logEvent);
+          }
+
           logEvent << "======================================" << endl;
           logEvent << endl;
 
@@ -235,6 +244,40 @@ private:
     }
 
     return vec_obj_cleaned;
+  }
+
+  Bool_t CustomSingleMuFilter_MimicDoubleMu3Leg_Debug(DYTool::DYTree *ntuple, vector<DYTool::L3MuonNoVtx> &vec_filterObj, ofstream& logEvent)
+  {
+    logEvent << "[CustomSingleMuFilter_MimicDoubleMu3Leg_Debug]" << endl;
+
+    vec_filterObj.clear();
+    
+    Bool_t flag = kFALSE;
+
+    vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
+    for( L3MuonNoVtx : vec_L3MuonNoVtx )
+    {
+      Bool_t isMatched_L1 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
+      Bool_t isMatched_L2 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
+
+      Bool_t isMatched_prevCand = isMatched_L1 || isMatched_L2;
+
+      Bool_t doPass_PtCut = L3MuonNoVtx.pt > 3.0;
+
+      if( isMatched_prevCand && doPass_PtCut ) vec_filterObj.push_back( L3MuonNoVtx );
+
+      logEvent << TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", L3MuonNoVtx.pt, L3MuonNoVtx.eta, L3MuonNoVtx.phi) << endl;
+      Bool_t flag_pass = isMatched_prevCand && doPass_PtCut;
+      if( flag_pass )
+        logEvent << "   ---> pass" << endl;
+      else
+        logEvent << "   ---> fail: " << TString::Format("(isMatched_L1, isMatched_L2, doPass_PtCut) = (%d, %d, %d)", isMatched_L1, isMatched_L2, doPass_PtCut) << endl;
+    }
+    logEvent << endl;
+
+    if( vec_filterObj.size() >= 1 ) flag = kTRUE;
+
+    return flag;
   }
 
 };
