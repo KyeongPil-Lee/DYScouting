@@ -1691,8 +1691,11 @@ Bool_t CustomSingleMuFilter_MimicDoubleMu3Leg(DYTool::DYTree *ntuple, vector<DYT
   vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
   for( auto& L3MuonNoVtx : vec_L3MuonNoVtx )
   {
-    Bool_t isMatched_L1 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
-    Bool_t isMatched_L2 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
+    // -- it was set as 0.3 before, but some of muons are failed to be matched as they have dR in the range of 0.3 < dR < 0.5.
+    // -- so it is decided to increase to 0.5.
+    Double_t dR_L1L2 = 0.5;
+    Bool_t isMatched_L1 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    dR_L1L2);
+    Bool_t isMatched_L2 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", dR_L1L2);
 
     Bool_t isMatched_prevCand = isMatched_L1 || isMatched_L2;
 
