@@ -43,7 +43,7 @@ Bool_t PassPassingProbeCondition(DYTool::OffMuon mu, DYTool::DYTree* ntuple)
   Double_t maxL1Pt = 9999.0;
 
   if( DYTool::dRMatching_L1Muon(mu.vecP_Propagated(), ntuple, minDR, minQuality, minL1Pt, maxL1Pt ) &&
-      DYTool::IsMatched_L3MuonNoVtx_CustomSingleMuLegFilter(mu.vecP, ntuple) )
+      DYTool::IsMatched_L3MuonNoVtx_CustomSingleMuLegFilter(mu, ntuple) )
     flag = kTRUE;
 
   return flag;
