@@ -122,8 +122,8 @@ public:
 
         // -- apply acceptance at the generator level: let's consider the events within the detector acceptance only
         Bool_t flag_passGenAcc = kFALSE;
-        if( vec_genMuon[0].pt > 5 && vec_genMuon[0].eta < 2.4 &&
-            vec_genMuon[1].pt > 5 && vec_genMuon[1].eta < 2.4 ) flag_passGenAcc = kTRUE;
+        if( vec_genMuon[0].pt > 5 && fabs(vec_genMuon[0].eta) < 2.4 &&
+            vec_genMuon[1].pt > 5 && fabs(vec_genMuon[1].eta) < 2.4 ) flag_passGenAcc = kTRUE;
 
         if( !flag_passGenAcc ) continue;
 
