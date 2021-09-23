@@ -26,6 +26,16 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
+    TH1D* h_nFilterObj_tot   = new TH1D("h_nFilterObj_tot",   100, 0, 100);
+    TH1D* h_nFilterObj_type1 = new TH1D("h_nFilterObj_type1", 100, 0, 100);
+    TH1D* h_nFilterObj_type2 = new TH1D("h_nFilterObj_type2", 100, 0, 100);
+    TH1D* h_nFilterObj_type3 = new TH1D("h_nFilterObj_type3", 100, 0, 100);
+
+    TH1D* h_nL3MuonNoVtx_tot   = new TH1D("h_nL3MuonNoVtx_tot",   100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_type1 = new TH1D("h_nL3MuonNoVtx_type1", 100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_type2 = new TH1D("h_nL3MuonNoVtx_type2", 100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_type3 = new TH1D("h_nL3MuonNoVtx_type3", 100, 0, 100);
+
     // -- # events of its type according to the generator level variables
     // -- nFilterObj == nL3MuonNoVtx
     // -- nFilterObj > nL3MuonNoVtx: my custom filter rejects more
@@ -171,8 +181,24 @@ public:
         else if( nFilterObj > nL3MuonNoVtx )  isType2 = kTRUE;
         else if( nFilterObj < nL3MuonNoVtx )  isType3 = kTRUE;
 
-        h_nFilterObj->Fill( nFilterObj, totWeight );
-        h_nL3MuonNoVtx->Fill( nL3MuonNoVtx, totWeight );
+        h_nFilterObj_tot->Fill( nFilterObj, totWeight );
+        h_nL3MuonNoVtx_tot->Fill( nL3MuonNoVtx, totWeight );
+
+        if( isType1 )
+        {
+          h_nFilterObj_type1->Fill( nFilterObj, totWeight );
+          h_nL3MuonNoVtx_type1->Fill( nL3MuonNoVtx, totWeight );
+        }
+        if( isType2 )
+        {
+          h_nFilterObj_type2->Fill( nFilterObj, totWeight );
+          h_nL3MuonNoVtx_type2->Fill( nL3MuonNoVtx, totWeight );
+        }
+        if( isType3 )
+        {
+          h_nFilterObj_type3->Fill( nFilterObj, totWeight );
+          h_nL3MuonNoVtx_type3->Fill( nL3MuonNoVtx, totWeight );
+        }
 
         if( isType1 )
         {
@@ -295,8 +321,17 @@ public:
     TString outputName = GetOutputFileName("Comp_L3MuonNoVtx_FilterObj");
     TFile *f_output = TFile::Open(outputName, "RECREATE");
 
-    h_nFilterObj->Write();
-    h_nL3MuonNoVtx->Write();
+    h_nFilterObj_tot->Write();
+    h_nL3MuonNoVtx_tot->Write();
+
+    h_nFilterObj_type1->Write();
+    h_nL3MuonNoVtx_type1->Write();
+
+    h_nFilterObj_type2->Write();
+    h_nL3MuonNoVtx_type2->Write();
+
+    h_nFilterObj_type3->Write();
+    h_nL3MuonNoVtx_type3->Write();
 
 
     h_nEvent_diMuPt_tot->Write();
