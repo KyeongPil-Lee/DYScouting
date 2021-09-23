@@ -115,6 +115,31 @@ public:
           h_phi_L3MuonNoVtx->Fill( L3MuonNoVtx.phi, totWeight );
         }
 
+        if( nFilterObj != nL3MuonNoVtx )
+        {
+          TString basePath = "/data9/Users/kplee/Physics/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/Comp_FilterObj"
+          ofstream logEvent(basePath+"/Event_differentNumberOfObject.txt");
+
+          logEvent << "[L3MuonCandidateNoVtx object with pT > 3 GeV]" << endl;
+          for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
+          {
+            TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
+            logEvent << str_temp << endl;
+          }
+          logEvent << endl;
+
+          logEvent << "[Filter(hltDoubleMu3L3FilteredNoVtx) object]" << endl;
+          for(auto& filterObj : vec_filterObj )
+          {
+            TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", filterObj.pt, filterObj.eta, filterObj.phi);
+            logEvent << str_temp << endl;
+          }
+          logEvent << endl;
+          logEvent << endl;
+
+          logEvent.close();
+        }
+
       } // -- SelectGenEventBySampleType      
     } // -- end of event iteration
 
