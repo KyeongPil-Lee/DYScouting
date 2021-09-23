@@ -255,7 +255,7 @@ private:
     Bool_t flag = kFALSE;
 
     vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
-    for( L3MuonNoVtx : vec_L3MuonNoVtx )
+    for( auto& L3MuonNoVtx : vec_L3MuonNoVtx )
     {
       Bool_t isMatched_L1 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
       Bool_t isMatched_L2 = dRMatching_HLTObj(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
