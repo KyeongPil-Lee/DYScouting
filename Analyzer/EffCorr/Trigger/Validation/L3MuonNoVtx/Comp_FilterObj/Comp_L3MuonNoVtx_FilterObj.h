@@ -118,7 +118,7 @@ public:
         if( nFilterObj != nL3MuonNoVtx_pt3 )
         {
           TString basePath = "/data9/Users/kplee/Physics/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/Comp_FilterObj";
-          ofstream logEvent(basePath+"/Event_differentNumberOfObject.txt");
+          ofstream logEvent(basePath+"/Event_differentNumberOfObject.txt", std::ios_base::out | std::ios_base::app);
 
           logEvent << "[L3MuonCandidateNoVtx object with pT > 3 GeV]" << endl;
           for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
