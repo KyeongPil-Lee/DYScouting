@@ -123,7 +123,7 @@ public:
           logEvent << "[L3MuonCandidateNoVtx object with pT > 3 GeV]" << endl;
           for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
           {
-            TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
+            TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
             logEvent << str_temp << endl;
           }
           logEvent << endl;
@@ -131,7 +131,7 @@ public:
           logEvent << "[Filter(hltDoubleMu3L3FilteredNoVtx) object]" << endl;
           for(auto& filterObj : vec_filterObj )
           {
-            TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)\n", filterObj.pt, filterObj.eta, filterObj.phi);
+            TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", filterObj.pt, filterObj.eta, filterObj.phi);
             logEvent << str_temp << endl;
           }
           logEvent << endl;
