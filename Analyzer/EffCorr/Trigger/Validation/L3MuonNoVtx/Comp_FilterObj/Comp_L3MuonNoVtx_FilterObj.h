@@ -26,15 +26,15 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
-    TH1D* h_nFilterObj_tot   = new TH1D("h_nFilterObj_tot",   100, 0, 100);
-    TH1D* h_nFilterObj_type1 = new TH1D("h_nFilterObj_type1", 100, 0, 100);
-    TH1D* h_nFilterObj_type2 = new TH1D("h_nFilterObj_type2", 100, 0, 100);
-    TH1D* h_nFilterObj_type3 = new TH1D("h_nFilterObj_type3", 100, 0, 100);
+    TH1D* h_nFilterObj_tot   = new TH1D("h_nFilterObj_tot",   "", 100, 0, 100);
+    TH1D* h_nFilterObj_type1 = new TH1D("h_nFilterObj_type1", "", 100, 0, 100);
+    TH1D* h_nFilterObj_type2 = new TH1D("h_nFilterObj_type2", "", 100, 0, 100);
+    TH1D* h_nFilterObj_type3 = new TH1D("h_nFilterObj_type3", "", 100, 0, 100);
 
-    TH1D* h_nL3MuonNoVtx_tot   = new TH1D("h_nL3MuonNoVtx_tot",   100, 0, 100);
-    TH1D* h_nL3MuonNoVtx_type1 = new TH1D("h_nL3MuonNoVtx_type1", 100, 0, 100);
-    TH1D* h_nL3MuonNoVtx_type2 = new TH1D("h_nL3MuonNoVtx_type2", 100, 0, 100);
-    TH1D* h_nL3MuonNoVtx_type3 = new TH1D("h_nL3MuonNoVtx_type3", 100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_tot   = new TH1D("h_nL3MuonNoVtx_tot",   "", 100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_type1 = new TH1D("h_nL3MuonNoVtx_type1", "", 100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_type2 = new TH1D("h_nL3MuonNoVtx_type2", "", 100, 0, 100);
+    TH1D* h_nL3MuonNoVtx_type3 = new TH1D("h_nL3MuonNoVtx_type3", "", 100, 0, 100);
 
     // -- # events of its type according to the generator level variables
     // -- nFilterObj == nL3MuonNoVtx
