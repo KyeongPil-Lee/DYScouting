@@ -130,31 +130,6 @@ private:
     return doPass_HLT;
   }
 
-  TString EfficiencyType(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
-  {
-    TString type = "none";
-
-    Double_t minDR = 0.3;
-    Double_t minQuality = 8.0;
-    Double_t minL1Pt = 15.0;
-    Double_t maxL1Pt = 9999.0;
-    Bool_t isHighPtL1Matched = DYTool::dRMatching_L1Muon(mu.vecP_Propagated(), ntuple, minDR, minQuality, minL1Pt, maxL1Pt );
-
-    minL1Pt = 7.0;
-    maxL1Pt = 14.9999;
-    Bool_t isLowPtL1Matched = DYTool::dRMatching_L1Muon(mu.vecP_Propagated(), ntuple, minDR, minQuality, minL1Pt, maxL1Pt );
-
-    Bool_t isHLTMatched = DYTool::dRMatching_HLTObj(mu.vecP, ntuple, "hltDoubleMu3L3FilteredNoVtx", 0.1);
-
-    if( isHLTMatched )
-    {
-      if( isHighPtL1Matched ) type = "highPt";
-      if( isLowPtL1Matched ) type = "lowPt";
-    }
-
-    return type;
-  }
-
   Bool_t IsMatched_HighPtL1(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
   {
     Double_t minDR = 0.3;
@@ -184,22 +159,27 @@ private:
     return isHLTMatched;
   }
 
-  Bool_t IsMatched_L3MuonNoVtx_Pt3(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
+  Bool_t IsMatched_L3MuonNoVtx_CustomSingleMu3Filter(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
   {
-    Double_t minPt = 3;
-    Double_t minDR = 0.1;
+    vetor<DYTool::L3MuonNoVtx> vec_filterObj;
+    Bool_t flag_pass = DYTool::CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj);
 
-    return DYTool::dRMatching_L3MuonNoVtx( mu.vecP, ntuple, minPt, minDR );    
+    vector<TLorentzVector> vec_vecP_filterObj;
+    for( auto& filterObj : vec_filterObj )
+      vec_vecP_filterObj.push_back( filterObj.vecP );
+
+    Double_t minDR = 0.1;
+    return DYTool::dRMatching(mu.vecP, vec_vecP_filterObj, minDR);
   }
 
   Bool_t IsMatched_LowPtL1Leg_L3MuonNoVtx_Pt3(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
   {
-    return IsMatched_LowPtL1(mu, ntuple) && IsMatched_L3MuonNoVtx_Pt3(mu, ntuple);
+    return IsMatched_LowPtL1(mu, ntuple) && IsMatched_L3MuonNoVtx_CustomSingleMu3Filter(mu, ntuple);
   }
 
   Bool_t IsMatched_HighPtL1Leg_L3MuonNoVtx_Pt3(DYTool::OffMuon mu, DYTool::DYTree *ntuple)
   {
-    return IsMatched_HighPtL1(mu, ntuple) && IsMatched_L3MuonNoVtx_Pt3(mu, ntuple);
+    return IsMatched_HighPtL1(mu, ntuple) && IsMatched_L3MuonNoVtx_CustomSingleMu3Filter(mu, ntuple);
   }
 
 };
