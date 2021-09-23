@@ -115,9 +115,9 @@ public:
           h_phi_L3MuonNoVtx->Fill( L3MuonNoVtx.phi, totWeight );
         }
 
-        if( nFilterObj != nL3MuonNoVtx )
+        if( nFilterObj != nL3MuonNoVtx_pt3 )
         {
-          TString basePath = "/data9/Users/kplee/Physics/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/Comp_FilterObj"
+          TString basePath = "/data9/Users/kplee/Physics/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/Comp_FilterObj";
           ofstream logEvent(basePath+"/Event_differentNumberOfObject.txt");
 
           logEvent << "[L3MuonCandidateNoVtx object with pT > 3 GeV]" << endl;
