@@ -123,7 +123,7 @@ public:
           logEvent << "======================================" << endl;
           logEvent << "[The full L3MuonCandidateNoVtx object]" << endl;
           vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
-          for( L3MuonNoVtx : vec_L3MuonNoVtx )
+          for( auto& L3MuonNoVtx : vec_L3MuonNoVtx )
             logEvent << TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", L3MuonNoVtx.pt, L3MuonNoVtx.eta, L3MuonNoVtx.phi) << endl;
           logEvent << endl;
 
