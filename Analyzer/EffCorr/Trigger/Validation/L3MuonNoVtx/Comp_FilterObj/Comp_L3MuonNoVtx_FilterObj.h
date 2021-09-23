@@ -120,7 +120,14 @@ public:
           TString basePath = "/data9/Users/kplee/Physics/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/Comp_FilterObj";
           ofstream logEvent(basePath+"/Event_differentNumberOfObject.txt", std::ios_base::out | std::ios_base::app);
 
-          logEvent << "[L3MuonCandidateNoVtx object with pT > 3 GeV]" << endl;
+          logEvent << "======================================" << endl;
+          logEvent << "[The full L3MuonCandidateNoVtx object]" << endl;
+          vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
+          for( L3MuonNoVtx : vec_L3MuonNoVtx )
+            logEvent << TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", L3MuonNoVtx.pt, L3MuonNoVtx.eta, L3MuonNoVtx.phi) << endl;
+          logEvent << endl;
+
+          logEvent << "[Custom filter object (SingleMu3 + >=2 muons)]" << endl;
           for(auto& L3MuonNoVtx_pt3 : vec_L3MuonNoVtx_pt3 )
           {
             TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", L3MuonNoVtx_pt3.pt, L3MuonNoVtx_pt3.eta, L3MuonNoVtx_pt3.phi);
@@ -134,7 +141,7 @@ public:
             TString str_temp = TString::Format("  (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", filterObj.pt, filterObj.eta, filterObj.phi);
             logEvent << str_temp << endl;
           }
-          logEvent << endl;
+          logEvent << "======================================" << endl;
           logEvent << endl;
 
           logEvent.close();
