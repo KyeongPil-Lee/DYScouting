@@ -258,8 +258,8 @@ private:
     vector<DYTool::L3MuonNoVtx> vec_L3MuonNoVtx = DYTool::GetAllL3MuonNoVtx(ntuple, -1.0);
     for( auto& L3MuonNoVtx : vec_L3MuonNoVtx )
     {
-      Bool_t isMatched_L1 = dRMatching_HLTObj_Debug(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3);
-      Bool_t isMatched_L2 = dRMatching_HLTObj_Debug(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3);
+      Bool_t isMatched_L1 = dRMatching_HLTObj_Debug(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L1Filtered0",    0.3, logEvent);
+      Bool_t isMatched_L2 = dRMatching_HLTObj_Debug(L3MuonNoVtx.vecP, ntuple, "hltDimuon3L2PreFiltered0", 0.3, logEvent);
 
       Bool_t isMatched_prevCand = isMatched_L1 || isMatched_L2;
 
