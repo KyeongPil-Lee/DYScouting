@@ -25,7 +25,7 @@ public:
     DYTool::PUReweightTool* PUTool = new DYTool::PUReweightTool("2018");
     NLOWeightTool* nloWeightTool = new NLOWeightTool();
 
-    vector<Double_t> vec_lowPtBinEdge     = {0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 30, 35, 40, 50, 60, 120, 200, 500};
+    vector<Double_t> vec_lowPtBinEdge  = {0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 30, 35, 40, 50, 60, 120, 200, 500};
     vector<Double_t> vec_highPtBinEdge = {0, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 30, 40, 50, 60, 120, 200, 500};
     vector<Double_t> vec_etaBinEdge    = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
 
@@ -38,6 +38,21 @@ public:
     TH1D* h_mu_pt_highPtBin_matched = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_matched", vec_highPtBinEdge);
     TH1D* h_mu_eta_highPtBin_all     = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_highPtBin_all",     vec_etaBinEdge);
     TH1D* h_mu_eta_highPtBin_matched = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_highPtBin_matched", vec_etaBinEdge);
+
+    // -- further investigation: Split L1 and HLT
+    // -- L1 only
+    TH1D* h_mu_pt_lowPtBin_matched_L1Only  = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_matched_L1Only", vec_lowPtBinEdge);
+    TH1D* h_mu_eta_lowPtBin_matched_L1Only = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_lowPtBin_matched_L1Only", vec_etaBinEdge);
+
+    TH1D* h_mu_pt_highPtBin_matched_L1Only  = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_matched_L1Only", vec_highPtBinEdge);
+    TH1D* h_mu_eta_highPtBin_matched_L1Only = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_highPtBin_matched_L1Only", vec_etaBinEdge);
+
+    // -- HLT only: muons are same (no difference between low and high pt) and only the binning is different
+    TH1D* h_mu_pt_lowPtBin_matched_HLTOnly  = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_matched_HLTOnly", vec_lowPtBinEdge);
+    TH1D* h_mu_eta_lowPtBin_matched_HLTOnly = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_lowPtBin_matched_HLTOnly", vec_etaBinEdge);
+
+    TH1D* h_mu_pt_highPtBin_matched_HLTOnly  = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_matched_HLTOnly", vec_highPtBinEdge);
+    TH1D* h_mu_eta_highPtBin_matched_HLTOnly = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_highPtBin_matched_HLTOnly", vec_etaBinEdge);
 
     for(Int_t i=0; i<nEvent; i++)
     {
@@ -82,6 +97,29 @@ public:
               h_mu_pt_highPtBin_matched->Fill( offMuon.pt, totWeight );
               if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_matched->Fill( offMuon.eta, totWeight );
             }
+
+            // -- L1 only matching
+            if( IsMatched_LowPtL1(offMuon, ntuple) )
+            {
+              h_mu_pt_lowPtBin_matched_L1Only->Fill( offMuon.pt, totWeight );
+              if( offMuon.pt > 5.0 ) h_mu_eta_lowPtBin_matched_L1Only->Fill( offMuon.eta, totWeight );
+            }
+
+            if( IsMatched_HighPtL1(offMuon, ntuple) )
+            {
+              h_mu_pt_highPtBin_matched_L1Only->Fill( offMuon.pt, totWeight );
+              if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_matched_L1Only->Fill( offMuon.eta, totWeight );
+            }
+
+            // -- HLT only matching
+            if( IsMatched_L3MuonNoVtx_CustomSingleMu3Filter(offMuon, ntuple) )
+            {
+              h_mu_pt_lowPtBin_matched_HLTOnly->Fill( offMuon.pt, totWeight );
+              if( offMuon.pt > 5.0 ) h_mu_eta_lowPtBin_matched_HLTOnly->Fill( offMuon.eta, totWeight );
+
+              h_mu_pt_highPtBin_matched_HLTOnly->Fill( offMuon.pt, totWeight );
+              if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_matched_HLTOnly->Fill( offMuon.eta, totWeight );
+            }
           }
 
         } // -- end of loop over offline muons
@@ -100,6 +138,16 @@ public:
     h_mu_pt_highPtBin_matched->Write();
     h_mu_eta_highPtBin_all->Write();
     h_mu_eta_highPtBin_matched->Write();
+
+    h_mu_pt_lowPtBin_matched_L1Only->Write();
+    h_mu_eta_lowPtBin_matched_L1Only->Write();
+    h_mu_pt_highPtBin_matched_L1Only->Write();
+    h_mu_eta_highPtBin_matched_L1Only->Write();
+
+    h_mu_pt_lowPtBin_matched_HLTOnly->Write();
+    h_mu_eta_lowPtBin_matched_HLTOnly->Write();
+    h_mu_pt_highPtBin_matched_HLTOnly->Write();
+    h_mu_eta_highPtBin_matched_HLTOnly->Write();
 
     f_output->Close();
 
