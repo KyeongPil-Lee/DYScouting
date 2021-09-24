@@ -91,13 +91,14 @@ public:
     TH1D* h_diMuM_withEff_TnP_DMu3_tag = new TH1D("h_diMuM_withEff_TnP_DMu3_tag", "", 200, 0, 200);
     TH1D* h_diMuM_corr_TnP_DMu3_tag    = new TH1D("h_diMuM_corr_TnP_DMu3_tag",    "", 200, 0, 200);
 
+    /Users/kplee/Research/Analysis/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/LegEff/
     // -- different leg efficiencies
     TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
     TString basePath = analyzerPath+"/EffCorr/Trigger/Validation/L3MuonNoVtx/LegEff/";
     TString effFileName_MCTruth      = basePath+"MCTruth/ROOTFile_L1HLTLegEfficiencyMap.root";
     TString effFileName_TnP          = basePath+"TnP/ROOTFile_L1HLTLegEfficiencyMap.root";
-    TString effFileName_TnP_DMu3     = basePath+"TnP_DMu3/ROOTFile_L1HLTLegEfficiencyMap.root";
-    TString effFileName_TnP_DMu3_tag = basePath+"TnP_DMu3_tag/ROOTFile_L1HLTLegEfficiencyMap.root";
+    TString effFileName_TnP_DMu3     = basePath+"TnP_DoubleMu3/Tag_Default/ROOTFile_L1HLTLegEfficiencyMap.root";
+    TString effFileName_TnP_DMu3_tag = basePath+"TnP_DoubleMu3/Tag_FilterObjMatching/ROOTFile_L1HLTLegEfficiencyMap.root";
 
     TnPEffMapTool* effTool_MCTruth      = new TnPEffMapTool(effFileName_MCTruth);
     TnPEffMapTool* effTool_TnP          = new TnPEffMapTool(effFileName_TnP);
