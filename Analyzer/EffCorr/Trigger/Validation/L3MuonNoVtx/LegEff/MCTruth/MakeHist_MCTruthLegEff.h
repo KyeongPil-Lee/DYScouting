@@ -69,18 +69,18 @@ public:
             h_mu_pt_lowPtBin_all->Fill( offMuon.pt, totWeight );
             h_mu_pt_highPtBin_all->Fill( offMuon.pt, totWeight );
             h_mu_eta_lowPtBin_all->Fill( offMuon.eta, totWeight );
-            h_mu_eta_highPtBin_all->Fill( offMuon.eta, totWeight );
+            if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_all->Fill( offMuon.eta, totWeight );
 
             if( IsMatched_LowPtL1Leg_L3MuonNoVtx_Pt3(offMuon, ntuple) )
             {
               h_mu_pt_lowPtBin_matched->Fill( offMuon.pt, totWeight );
-              h_mu_eta_lowPtBin_matched->Fill( offMuon.eta, totWeight );
+              if( offMuon.pt > 5.0 ) h_mu_eta_lowPtBin_matched->Fill( offMuon.eta, totWeight );
             }
 
             if( IsMatched_HighPtL1Leg_L3MuonNoVtx_Pt3(offMuon, ntuple) )
             {
               h_mu_pt_highPtBin_matched->Fill( offMuon.pt, totWeight );
-              h_mu_eta_highPtBin_matched->Fill( offMuon.eta, totWeight );
+              if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_matched->Fill( offMuon.eta, totWeight );
             }
           }
 
