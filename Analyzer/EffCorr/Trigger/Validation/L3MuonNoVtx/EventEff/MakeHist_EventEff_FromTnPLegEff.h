@@ -91,7 +91,6 @@ public:
     TH1D* h_diMuM_withEff_TnP_DMu3_tag = new TH1D("h_diMuM_withEff_TnP_DMu3_tag", "", 200, 0, 200);
     TH1D* h_diMuM_corr_TnP_DMu3_tag    = new TH1D("h_diMuM_corr_TnP_DMu3_tag",    "", 200, 0, 200);
 
-    /Users/kplee/Research/Analysis/DYScouting/Analyzer/EffCorr/Trigger/Validation/L3MuonNoVtx/LegEff/
     // -- different leg efficiencies
     TString analyzerPath = gSystem->Getenv("DY_ANALYZER_PATH");
     TString basePath = analyzerPath+"/EffCorr/Trigger/Validation/L3MuonNoVtx/LegEff/";
