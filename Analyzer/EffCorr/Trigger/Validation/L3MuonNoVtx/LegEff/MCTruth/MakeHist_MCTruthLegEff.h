@@ -3,6 +3,8 @@
 class HistProducer: public DYTool::ClassTemplate
 {
 public:
+  Bool_t debug_ = kTRUE;
+
   HistProducer(): ClassTemplate()
   {
 
@@ -76,6 +78,8 @@ public:
 
         vector<DYTool::OffMuon> vec_matchedOffMuon = DYTool::GenMatchedOfflineMuon(ntuple);
 
+        if( debug_ ) cout << TString::Format("[%dth event]", i) << endl;
+
         // -- calc. efficiency using gen-matched offline muons
         for(auto offMuon : vec_matchedOffMuon )
         {
@@ -120,9 +124,29 @@ public:
               h_mu_pt_highPtBin_matched_HLTOnly->Fill( offMuon.pt, totWeight );
               if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_matched_HLTOnly->Fill( offMuon.eta, totWeight );
             }
-          }
 
+            if( debug_ )
+            {
+              cout << TString::Format("[offline muon] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", offMuon.pt, offMuon.eta, offMuon.phi) << endl;
+
+              vector<DYTool::L3MuonNoVtx> vec_filterObj;
+              Bool_t flag_pass = DYTool::CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj);
+
+              vector<TLorentzVector> vec_vecP_filterObj;
+              for( auto& filterObj : vec_filterObj )
+              {
+                Double_t dR = offMuon.vecP.DeltaR( filterObj.vecP );
+                cout << TString::Format("  [filter obj.] (pt, eta, phi) = (%.1lf, %.3lf, %3.lf)", filterObj.pt, filterObj.eta, filterObj.phi);
+                cout << TString::Format("---> dR = %.3lf", dR);
+                if( dR < 0.1 )
+                  cout << "---> matched" << endl;
+                else
+                  cout << endl;
+              }
+            }
+          }
         } // -- end of loop over offline muons
+        if( debug_ ) cout << "=============================\n" << endl;
       } // -- SelectGenEventBySampleType      
     } // -- end of event iteration
 
