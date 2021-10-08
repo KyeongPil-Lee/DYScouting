@@ -132,14 +132,29 @@ public:
               vector<DYTool::L3MuonNoVtx> vec_filterObj;
               Bool_t flag_pass = DYTool::CustomSingleMuFilter_MimicDoubleMu3Leg(ntuple, vec_filterObj);
 
+              vector<DYTool::L1Muon> vec_L1Muon = DYTool::GetAllL1Muon(ntuple, -1, -1, 1e10);
+              for( auto& L1Muon : vec_L1Muon )
+              {
+                Double_t dR = offMuon.vecP_Propagated().DeltaR( L1Muon.vecP );
+                cout << TString::Format("  [L1 muon] (pt, eta, phi, quality) = (%.1lf, %.3lf, %.3lf, %.1lf)", L1Muon.pt, L1Muon.eta, L1Muon.phi, L1Muon.quality);
+                cout << TString::Format("---> dR = %.3lf", dR);
+                if( dR < 0.3 && L1Muon.quality >= 8 )
+                {
+                  if( L1Muon.pt > 15 )     cout << " ---> matched (high pT L1 leg)" << endl;
+                  else if( L1Muon.pt > 8 ) cout << " ---> matched (low pT L1 leg)" << endl;
+                }
+                else
+                  cout << endl;
+              }
+
               vector<TLorentzVector> vec_vecP_filterObj;
               for( auto& filterObj : vec_filterObj )
               {
                 Double_t dR = offMuon.vecP.DeltaR( filterObj.vecP );
-                cout << TString::Format("  [filter obj.] (pt, eta, phi) = (%.1lf, %.3lf, %3.lf)", filterObj.pt, filterObj.eta, filterObj.phi);
+                cout << TString::Format("  [filter obj.] (pt, eta, phi) = (%.1lf, %.3lf, %.3lf)", filterObj.pt, filterObj.eta, filterObj.phi);
                 cout << TString::Format("---> dR = %.3lf", dR);
                 if( dR < 0.1 )
-                  cout << "---> matched" << endl;
+                  cout << " ---> matched" << endl;
                 else
                   cout << endl;
               }
