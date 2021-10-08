@@ -3,7 +3,7 @@
 class HistProducer: public DYTool::ClassTemplate
 {
 public:
-  Bool_t debug_ = kTRUE;
+  Bool_t debug_ = kFALSE;
 
   HistProducer(): ClassTemplate()
   {
@@ -40,6 +40,17 @@ public:
     TH1D* h_mu_pt_highPtBin_matched = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_matched", vec_highPtBinEdge);
     TH1D* h_mu_eta_highPtBin_all     = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_highPtBin_all",     vec_etaBinEdge);
     TH1D* h_mu_eta_highPtBin_matched = DYTool::MakeTH1D_BinEdgeVector("h_mu_eta_highPtBin_matched", vec_etaBinEdge);
+
+    // -- check the efficiency depending on # offline muons in a event
+    TH1D* h_mu_pt_lowPtBin_all_nMu1     = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_all_nMu1",     vec_lowPtBinEdge);
+    TH1D* h_mu_pt_lowPtBin_matched_nMu1 = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_matched_nMu1", vec_lowPtBinEdge);
+    TH1D* h_mu_pt_lowPtBin_all_nMu2     = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_all_nMu2",     vec_lowPtBinEdge);
+    TH1D* h_mu_pt_lowPtBin_matched_nMu2 = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_lowPtBin_matched_nMu2", vec_lowPtBinEdge);
+
+    TH1D* h_mu_pt_highPtBin_all_nMu1     = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_all_nMu1",     vec_highPtBinEdge);
+    TH1D* h_mu_pt_highPtBin_matched_nMu1 = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_matched_nMu1", vec_highPtBinEdge);
+    TH1D* h_mu_pt_highPtBin_all_nMu2     = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_all_nMu2",     vec_highPtBinEdge);
+    TH1D* h_mu_pt_highPtBin_matched_nMu2 = DYTool::MakeTH1D_BinEdgeVector("h_mu_pt_highPtBin_matched_nMu2", vec_highPtBinEdge);
 
     // -- further investigation: Split L1 and HLT
     // -- L1 only
@@ -81,6 +92,7 @@ public:
         if( debug_ ) cout << TString::Format("[%dth event]", i) << endl;
 
         // -- calc. efficiency using gen-matched offline muons
+        Int_t nOffMuon = (Int_t)vec_matchedOffMuon.size();
         for(auto offMuon : vec_matchedOffMuon )
         {
           if( offMuon.isTRK ) // -- only if it is tracker muon
@@ -90,16 +102,33 @@ public:
             if( offMuon.pt > 5.0 ) h_mu_eta_lowPtBin_all->Fill( offMuon.eta, totWeight );
             if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_all->Fill( offMuon.eta, totWeight );
 
+            if( nOffMuon == 1 )
+            {
+              h_mu_pt_lowPtBin_all_nMu1->Fill( offMuon.pt, totWeight );
+              h_mu_pt_highPtBin_all_nMu1->Fill( offMuon.pt, totWeight );
+            }
+            else if( nOffMuon == 2 )
+            {
+              h_mu_pt_lowPtBin_all_nMu2->Fill( offMuon.pt, totWeight );
+              h_mu_pt_highPtBin_all_nMu2->Fill( offMuon.pt, totWeight );
+            }
+
             if( IsMatched_LowPtL1Leg_L3MuonNoVtx_Pt3(offMuon, ntuple) )
             {
               h_mu_pt_lowPtBin_matched->Fill( offMuon.pt, totWeight );
               if( offMuon.pt > 5.0 ) h_mu_eta_lowPtBin_matched->Fill( offMuon.eta, totWeight );
+
+              if( nOffMuon == 1 )      h_mu_pt_lowPtBin_matched_nMu1->Fill( offMuon.pt, totWeight );
+              else if( nOffMuon == 2 ) h_mu_pt_lowPtBin_matched_nMu2->Fill( offMuon.pt, totWeight );
             }
 
             if( IsMatched_HighPtL1Leg_L3MuonNoVtx_Pt3(offMuon, ntuple) )
             {
               h_mu_pt_highPtBin_matched->Fill( offMuon.pt, totWeight );
               if( offMuon.pt > 5.0 ) h_mu_eta_highPtBin_matched->Fill( offMuon.eta, totWeight );
+
+              if( nOffMuon == 1 )      h_mu_pt_highPtBin_matched_nMu1->Fill( offMuon.pt, totWeight );
+              else if( nOffMuon == 2 ) h_mu_pt_highPtBin_matched_nMu2->Fill( offMuon.pt, totWeight );
             }
 
             // -- L1 only matching
@@ -178,6 +207,16 @@ public:
     h_mu_pt_highPtBin_matched->Write();
     h_mu_eta_highPtBin_all->Write();
     h_mu_eta_highPtBin_matched->Write();
+
+    h_mu_pt_lowPtBin_all_nMu1->Write();
+    h_mu_pt_lowPtBin_all_nMu2->Write();
+    h_mu_pt_highPtBin_all_nMu1->Write();
+    h_mu_pt_highPtBin_all_nMu2->Write();
+
+    h_mu_pt_lowPtBin_matched_nMu1->Write();
+    h_mu_pt_lowPtBin_matched_nMu2->Write();
+    h_mu_pt_highPtBin_matched_nMu1->Write();
+    h_mu_pt_highPtBin_matched_nMu2->Write();
 
     h_mu_pt_lowPtBin_matched_L1Only->Write();
     h_mu_eta_lowPtBin_matched_L1Only->Write();
