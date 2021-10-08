@@ -142,6 +142,7 @@ public:
                 {
                   if( L1Muon.pt > 15 )     cout << " ---> matched (high pT L1 leg)" << endl;
                   else if( L1Muon.pt > 8 ) cout << " ---> matched (low pT L1 leg)" << endl;
+                  else                     cout << endl;
                 }
                 else
                   cout << endl;
