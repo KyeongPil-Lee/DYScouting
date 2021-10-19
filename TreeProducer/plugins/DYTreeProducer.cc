@@ -1332,6 +1332,7 @@ bool DYTreeProducer::SavedTriggerCondition( std::string& pathName )
   // -- muon triggers
   if( pathName.find("DST_DoubleMu") != std::string::npos ||
       pathName.find("HLT_IsoMu")    != std::string::npos ||
+      pathName.find("HLT_Mu7p5")    != std::string::npos ||
       pathName.find("HLT_Mu8")      != std::string::npos ||
       pathName.find("HLT_Mu17")     != std::string::npos ||
       pathName.find("HLT_Mu50")     != std::string::npos ||
