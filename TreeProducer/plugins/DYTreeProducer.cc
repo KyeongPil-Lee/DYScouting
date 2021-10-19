@@ -1390,7 +1390,13 @@ bool DYTreeProducer::SavedFilterCondition( std::string& filterName )
       filterName.find("hltL3fL1DoubleMu155fFiltered17")                != std::string::npos || 
       filterName.find("hltDiMuon178RelTrkIsoFiltered0p4")              != std::string::npos || 
       filterName.find("hltDiMuon178RelTrkIsoFiltered0p4DzFiltered0p2") != std::string::npos || 
-      filterName.find("hltDiMuon178Mass3p8Filtered")                   != std::string::npos || 
+      filterName.find("hltDiMuon178Mass3p8Filtered")                   != std::string::npos ||
+      filterName.find("hltL1sSingleMu5IorSingleMu7")                   != std::string::npos ||
+      filterName.find("hltL1fMu7p5TrackFiltered0")                     != std::string::npos ||
+      filterName.find("hltL2fMu7p5TrackL2Filtered7")                   != std::string::npos ||
+      filterName.find("hltL1fForIterL3L1fMu7p5TrackFiltered0")         != std::string::npos ||
+      filterName.find("hltL3fLMu7p5TrackL3Filtered7p5")                != std::string::npos ||
+      filterName.find("hltMu7p5Track2JpsiTrackMassFiltered")           != std::string::npos ||
       filterName.find("hltL1sSingleMu22or25")                     != std::string::npos || 
       filterName.find("hltL1fL1sMu22or25L1Filtered0")             != std::string::npos || 
       filterName.find("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q") != std::string::npos ) flag = true;
