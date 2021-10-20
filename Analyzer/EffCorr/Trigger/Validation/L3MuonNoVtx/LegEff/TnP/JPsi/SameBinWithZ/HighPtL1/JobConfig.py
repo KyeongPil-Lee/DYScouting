@@ -13,7 +13,7 @@ from Include.CondorJobGenerator import *
 generator = MultiCondorJobGenerator()
 
 generator.jobName = "EffCorr" # -- used for workspace name
-generator.ROOTCodePath = GetCWD()+"/MakeTnPHist_HighPtL1andHLT.h"
+generator.ROOTCodePath = GetCWD()+"/MakeTnPHist_JPsi_HighPtL1.h"
 generator.className = "HistProducer"
 
 generator.luminosity = 59740.565202 # -- 2018
