@@ -1,0 +1,13 @@
+{
+  "Sample": [
+  {
+    "tag": "JPsiToMuMu_JPsiPt8_Pythia8",
+    "isMC": 1,
+    "xSec": 874800.0,
+    "sumWeight": -1.0,
+    "comment": "(NOT fully processed) Cross section is from XSDB (uncertainty = 2750.0 pb)",
+    "list_dir": ["v1.8/JPsiToMuMu_JPsiPt8_Pythia8"]
+  }
+]
+
+}
