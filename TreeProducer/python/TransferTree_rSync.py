@@ -88,6 +88,9 @@ class ScriptGenerator:
         self.destination = "" # -- e.g. kplee@147.47.50.161. It should be able to connect without ssh password
         self.portNumber = 22
 
+        # -- ignore comments
+        self.ignoreComment = False
+
         # -- internal variables
         self.tool = TransferTool()
 
@@ -168,6 +171,7 @@ class ScriptGenerator:
 
         for command in list_command:
             list_commandLine = command.split("\n")
+            if self.ignoreComment and "#" in list_commandLine: continue
 
             crabJobName = ""
             dataset = ""
