@@ -381,7 +381,7 @@ private:
     };
 
     vector<Double_t> vec_ptEtaBinEdge_pt  = {5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10};
-    vector<Double_t> vec_ptEtaBinEdge_eta = {2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
+    vector<Double_t> vec_ptEtaBinEdge_eta = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
 
     TnPHistPt_     = new TnPHist("pt",     0,      vec_PtBinEdge);
     TnPHistHighPt_ = new TnPHist("highPt", 0,      vec_HighPtBinEdge);
