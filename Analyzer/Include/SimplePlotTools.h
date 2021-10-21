@@ -374,6 +374,99 @@ void Print_Histogram2D( TH2D* h2D )
   cout << "[Print_Histogram2D] end" << endl;
 }
 
+TH1D* HistOperation(TString histName, TH1D* h1, TH1D* h2, TString operation)
+{
+  if( !(operation == "+" || operation == "-" || operation == "*" || operation == "/") )
+  {
+    cout << "[HistOperation] operation = " << operation << " is not supported ... return nullptr" << endl;
+    return nullptr;
+  }
+
+  Int_t nBin1 = h1->GetNbinsX();
+  Int_t nBin2 = h2->GetNbinsX();
+  if( nBin1 != nBin2 )
+  {
+    printf("[HistOperation] (nBin1, nBin2) = (%d, %d): not same ... return nullptr\n", nBin1, nBin2);
+    return nullptr;
+  }
+
+  TH1D* h_return = (TH1D*)h1->Clone();
+  h_return->SetName(histName);
+
+  for(Int_t i=0; i<nBin1; i++)
+  {
+    Int_t i_bin = i+1;
+
+    Double_t value1 = h1->GetBinContent(i_bin);
+    Double_t value2 = h2->GetBinContent(i_bin);
+
+    Double_t value_return = -1;
+
+    if( operation == "+" ) value_return = value1 + value2;
+    if( operation == "-" ) value_return = value1 - value2;
+    if( operation == "*" ) value_return = value1 * value2;
+    if( operation == "/" ) value_return = value1 / value2;
+
+    h_return->SetBinContent(i_bin, value_return);
+    h_return->SetBinError(i_bin, 0); // -- no error propagation considered for now
+  }
+
+  return h_return;
+}
+
+TH2D* Hist2DOperation(TString histName, TH2D* h1, TH2D* h2, TString operation)
+{
+  if( !(operation == "+" || operation == "-" || operation == "*" || operation == "/") )
+  {
+    cout << "[HistOperation] operation = " << operation << " is not supported ... return nullptr" << endl;
+    return nullptr;
+  }
+
+  Int_t nBinX1 = h1->GetNbinsX();
+  Int_t nBinX2 = h2->GetNbinsX();
+  if( nBinX1 != nBinX2 )
+  {
+    printf("[HistOperation] (nBinX1, nBinX2) = (%d, %d): not same ... return nullptr\n", nBinX1, nBinX2);
+    return nullptr;
+  }
+
+  Int_t nBinY1 = h1->GetNbinsY();
+  Int_t nBinY2 = h2->GetNbinsY();
+  if( nBinY1 != nBinY2 )
+  {
+    printf("[HistOperation] (nBinY1, nBinY2) = (%d, %d): not same ... return nullptr\n", nBinY1, nBinY2);
+    return nullptr;
+  }
+
+  TH2D* h_return = (TH2D*)h1->Clone();
+  h_return->SetName(histName);
+
+  for(Int_t i_x=0; i_x<nBinX1; i_x++)
+  {
+    Int_t i_binX = i_x+1;
+
+    for(Int_t i_y=0; i_y<nBinY1; i_y++)
+    {
+      Int_t i_binY = i_y+1;
+
+      Double_t value1 = h1->GetBinContent(i_binX, i_binY);
+      Double_t value2 = h2->GetBinContent(i_binX, i_binY);
+
+      Double_t value_return = -1;
+
+      if( operation == "+" ) value_return = value1 + value2;
+      if( operation == "-" ) value_return = value1 - value2;
+      if( operation == "*" ) value_return = value1 * value2;
+      if( operation == "/" ) value_return = value1 / value2;
+
+      h_return->SetBinContent(i_binX, i_binY, value_return);
+      h_return->SetBinError(i_binX, i_binY, 0); // -- no error propagation considered for now
+    }
+  }
+
+  return h_return;
+}
+
 struct HistInfo
 {
   TH1D* h;
@@ -921,6 +1014,7 @@ public:
       h_ratio->SetFillColorAlpha(kWhite, 0); 
       h_ratio->SetTitle("");
       if( i == 0 ) SetAxis_BottomPad(h_ratio->GetXaxis(), h_ratio->GetYaxis(), titleX_, titleRatio_);
+      if( setRangeX_ )     h_ratio->GetXaxis()->SetRangeUser( minX_, maxX_ );
       if( setRangeRatio_ ) h_ratio->GetYaxis()->SetRangeUser( minRatio_, maxRatio_ );
     }
 
@@ -1447,6 +1541,8 @@ public:
   Double_t minZ_ = 0.0;
   Double_t maxZ_ = 1.0;
 
+  Bool_t setAutoRangeZ_ = kFALSE;
+
   Hist2DCanvas() {};
 
   Hist2DCanvas(TString canvasName, Bool_t isLogX = kFALSE, Bool_t isLogY = kFALSE, Bool_t isLogZ = kFALSE ): Hist2DCanvas()
@@ -1468,6 +1564,9 @@ public:
     minZ_ = minZ;
     maxZ_ = maxZ;
   }
+
+  void SetAutoRangeZ( Bool_t flag = kTRUE ) { setAutoRangeZ_ = flag; }
+
 
   void Draw( TString drawOp = "COLZ" )
   {
@@ -1491,6 +1590,8 @@ public:
     if( setRangeY_ ) h2D_->GetYaxis()->SetRangeUser( minY_, maxY_ );
     if( setRangeZ_ ) h2D_->GetZaxis()->SetRangeUser( minZ_, maxZ_ );
 
+    if( setAutoRangeZ_ ) CalcAutoRangeZAndSet();
+
     // -- adjustment
     h2D_->GetXaxis()->SetLabelSize(0.035);
     h2D_->GetYaxis()->SetLabelSize(0.035);
@@ -1500,6 +1601,52 @@ public:
 
     if( setSavePath_ ) c_->SaveAs(savePath_);
     else               c_->SaveAs(".pdf");
+  }
+
+private:
+  void CalcAutoRangeZAndSet()
+  {
+    Double_t minZ = 1e10;
+    Double_t maxZ = -1e10;
+
+    // -- find min and max
+    Int_t nBinX = h2D_->GetNbinsX();
+    Int_t nBinY = h2D_->GetNbinsY();
+    for(Int_t i_x=0; i_x<nBinX; i_x++)
+    {
+      Int_t i_binX = i_x+1;
+
+      for(Int_t i_y=0; i_y<nBinY; i_y++)
+      {
+        Int_t i_binY = i_y+1;
+        Double_t value = h2D_->GetBinContent(i_binX, i_binY);
+
+        if( value > maxZ ) maxZ = value;
+        if( value < minZ ) minZ = value;
+      }
+    }
+
+    if( isLogZ_ )
+    {
+      if( minZ < 0 )
+      {
+        cout << "[Hist2DCanvas::SetAutoRangeZ] minZ < 0 but isLogZ = True ... force the range to start at 0" << endl;
+        minZ = 0;
+      }
+
+      maxZ = maxZ * 5;
+    }
+    else // -- linear scale
+    {
+      if( minZ > 0 ) minZ = minZ * 0.9;
+      else           minZ = minZ * 1.1;
+
+      if( maxZ > 0 ) maxZ = maxZ * 1.1;
+      else           maxZ = maxZ * 0.9;
+    }
+
+    cout << "[Hist2DCanvas::SetAutoRangeZ] minZ = " << minZ << ", maxZ = " << maxZ << endl; 
+    h2D_->GetZaxis()->SetRangeUser( minZ, maxZ );
   }
 
 };
