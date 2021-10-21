@@ -677,7 +677,7 @@ private:
       Double_t binEdge = x - errorX_low;
       vec_binEdge.push_back( binEdge );
 
-      if( i_p == i_p - 1 ) // -- last point
+      if( i_p == nPoint - 1 ) // -- last point
       {
         Double_t errorX_high  = g->GetErrorXhigh(i_p);
         Double_t binEdge_last = x + errorX_high;
